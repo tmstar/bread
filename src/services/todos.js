@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseUrl = "http://localhost:3001/todos";
+const baseUrl = "https://young-cove-50323.herokuapp.com/todos";
 
 const getAll = async () => {
   const response = await axios.get(baseUrl);
