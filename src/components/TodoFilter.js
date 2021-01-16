@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
 
 const filters = [
   { type: "all", label: "すべて" },
-  { type: "inProgress", label: "欲しいもの" },
+  { type: "inProgress", label: "買うもの" },
   { type: "completed", label: "買い物かご" },
 ];
 
