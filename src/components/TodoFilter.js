@@ -17,8 +17,8 @@ const useStyles = makeStyles((theme) => ({
 
 const filters = [
   { type: "all", label: "すべて" },
-  { type: "inProgress", label: "作業中" },
-  { type: "completed", label: "完了" },
+  { type: "inProgress", label: "欲しいもの" },
+  { type: "completed", label: "買い物かご" },
 ];
 
 function TodoFilter({ selectedFilter, handleFilter }) {

@@ -82,9 +82,9 @@ function TodoForm({ addTodo }) {
         aria-labelledby="form-dialog-title"
       >
         <form onSubmit={handleSubmit}>
-          <DialogTitle id="form-dialog-title">New Todo</DialogTitle>
+          <DialogTitle id="form-dialog-title">買うもの</DialogTitle>
           <DialogContent>
-            <DialogContentText>Todoの内容を入力してください.</DialogContentText>
+            <DialogContentText>追加する食材を入力してください.</DialogContentText>
             <TextField
               autoFocus
               margin="dense"

@@ -44,7 +44,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <Typography variant="h6" className={classes.title}>
-          Todo List
+          Shopping List
         </Typography>
         <TodoFilter handleFilter={handleFilter} selectedFilter={filter} />
         <TodoForm addTodo={addTodo} />
