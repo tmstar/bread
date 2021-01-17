@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
 function App() {
   const classes = useStyles();
   const { todos, toggleTodo, hideTodo, deleteTodo, addTodo } = useTodo();
-  const [filter, setFilter] = useState("all");
+  const [filter, setFilter] = useState("active");
   const handleFilter = (event, newValue) => {
     if (newValue !== null) {
       setFilter(newValue);
@@ -48,7 +48,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <Typography variant="h6" className={classes.title}>
-          Shopping List
+          To Buy
         </Typography>
         <TodoFilter handleFilter={handleFilter} selectedFilter={filter} />
         <TodoForm addTodo={addTodo} />

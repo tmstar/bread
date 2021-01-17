@@ -9,7 +9,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import DeleteIcon from "@material-ui/icons/Delete";
 import React from "react";
 import Switch from "@material-ui/core/Switch";
-import ListSubheader from '@material-ui/core/ListSubheader';
+import ListSubheader from "@material-ui/core/ListSubheader";
+import CommentIcon from "@material-ui/icons/Comment";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,40 +23,70 @@ const useStyles = makeStyles((theme) => ({
 function TodoList({ todos, toggleTodo, hideTodo, deleteTodo, hideSwitch }) {
   const classes = useStyles();
 
-  const todoList = todos.map((todo) => {
+  const listItemMain = (todo) => {
     return (
-      <ListItem key={todo.id}>
+      <>
         <ListItemIcon>
-          <div hidden={hideSwitch}>
-            <Switch
-              edge="start"
-              disableRipple
-              onChange={() => hideTodo(todo.id, todo.isActive)}
-              checked={todo.isActive}
-            />
-          </div>
           <Checkbox
+            edge="start"
             disableRipple
             checked={todo.completed}
-            onClick={() => toggleTodo(todo.id, todo.completed)}
-            disabled={!hideSwitch}
+            onChange={() => toggleTodo(todo.id, todo.completed)}
           />
         </ListItemIcon>
         <ListItemText primary={todo.title} />
         <ListItemSecondaryAction>
-          <IconButton
-            edge="end"
-            onClick={() => deleteTodo(todo.id)}
-            disabled={!hideSwitch}
-          >
-            <DeleteIcon />
+          <IconButton edge="end">
+            <CommentIcon onClick={() => deleteTodo(todo.id)} />
+          </IconButton>
+          <IconButton edge="end">
+            <DeleteIcon onClick={() => deleteTodo(todo.id)} />
           </IconButton>
         </ListItemSecondaryAction>
+      </>
+    );
+  };
+
+  const listItemSwitch = (todo) => {
+    return (
+      <>
+        <ListItemIcon>
+          <Switch
+            edge="start"
+            disableRipple
+            onChange={() => hideTodo(todo.id, todo.isActive)}
+            checked={todo.isActive}
+          />
+        </ListItemIcon>
+        <ListItemText primary={todo.title} />
+      </>
+    );
+  };
+
+  const todoList = todos.map((todo) => {
+    return (
+      <ListItem key={todo.id}>
+        {hideSwitch ? (
+          listItemMain(todo)
+        ) : (
+          listItemSwitch(todo)
+        )}
       </ListItem>
     );
   });
 
-  return <List className={classes.root} subheader={<ListSubheader>{!hideSwitch ? "表示する食材を選んでください." : ""}</ListSubheader>}>{todoList}</List>;
+  return (
+    <List
+      className={classes.root}
+      subheader={
+        <ListSubheader>
+          {!hideSwitch ? "表示する食材を選んでください." : ""}
+        </ListSubheader>
+      }
+    >
+      {todoList}
+    </List>
+  );
 }
 
 export default TodoList;
