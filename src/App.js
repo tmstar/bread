@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
 
 function App() {
   const classes = useStyles();
-  const { todos, toggleTodo, hideTodo, deleteTodo, addTodo } = useTodo();
+  const { todos, toggleTodo, hideTodo, updateTodo, deleteTodo, addTodo } = useTodo();
   const [filter, setFilter] = useState("active");
   const handleFilter = (event, newValue) => {
     if (newValue !== null) {
@@ -56,6 +56,7 @@ function App() {
           todos={filteredTodos}
           toggleTodo={toggleTodo}
           hideTodo={hideTodo}
+          updateTodo={updateTodo}
           deleteTodo={deleteTodo}
           hideSwitch={filter !== "all"}
         />
