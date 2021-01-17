@@ -1,11 +1,11 @@
-import "./App.css";
-import React, { useState, useMemo } from "react";
-import TodoList from "./components/TodoList";
-import TodoForm from "./components/TodoForm";
-import TodoFilter from "./components/TodoFilter";
-import useTodo from "./hooks/useTodo";
-import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
+import Typography from "@material-ui/core/Typography";
+import React, { useMemo, useState } from "react";
+import "./App.css";
+import TodoFilter from "./components/TodoFilter";
+import TodoForm from "./components/TodoForm";
+import TodoList from "./components/TodoList";
+import useTodo from "./hooks/useTodo";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -26,15 +26,15 @@ function App() {
   const classes = useStyles();
   const { todos, toggleTodo, deleteTodo, addTodo } = useTodo();
   const [filter, setFilter] = useState("all");
-  const handleFilter = (event) => {
-    setFilter(event.target.value);
+  const handleFilter = (event, newValue) => {
+    if (newValue !== null) {
+      setFilter(newValue);
+    }
   };
   const filteredTodos = useMemo(() => {
     switch (filter) {
       case "inProgress":
         return todos.filter((todo) => !todo.completed);
-      case "completed":
-        return todos.filter((todo) => todo.completed);
       case "all":
       default:
         return todos;
