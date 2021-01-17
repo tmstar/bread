@@ -7,9 +7,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import EditIcon from "@material-ui/icons/Edit";
-import SaveIcon from "@material-ui/icons/Save";
 import SpeedDial from "@material-ui/lab/SpeedDial";
-import SpeedDialAction from "@material-ui/lab/SpeedDialAction";
 import SpeedDialIcon from "@material-ui/lab/SpeedDialIcon";
 import React, { useState } from "react";
 
@@ -25,8 +23,6 @@ const useStyles = makeStyles((theme) => ({
     right: theme.spacing(2),
   },
 }));
-
-const actions = [{ icon: <SaveIcon />, name: "Create" }];
 
 function TodoForm({ addTodo }) {
   const classes = useStyles();
@@ -65,17 +61,9 @@ function TodoForm({ addTodo }) {
         icon={<SpeedDialIcon openIcon={<EditIcon />} />}
         onClose={handleClose}
         onOpen={handleOpen}
+        onClick={handleClickOpen}
         open={open}
-      >
-        {actions.map((action) => (
-          <SpeedDialAction
-            key={action.name}
-            icon={action.icon}
-            tooltipTitle={action.name}
-            onClick={handleClickOpen}
-          />
-        ))}
-      </SpeedDial>
+      />
       <Dialog
         open={openForm}
         onClose={handleCloseForm}
@@ -84,7 +72,9 @@ function TodoForm({ addTodo }) {
         <form onSubmit={handleSubmit}>
           <DialogTitle id="form-dialog-title">買うもの</DialogTitle>
           <DialogContent>
-            <DialogContentText>追加する食材を入力してください.</DialogContentText>
+            <DialogContentText>
+              追加する食材を入力してください.
+            </DialogContentText>
             <TextField
               autoFocus
               margin="dense"
