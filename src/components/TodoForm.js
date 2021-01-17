@@ -90,7 +90,7 @@ function TodoForm({ addTodo }) {
               Cancel
             </Button>
             <Button onClick={handleCloseForm} color="primary" type="submit">
-              OK
+              Ok
             </Button>
           </DialogActions>
         </form>

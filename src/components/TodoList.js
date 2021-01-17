@@ -7,10 +7,11 @@ import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemText from "@material-ui/core/ListItemText";
 import { makeStyles } from "@material-ui/core/styles";
 import DeleteIcon from "@material-ui/icons/Delete";
-import React from "react";
+import React, {useState} from "react";
 import Switch from "@material-ui/core/Switch";
 import ListSubheader from "@material-ui/core/ListSubheader";
 import CommentIcon from "@material-ui/icons/Comment";
+import TodoEditForm from "./TodoEditForm";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,8 +21,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function TodoList({ todos, toggleTodo, hideTodo, deleteTodo, hideSwitch }) {
+function TodoList({ todos, toggleTodo, hideTodo, deleteTodo, hideSwitch, updateTodo }) {
   const classes = useStyles();
+  const [selectedTodo, setSelectedTodo] = useState([]);
+  const [openForm, setOpenForm] = useState(false);
 
   const listItemMain = (todo) => {
     return (
@@ -34,10 +37,10 @@ function TodoList({ todos, toggleTodo, hideTodo, deleteTodo, hideSwitch }) {
             onChange={() => toggleTodo(todo.id, todo.completed)}
           />
         </ListItemIcon>
-        <ListItemText primary={todo.title} />
+        <ListItemText primary={todo.title} secondary={todo.note}/>
         <ListItemSecondaryAction>
           <IconButton edge="end">
-            <CommentIcon onClick={() => deleteTodo(todo.id)} />
+            <CommentIcon onClick={() => {setSelectedTodo(todo);setOpenForm(true);}} />
           </IconButton>
           <IconButton edge="end">
             <DeleteIcon onClick={() => deleteTodo(todo.id)} />
@@ -58,7 +61,7 @@ function TodoList({ todos, toggleTodo, hideTodo, deleteTodo, hideSwitch }) {
             checked={todo.isActive}
           />
         </ListItemIcon>
-        <ListItemText primary={todo.title} />
+        <ListItemText primary={todo.title} secondary={todo.note}/>
       </>
     );
   };
@@ -66,26 +69,25 @@ function TodoList({ todos, toggleTodo, hideTodo, deleteTodo, hideSwitch }) {
   const todoList = todos.map((todo) => {
     return (
       <ListItem key={todo.id}>
-        {hideSwitch ? (
-          listItemMain(todo)
-        ) : (
-          listItemSwitch(todo)
-        )}
+        {hideSwitch ? listItemMain(todo) : listItemSwitch(todo)}
       </ListItem>
     );
   });
 
   return (
-    <List
-      className={classes.root}
-      subheader={
-        <ListSubheader>
-          {!hideSwitch ? "表示する食材を選んでください." : ""}
-        </ListSubheader>
-      }
-    >
-      {todoList}
-    </List>
+    <>
+      <List
+        className={classes.root}
+        subheader={
+          <ListSubheader>
+            {!hideSwitch ? "表示する食材を選んでください." : ""}
+          </ListSubheader>
+        }
+      >
+        {todoList}
+      </List>
+      <TodoEditForm todo={selectedTodo} openForm={openForm} setOpenForm={setOpenForm} updateTodo={updateTodo}/>
+    </>
   );
 }
 
