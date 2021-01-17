@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
 
 function App() {
   const classes = useStyles();
-  const { todos, toggleTodo, deleteTodo, addTodo } = useTodo();
+  const { todos, toggleTodo, hideTodo, deleteTodo, addTodo } = useTodo();
   const [filter, setFilter] = useState("all");
   const handleFilter = (event, newValue) => {
     if (newValue !== null) {
@@ -33,10 +33,12 @@ function App() {
   };
   const filteredTodos = useMemo(() => {
     switch (filter) {
+      case "active":
+          return todos.filter((todo) => todo.isActive);
       case "inProgress":
-        return todos.filter((todo) => !todo.completed);
+        return todos.filter((todo) => todo.isActive && !todo.completed);
       case "completed":
-        return todos.filter((todo) => todo.completed);
+        return todos.filter((todo) => todo.isActive && todo.completed);
       case "all":
       default:
         return todos;
@@ -53,7 +55,9 @@ function App() {
         <TodoList
           todos={filteredTodos}
           toggleTodo={toggleTodo}
+          hideTodo={hideTodo}
           deleteTodo={deleteTodo}
+          hideSwitch={filter !== "all"}
         />
       </header>
     </div>

@@ -8,6 +8,8 @@ import ListItemText from "@material-ui/core/ListItemText";
 import { makeStyles } from "@material-ui/core/styles";
 import DeleteIcon from "@material-ui/icons/Delete";
 import React from "react";
+import Switch from "@material-ui/core/Switch";
+import ListSubheader from '@material-ui/core/ListSubheader';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -17,21 +19,35 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function TodoList({ todos, toggleTodo, deleteTodo }) {
+function TodoList({ todos, toggleTodo, hideTodo, deleteTodo, hideSwitch }) {
   const classes = useStyles();
 
   const todoList = todos.map((todo) => {
     return (
-      <ListItem
-        key={todo.id}
-        onClick={() => toggleTodo(todo.id, todo.completed)}
-      >
+      <ListItem key={todo.id}>
         <ListItemIcon>
-          <Checkbox edge="start" disableRipple checked={todo.completed} />
+          <div hidden={hideSwitch}>
+            <Switch
+              edge="start"
+              disableRipple
+              onChange={() => hideTodo(todo.id, todo.isActive)}
+              checked={todo.isActive}
+            />
+          </div>
+          <Checkbox
+            disableRipple
+            checked={todo.completed}
+            onClick={() => toggleTodo(todo.id, todo.completed)}
+            disabled={!hideSwitch}
+          />
         </ListItemIcon>
         <ListItemText primary={todo.title} />
         <ListItemSecondaryAction>
-          <IconButton edge="end" onClick={() => deleteTodo(todo.id)}>
+          <IconButton
+            edge="end"
+            onClick={() => deleteTodo(todo.id)}
+            disabled={!hideSwitch}
+          >
             <DeleteIcon />
           </IconButton>
         </ListItemSecondaryAction>
@@ -39,7 +55,7 @@ function TodoList({ todos, toggleTodo, deleteTodo }) {
     );
   });
 
-  return <List className={classes.root}>{todoList}</List>;
+  return <List className={classes.root} subheader={<ListSubheader>{!hideSwitch ? "表示する食材を選んでください." : ""}</ListSubheader>}>{todoList}</List>;
 }
 
 export default TodoList;
