@@ -1,4 +1,5 @@
 import AllInboxIcon from "@material-ui/icons/AllInbox";
+import CheckIcon from '@material-ui/icons/Check';
 import InboxIcon from "@material-ui/icons/Inbox";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
@@ -17,6 +18,9 @@ function TodoFilter({ selectedFilter, handleFilter }) {
       </ToggleButton>
       <ToggleButton value="inProgress" aria-label="inProgress">
         <InboxIcon />
+      </ToggleButton>
+      <ToggleButton value="completed" aria-label="completed">
+        <CheckIcon />
       </ToggleButton>
     </ToggleButtonGroup>
   );

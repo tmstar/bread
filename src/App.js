@@ -35,6 +35,8 @@ function App() {
     switch (filter) {
       case "inProgress":
         return todos.filter((todo) => !todo.completed);
+      case "completed":
+        return todos.filter((todo) => todo.completed);
       case "all":
       default:
         return todos;
