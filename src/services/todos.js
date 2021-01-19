@@ -18,9 +18,7 @@ const ALL_TODOS = gql`
 
 const CREATE_TODO = gql`
   mutation CreateTodo($id: uuid!, $title: String!, $completed: Boolean!, $isactive: Boolean!) {
-    insert_wish_list_one(
-      object: { id: $id, title: $title, completed: $completed, isactive: $isactive }
-    ) {
+    insert_wish_list_one(object: { id: $id, title: $title, completed: $completed, isactive: $isactive }) {
       id
       isactive
       note
@@ -31,7 +29,7 @@ const CREATE_TODO = gql`
 `;
 
 const UPDATE_TODO = gql`
-  mutation UpdateTodo($id: uuid!, $note: String!, $title: String!) {
+  mutation UpdateTodo($id: uuid!, $note: String, $title: String!) {
     update_wish_list_by_pk(pk_columns: { id: $id }, _set: { note: $note, title: $title }) {
       id
       note
@@ -86,4 +84,5 @@ const add = async (newTodo) => {
   return response.data.data.insert_wish_list_one;
 };
 
-export default { getAll, update, delete: _delete, add };
+const api = { getAll, update, delete: _delete, add };
+export default api;
