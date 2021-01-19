@@ -38,14 +38,7 @@ function TodoList({ todos, toggleTodo, hideTodo, deleteTodo, hideSwitch, updateT
           />
         </ListItemIcon>
         <ListItemText primary={todo.title} secondary={todo.note}/>
-        <ListItemSecondaryAction>
-          <IconButton edge="end">
-            <CommentIcon onClick={() => {setSelectedTodo(todo);setOpenForm(true);}} />
-          </IconButton>
-          <IconButton edge="end">
-            <DeleteIcon onClick={() => deleteTodo(todo.id)} />
-          </IconButton>
-        </ListItemSecondaryAction>
+
       </>
     );
   };
@@ -62,6 +55,14 @@ function TodoList({ todos, toggleTodo, hideTodo, deleteTodo, hideSwitch, updateT
           />
         </ListItemIcon>
         <ListItemText primary={todo.title} secondary={todo.note}/>
+        <ListItemSecondaryAction>
+          <IconButton edge="end">
+            <CommentIcon onClick={() => {setSelectedTodo(todo);setOpenForm(true);}} />
+          </IconButton>
+          <IconButton edge="end">
+            <DeleteIcon onClick={() => deleteTodo(todo.id)} />
+          </IconButton>
+        </ListItemSecondaryAction>
       </>
     );
   };
