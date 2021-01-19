@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { uuid } from "uuidv4";
+import { v4 as uuid_v4 } from "uuid";
 import todoService from "../services/todos";
 
 export default function useTodo() {
@@ -15,9 +15,7 @@ export default function useTodo() {
     const newTodo = { ...todo, completed: !completed };
 
     todoService.update(id, newTodo).then((updatedTodo) => {
-      const newTodos = todos.map((todo) =>
-        todo.id !== updatedTodo.id ? todo : updatedTodo
-      );
+      const newTodos = todos.map((todo) => (todo.id !== updatedTodo.id ? todo : updatedTodo));
       setTodos(newTodos);
     });
   };
@@ -27,9 +25,7 @@ export default function useTodo() {
     const newTodo = { ...todo, isActive: !isActive };
 
     todoService.update(id, newTodo).then((updatedTodo) => {
-      const newTodos = todos.map((todo) =>
-        todo.id !== updatedTodo.id ? todo : updatedTodo
-      );
+      const newTodos = todos.map((todo) => (todo.id !== updatedTodo.id ? todo : updatedTodo));
       setTodos(newTodos);
     });
   };
@@ -39,9 +35,7 @@ export default function useTodo() {
     const newTodo = { ...todo, title: title, note: note };
 
     return todoService.update(id, newTodo).then((updatedTodo) => {
-      const newTodos = todos.map((todo) =>
-        todo.id !== updatedTodo.id ? todo : updatedTodo
-      );
+      const newTodos = todos.map((todo) => (todo.id !== updatedTodo.id ? todo : updatedTodo));
       setTodos(newTodos);
     });
   };
@@ -54,7 +48,7 @@ export default function useTodo() {
   };
 
   const addTodo = (todo) => {
-    const newTodo = { title: todo, completed: false, isActive: true, id: uuid() };
+    const newTodo = { title: todo, completed: false, isActive: true, id: uuid_v4() };
     return todoService.add(newTodo).then((addedTodo) => {
       setTodos([addedTodo].concat(todos));
     });
