@@ -34,11 +34,11 @@ function App() {
   const filteredTodos = useMemo(() => {
     switch (filter) {
       case "active":
-          return todos.filter((todo) => todo.isActive);
+        return todos.filter((todo) => todo.is_active);
       case "inProgress":
-        return todos.filter((todo) => todo.isActive && !todo.completed);
+        return todos.filter((todo) => todo.is_active && !todo.completed);
       case "completed":
-        return todos.filter((todo) => todo.isActive && todo.completed);
+        return todos.filter((todo) => todo.is_active && todo.completed);
       case "all":
       default:
         return todos;

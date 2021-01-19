@@ -4,5 +4,5 @@ CREATE TABLE wish_list (
   title      text NOT NULL,
   note       text,
   completed  boolean NOT NULL DEFAULT false,
-  isActive   boolean NOT NULL DEFAULT true
+  is_active   boolean NOT NULL DEFAULT true
 );

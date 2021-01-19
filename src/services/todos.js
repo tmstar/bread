@@ -8,32 +8,37 @@ const ALL_TODOS = gql`
   query AllTodos {
     wish_list {
       id
-      isactive
-      note
       title
+      note
       completed
+      is_active
     }
   }
 `;
 
 const CREATE_TODO = gql`
-  mutation CreateTodo($id: uuid!, $title: String!, $completed: Boolean!, $isactive: Boolean!) {
-    insert_wish_list_one(object: { id: $id, title: $title, completed: $completed, isactive: $isactive }) {
+  mutation CreateTodo($id: uuid!, $title: String!, $completed: Boolean!, $is_active: Boolean!) {
+    insert_wish_list_one(object: { id: $id, title: $title, completed: $completed, is_active: $is_active }) {
       id
-      isactive
-      note
       title
+      note
       completed
+      is_active
     }
   }
 `;
 
 const UPDATE_TODO = gql`
-  mutation UpdateTodo($id: uuid!, $note: String, $title: String!) {
-    update_wish_list_by_pk(pk_columns: { id: $id }, _set: { note: $note, title: $title }) {
+  mutation UpdateTodo($id: uuid!, $note: String, $title: String!, $completed: Boolean!, $is_active: Boolean!) {
+    update_wish_list_by_pk(
+      pk_columns: { id: $id }
+      _set: { note: $note, title: $title, completed: $completed, is_active: $is_active }
+    ) {
       id
-      note
       title
+      note
+      completed
+      is_active
     }
   }
 `;
@@ -58,6 +63,8 @@ const update = async (id, newTodo) => {
       id: id,
       title: newTodo.title,
       note: newTodo.note,
+      completed: newTodo.completed,
+      is_active: newTodo.is_active,
     },
   });
   return response.data.data.update_wish_list_by_pk;
@@ -78,7 +85,7 @@ const add = async (newTodo) => {
       id: newTodo.id,
       title: newTodo.title,
       completed: false,
-      isactive: true,
+      is_active: true,
     },
   });
   return response.data.data.insert_wish_list_one;

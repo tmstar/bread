@@ -49,8 +49,8 @@ function TodoList({ todos, toggleTodo, hideTodo, deleteTodo, hideSwitch, updateT
           <Switch
             edge="start"
             disableRipple
-            onChange={() => hideTodo(todo.id, todo.isActive)}
-            checked={todo.isActive}
+            onChange={() => hideTodo(todo.id, todo.is_active)}
+            checked={todo.is_active}
           />
         </ListItemIcon>
         <ListItemText primary={todo.title} secondary={todo.note} />

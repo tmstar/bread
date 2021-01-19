@@ -20,10 +20,9 @@ export default function useTodo() {
     });
   };
 
-  const hideTodo = (id, isActive) => {
+  const hideTodo = (id, is_active) => {
     const todo = todos.find((todo) => todo.id === id);
-    const newTodo = { ...todo, isActive: !isActive };
-
+    const newTodo = { ...todo, is_active: !is_active };
     todoService.update(id, newTodo).then((updatedTodo) => {
       const newTodos = todos.map((todo) => (todo.id !== updatedTodo.id ? todo : updatedTodo));
       setTodos(newTodos);
@@ -48,7 +47,7 @@ export default function useTodo() {
   };
 
   const addTodo = (todo) => {
-    const newTodo = { title: todo, completed: false, isActive: true, id: uuid_v4() };
+    const newTodo = { title: todo, completed: false, is_active: true, id: uuid_v4() };
     return todoService.add(newTodo).then((addedTodo) => {
       setTodos([addedTodo].concat(todos));
     });
