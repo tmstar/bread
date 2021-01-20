@@ -1,19 +1,12 @@
-import React from "react";
-import { GoogleLogout } from "react-google-login";
-import AuthService from "../services/auth";
-
-const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+import React, { useContext } from "react";
+import { AuthContext } from "../services/authProvider";
+import { Redirect } from "react-router-dom";
 
 function Logout() {
-  const onSuccess = () => {
-    AuthService.logout();
-  };
+  const { signOut } = useContext(AuthContext);
+  signOut();
 
-  return (
-    <div>
-      <GoogleLogout clientId={clientId} buttonText="Logout" onLogoutSuccess={onSuccess} />
-    </div>
-  );
+  return <Redirect to="/login" />;
 }
 
 export default Logout;

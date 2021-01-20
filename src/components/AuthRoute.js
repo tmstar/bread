@@ -1,15 +1,13 @@
-import React from "react";
-import { Redirect, Route } from "react-router";
-import AuthService from "../services/auth";
+import React, { useContext } from "react";
+import { Route } from "react-router";
+import { AuthContext } from "../services/authProvider";
+import Login from "./Login";
 
-const AuthRoute = (props) => {
-  const { type } = props;
-  const isAuthUser = AuthService.isAuthenticated();
+const AuthRoute = ({ component: RouteComponent, ...options }) => {
+  const { currentUser } = useContext(AuthContext);
 
-  if (type === "guest" && isAuthUser) return <Redirect to="/home" />;
-  else if (type === "private" && !isAuthUser) return <Redirect to="/" />;
-
-  return <Route {...props} />;
+  const Component = currentUser ? RouteComponent : Login;
+  return <Route {...options} component={Component} />;
 };
 
 export default AuthRoute;

@@ -1,6 +1,7 @@
+import CssBaseline from "@material-ui/core/CssBaseline";
 import { makeStyles } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
 import React, { useMemo, useState } from "react";
+import { Route } from "react-router";
 import { BrowserRouter, Switch } from "react-router-dom";
 import "./App.css";
 import AuthRoute from "./components/AuthRoute";
@@ -10,6 +11,7 @@ import TodoFilter from "./components/TodoFilter";
 import TodoForm from "./components/TodoForm";
 import TodoList from "./components/TodoList";
 import useTodo from "./hooks/useTodo";
+import { AuthProvider } from "./services/authProvider";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,6 +25,12 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     margin: theme.spacing(4, 0, 2),
+  },
+  paper: {
+    margin: theme.spacing(4),
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
   },
 }));
 
@@ -51,32 +59,30 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <Typography variant="h6" className={classes.title}>
-          To Buy
-        </Typography>
-        <BrowserRouter>
-          <Switch>
-            <AuthRoute path="/login" type="guest">
-              <Login />
-            </AuthRoute>
-            <AuthRoute path="/home" type="private">
-              <TodoFilter handleFilter={handleFilter} selectedFilter={filter} />
-              <TodoForm addTodo={addTodo} />
-              <TodoList
-                todos={filteredTodos}
-                toggleTodo={toggleTodo}
-                hideTodo={hideTodo}
-                updateTodo={updateTodo}
-                deleteTodo={deleteTodo}
-                hideSwitch={filter !== "all"}
-              />
-            </AuthRoute>
-            <AuthRoute path="/logout" type="private">
-              <Logout />
-            </AuthRoute>
-          </Switch>
-        </BrowserRouter>
+      <CssBaseline />
+      <header>
+        <AuthProvider>
+          <BrowserRouter>
+            <Switch>
+              <Route path="/login" component={Login} />
+              <Route path="/logout" component={Logout} />
+              <AuthRoute exact path="/home">
+                <div className={classes.paper}>
+                  <TodoFilter handleFilter={handleFilter} selectedFilter={filter} />
+                  <TodoForm addTodo={addTodo} />
+                  <TodoList
+                    todos={filteredTodos}
+                    toggleTodo={toggleTodo}
+                    hideTodo={hideTodo}
+                    updateTodo={updateTodo}
+                    deleteTodo={deleteTodo}
+                    hideSwitch={filter !== "all"}
+                  />
+                </div>
+              </AuthRoute>
+            </Switch>
+          </BrowserRouter>
+        </AuthProvider>
       </header>
     </div>
   );
