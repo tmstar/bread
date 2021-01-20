@@ -3,7 +3,6 @@ const login = () => {
 };
 
 const isAuthenticated = () => {
-  console.log("test: ", localStorage.getItem("auth"));
   return localStorage.getItem("auth") === "true";
 };
 

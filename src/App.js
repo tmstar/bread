@@ -1,7 +1,11 @@
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import React, { useMemo, useState } from "react";
+import { BrowserRouter, Switch } from "react-router-dom";
 import "./App.css";
+import AuthRoute from "./components/AuthRoute";
+import Login from "./components/Login";
+import Logout from "./components/Logout";
 import TodoFilter from "./components/TodoFilter";
 import TodoForm from "./components/TodoForm";
 import TodoList from "./components/TodoList";
@@ -44,22 +48,35 @@ function App() {
         return todos;
     }
   }, [todos, filter]);
+
   return (
     <div className="App">
       <header className="App-header">
         <Typography variant="h6" className={classes.title}>
           To Buy
         </Typography>
-        <TodoFilter handleFilter={handleFilter} selectedFilter={filter} />
-        <TodoForm addTodo={addTodo} />
-        <TodoList
-          todos={filteredTodos}
-          toggleTodo={toggleTodo}
-          hideTodo={hideTodo}
-          updateTodo={updateTodo}
-          deleteTodo={deleteTodo}
-          hideSwitch={filter !== "all"}
-        />
+        <BrowserRouter>
+          <Switch>
+            <AuthRoute path="/login" type="guest">
+              <Login />
+            </AuthRoute>
+            <AuthRoute path="/home" type="private">
+              <TodoFilter handleFilter={handleFilter} selectedFilter={filter} />
+              <TodoForm addTodo={addTodo} />
+              <TodoList
+                todos={filteredTodos}
+                toggleTodo={toggleTodo}
+                hideTodo={hideTodo}
+                updateTodo={updateTodo}
+                deleteTodo={deleteTodo}
+                hideSwitch={filter !== "all"}
+              />
+            </AuthRoute>
+            <AuthRoute path="/logout" type="private">
+              <Logout />
+            </AuthRoute>
+          </Switch>
+        </BrowserRouter>
       </header>
     </div>
   );
