@@ -1,8 +1,7 @@
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useMemo, useState } from "react";
-import { Route } from "react-router";
-import { BrowserRouter, Switch } from "react-router-dom";
+import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import "./App.css";
 import AuthRoute from "./components/AuthRoute";
 import Login from "./components/Login";
@@ -64,6 +63,7 @@ function App() {
         <AuthProvider>
           <BrowserRouter>
             <Switch>
+              <Redirect exact path="/" to="/login" />
               <Route path="/login" component={Login} />
               <Route path="/logout" component={Logout} />
               <AuthRoute exact path="/home">
