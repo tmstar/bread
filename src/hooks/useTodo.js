@@ -14,6 +14,10 @@ export default function useTodo() {
     const todo = todos.find((todo) => todo.id === id);
     const newTodo = { ...todo, completed: !completed };
 
+    // quick update displayed list
+    const toggledTodos = todos.map((todo) => (todo.id !== newTodo.id ? todo : newTodo));
+    setTodos(toggledTodos);
+
     TodoService.update(id, newTodo).then((updatedTodo) => {
       const newTodos = todos.map((todo) => (todo.id !== updatedTodo.id ? todo : updatedTodo));
       setTodos(newTodos);
@@ -23,6 +27,11 @@ export default function useTodo() {
   const hideTodo = (id, is_active) => {
     const todo = todos.find((todo) => todo.id === id);
     const newTodo = { ...todo, is_active: !is_active };
+
+    // quick update displayed list
+    const hidedTodos = todos.map((todo) => (todo.id !== newTodo.id ? todo : newTodo));
+    setTodos(hidedTodos);
+
     TodoService.update(id, newTodo).then((updatedTodo) => {
       const newTodos = todos.map((todo) => (todo.id !== updatedTodo.id ? todo : updatedTodo));
       setTodos(newTodos);
