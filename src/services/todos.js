@@ -2,7 +2,12 @@ import axios from "axios";
 import { print } from "graphql";
 import gql from "graphql-tag";
 
-const gqlUrl = process.env.REACT_APP_API_SERVER_URL;
+const gqlUrl = process.env.REACT_APP_HASURA_SERVER_URL;
+
+const headers = {
+  "content-type": "application/json",
+  "x-hasura-admin-secret": process.env.REACT_APP_HASURA_ADMIN_SECRET,
+};
 
 const ALL_TODOS = gql`
   query AllTodos {
@@ -52,42 +57,54 @@ const DELETE_TODO = gql`
 `;
 
 const getAll = async () => {
-  const response = await axios.post(`${gqlUrl}`, { query: print(ALL_TODOS) });
+  const response = await axios.post(`${gqlUrl}`, { query: print(ALL_TODOS) }, { headers: headers });
   return response.data.data.wish_list;
 };
 
 const update = async (id, newTodo) => {
-  const response = await axios.post(`${gqlUrl}`, {
-    query: print(UPDATE_TODO),
-    variables: {
-      id: id,
-      title: newTodo.title,
-      note: newTodo.note,
-      completed: newTodo.completed,
-      is_active: newTodo.is_active,
+  const response = await axios.post(
+    `${gqlUrl}`,
+    {
+      query: print(UPDATE_TODO),
+      variables: {
+        id: id,
+        title: newTodo.title,
+        note: newTodo.note,
+        completed: newTodo.completed,
+        is_active: newTodo.is_active,
+      },
     },
-  });
+    { headers: headers }
+  );
   return response.data.data.update_wish_list_by_pk;
 };
 
 const _delete = async (id) => {
-  await axios.post(`${gqlUrl}`, {
-    query: print(DELETE_TODO),
-    variables: { id: id },
-  });
+  await axios.post(
+    `${gqlUrl}`,
+    {
+      query: print(DELETE_TODO),
+      variables: { id: id },
+    },
+    { headers: headers }
+  );
   return id;
 };
 
 const add = async (newTodo) => {
-  const response = await axios.post(`${gqlUrl}`, {
-    query: print(CREATE_TODO),
-    variables: {
-      id: newTodo.id,
-      title: newTodo.title,
-      completed: false,
-      is_active: true,
+  const response = await axios.post(
+    `${gqlUrl}`,
+    {
+      query: print(CREATE_TODO),
+      variables: {
+        id: newTodo.id,
+        title: newTodo.title,
+        completed: false,
+        is_active: true,
+      },
     },
-  });
+    { headers: headers }
+  );
   return response.data.data.insert_wish_list_one;
 };
 
