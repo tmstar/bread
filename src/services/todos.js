@@ -10,8 +10,8 @@ const headers = {
 };
 
 const ALL_TODOS = gql`
-  query AllTodos {
-    wish_list {
+  query AllTodos($item_list_id: uuid!) {
+    item(where: { item_list_id: { _eq: $item_list_id } }) {
       id
       title
       note
@@ -22,20 +22,23 @@ const ALL_TODOS = gql`
 `;
 
 const CREATE_TODO = gql`
-  mutation CreateTodo($id: uuid!, $title: String!, $completed: Boolean!, $is_active: Boolean!) {
-    insert_wish_list_one(object: { id: $id, title: $title, completed: $completed, is_active: $is_active }) {
+  mutation CreateTodo($id: uuid!, $title: String!, $completed: Boolean!, $is_active: Boolean!, $item_list_id: uuid!) {
+    insert_item_one(
+      object: { id: $id, title: $title, completed: $completed, is_active: $is_active, item_list_id: $item_list_id }
+    ) {
       id
       title
       note
       completed
       is_active
+      item_list_id
     }
   }
 `;
 
 const UPDATE_TODO = gql`
   mutation UpdateTodo($id: uuid!, $note: String, $title: String!, $completed: Boolean!, $is_active: Boolean!) {
-    update_wish_list_by_pk(
+    update_item_by_pk(
       pk_columns: { id: $id }
       _set: { note: $note, title: $title, completed: $completed, is_active: $is_active }
     ) {
@@ -50,15 +53,24 @@ const UPDATE_TODO = gql`
 
 const DELETE_TODO = gql`
   mutation DeleteTodo($id: uuid!) {
-    delete_wish_list_by_pk(id: $id) {
+    delete_item_by_pk(id: $id) {
       id
     }
   }
 `;
 
-const getAll = async () => {
-  const response = await axios.post(`${gqlUrl}`, { query: print(ALL_TODOS) }, { headers: headers });
-  return response.data.data.wish_list;
+const getAll = async (listId) => {
+  const response = await axios.post(
+    `${gqlUrl}`,
+    {
+      query: print(ALL_TODOS),
+      variables: {
+        item_list_id: listId,
+      },
+    },
+    { headers: headers }
+  );
+  return response.data.data.item;
 };
 
 const update = async (id, newTodo) => {
@@ -76,7 +88,7 @@ const update = async (id, newTodo) => {
     },
     { headers: headers }
   );
-  return response.data.data.update_wish_list_by_pk;
+  return response.data.data.update_item_by_pk;
 };
 
 const _delete = async (id) => {
@@ -101,11 +113,12 @@ const add = async (newTodo) => {
         title: newTodo.title,
         completed: false,
         is_active: true,
+        item_list_id: newTodo.item_list_id,
       },
     },
     { headers: headers }
   );
-  return response.data.data.insert_wish_list_one;
+  return response.data.data.insert_item_one;
 };
 
 const api = { getAll, update, delete: _delete, add };

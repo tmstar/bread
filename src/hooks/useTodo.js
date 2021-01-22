@@ -1,14 +1,28 @@
 import { useEffect, useState } from "react";
 import { v4 as uuid_v4 } from "uuid";
 import TodoService from "../services/todos";
+import ListService from "../services/itemList";
 
 export default function useTodo() {
   const [todos, setTodos] = useState([]);
+  const [lists, setLists] = useState([]);
+  const [selectedListIndex, setSelectedListIndex] = useState(0);
+
   useEffect(() => {
-    TodoService.getAll().then((todos) => {
-      setTodos(todos.reverse());
+    console.log("useEffect");
+    ListService.getAll().then((itemLists) => {
+      setLists(itemLists.reverse());
     });
   }, []);
+
+  useEffect(() => {
+    if (!lists.length) {
+      return;
+    }
+    TodoService.getAll(lists[selectedListIndex].id).then((todos) => {
+      setTodos(todos.reverse());
+    });
+  }, [lists, selectedListIndex]);
 
   const toggleTodo = (id, completed) => {
     const todo = todos.find((todo) => todo.id === id);
@@ -56,11 +70,35 @@ export default function useTodo() {
   };
 
   const addTodo = (todo) => {
-    const newTodo = { title: todo, completed: false, is_active: true, id: uuid_v4() };
+    const newTodo = {
+      title: todo,
+      completed: false,
+      is_active: true,
+      id: uuid_v4(),
+      item_list_id: lists[selectedListIndex].id,
+    };
     return TodoService.add(newTodo).then((addedTodo) => {
       setTodos([addedTodo].concat(todos));
     });
   };
 
-  return { todos, toggleTodo, hideTodo, updateTodo, deleteTodo, addTodo };
+  const addList = (listName) => {
+    const newItemList = { name: listName, id: uuid_v4() };
+    return ListService.add(newItemList).then((addedList) => {
+      setLists([addedList].concat(lists));
+    });
+  };
+
+  return {
+    todos,
+    lists,
+    selectedListIndex,
+    setSelectedListIndex,
+    toggleTodo,
+    hideTodo,
+    updateTodo,
+    deleteTodo,
+    addTodo,
+    addList,
+  };
 }
