@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
   },
   appBar: {
-    backgroundColor: "inherit",
+    backgroundColor: theme.palette.background.default,
     boxShadow: "none",
     borderBottom: "1px solid",
     borderBottomColor: theme.palette.divider,
