@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   speedDial: {
-    position: "absolute",
+    position: "fixed",
     bottom: theme.spacing(2),
     right: theme.spacing(2),
   },
@@ -64,17 +64,11 @@ function TodoForm({ addTodo }) {
         onClick={handleClickOpen}
         open={open}
       />
-      <Dialog
-        open={openForm}
-        onClose={handleCloseForm}
-        aria-labelledby="form-dialog-title"
-      >
+      <Dialog open={openForm} onClose={handleCloseForm} aria-labelledby="form-dialog-title">
         <form onSubmit={handleSubmit}>
           <DialogTitle id="form-dialog-title">買うもの</DialogTitle>
           <DialogContent>
-            <DialogContentText>
-              追加する食材を入力してください.
-            </DialogContentText>
+            <DialogContentText>追加する食材を入力してください.</DialogContentText>
             <TextField
               autoFocus
               margin="dense"

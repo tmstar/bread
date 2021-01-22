@@ -19,6 +19,9 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 720,
     backgroundColor: theme.palette.background.paper,
   },
+  text: {
+    paddingRight: 60,
+  },
 }));
 
 function TodoList({ todos, toggleTodo, hideTodo, deleteTodo, hideSwitch, updateTodo }) {
@@ -53,7 +56,7 @@ function TodoList({ todos, toggleTodo, hideTodo, deleteTodo, hideSwitch, updateT
             checked={todo.is_active}
           />
         </ListItemIcon>
-        <ListItemText primary={todo.title} secondary={todo.note} />
+        <ListItemText className={classes.text} primary={todo.title} secondary={todo.note} />
         <ListItemSecondaryAction>
           <IconButton
             edge="end"
