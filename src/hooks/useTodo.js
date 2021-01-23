@@ -69,6 +69,14 @@ export default function useTodo() {
     });
   };
 
+  const deleteList = (id) => {
+    ListService.delete(id).then((deletedListId) => {
+      console.log(id);
+      const newLists = lists.filter((list) => list.id !== deletedListId);
+      setLists(newLists);
+    });
+  };
+
   const addTodo = (todo) => {
     const newTodo = {
       title: todo,
@@ -98,6 +106,7 @@ export default function useTodo() {
     hideTodo,
     updateTodo,
     deleteTodo,
+    deleteList,
     addTodo,
     addList,
   };

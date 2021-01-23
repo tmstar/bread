@@ -29,6 +29,19 @@ const CREATE_LIST = gql`
   }
 `;
 
+const DELETE_LIST = gql`
+  mutation DeleteList($id: uuid!) {
+    delete_item(where: { item_list_id: { _eq: $id } }) {
+      returning {
+        id
+      }
+    }
+    delete_item_list_by_pk(id: $id) {
+      id
+    }
+  }
+`;
+
 const getAll = async () => {
   const response = await axios.post(`${gqlUrl}`, { query: print(ALL_LISTS) }, { headers: headers });
   console.log(response);
@@ -50,5 +63,17 @@ const add = async (newList) => {
   return response.data.data.insert_item_list_one;
 };
 
-const api = { getAll, add };
+const _delete = async (id) => {
+  await axios.post(
+    `${gqlUrl}`,
+    {
+      query: print(DELETE_LIST),
+      variables: { id: id },
+    },
+    { headers: headers }
+  );
+  return id;
+};
+
+const api = { getAll, add, delete: _delete };
 export default api;

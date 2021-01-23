@@ -10,16 +10,18 @@ import MenuItem from "@material-ui/core/MenuItem";
 import { makeStyles } from "@material-ui/core/styles";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import AddIcon from "@material-ui/icons/Add";
 import AllInboxIcon from "@material-ui/icons/AllInbox";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import DeleteIcon from "@material-ui/icons/Delete";
 import InboxIcon from "@material-ui/icons/Inbox";
+import ListAltIcon from "@material-ui/icons/ListAlt";
 import MoreIcon from "@material-ui/icons/MoreVert";
 import PlaylistAddIcon from "@material-ui/icons/PlaylistAdd";
 import clsx from "clsx";
 import React, { useMemo, useState } from "react";
 import useTodo from "../hooks/useTodo";
+import AlertDialog from "./AlertDialog";
 import TodoForm from "./TodoForm";
 import TodoList from "./TodoList";
 
@@ -30,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
   },
   appBar: {
+    color: theme.palette.text.primary,
     backgroundColor: theme.palette.background.default,
     boxShadow: "none",
     borderBottom: "1px solid",
@@ -88,18 +91,13 @@ const useStyles = makeStyles((theme) => ({
     }),
     marginLeft: 0,
   },
-  paper: {
-    margin: theme.spacing(4),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },
 }));
 
 function Home() {
   const classes = useStyles();
 
   const [open, setOpen] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
   const [filter, setFilter] = useState("active");
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -113,6 +111,7 @@ function Home() {
     hideTodo,
     updateTodo,
     deleteTodo,
+    deleteList,
     addTodo,
     addList,
   } = useTodo();
@@ -147,6 +146,11 @@ function Home() {
     if (newValue !== null) {
       setFilter(newValue);
     }
+    setMobileMoreAnchorEl(null);
+  };
+
+  const handleDeleteListOk = () => {
+    deleteList(lists[selectedListIndex].id);
   };
 
   const mobileMenuId = "primary-search-account-menu-mobile";
@@ -162,9 +166,20 @@ function Home() {
     >
       <MenuItem onClick={() => handleFilter("all")}>
         <IconButton aria-label="show all" color="inherit">
-          <AddIcon />
+          <ListAltIcon />
         </IconButton>
-        <p>リストの並び替え</p>
+        <p>リストの編集</p>
+      </MenuItem>
+      <MenuItem
+        onClick={() => {
+          setAlertOpen(true);
+          setMobileMoreAnchorEl(null);
+        }}
+      >
+        <IconButton aria-label="delete this list" color="inherit">
+          <DeleteIcon />
+        </IconButton>
+        <p>リストの削除</p>
       </MenuItem>
       <MenuItem onClick={() => handleFilter("active")}>
         <IconButton aria-label="show active" color="inherit">
@@ -248,7 +263,7 @@ function Home() {
         })}
       >
         <div className={classes.drawerHeader} />
-        <div className={classes.paper}>
+        <div>
           <TodoForm addTodo={addTodo} />
           <TodoList
             todos={filteredTodos}
@@ -257,6 +272,13 @@ function Home() {
             updateTodo={updateTodo}
             deleteTodo={deleteTodo}
             hideSwitch={filter !== "all"}
+          />
+          <AlertDialog
+            open={alertOpen}
+            setOpen={setAlertOpen}
+            title="リストの削除"
+            msg="リスト内にあるチェック項目はすべて削除されます。よろしいですか。"
+            handleOk={handleDeleteListOk}
           />
         </div>
       </main>
