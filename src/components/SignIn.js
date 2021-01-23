@@ -56,12 +56,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignIn({}) {
+export default function SignIn() {
   const classes = useStyles();
-  const { signInWithRedirect } = useContext(AuthContext);
+  const { signInWithRedirect, signInMock } = useContext(AuthContext);
 
   const signInWithGoogle = () => {
     signInWithRedirect().then((result) => {});
+  };
+  const signInWithFacebook = () => {
+    signInMock();
   };
 
   return (
@@ -79,7 +82,7 @@ export default function SignIn({}) {
               Googleでログイン
             </Typography>
           </GoogleLoginButton>
-          <FacebookLoginButton onClick={signInWithGoogle}>
+          <FacebookLoginButton onClick={signInWithFacebook}>
             <Typography variant="button" display="block">
               Facebookでログイン
             </Typography>

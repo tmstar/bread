@@ -10,8 +10,9 @@ const firebaseConfig = {
   messagingSenderId: process.env.REACT_APP_FIREBASE_SENDER_ID,
   appId: process.env.REACT_APP_FIREBASE_APP_ID,
 };
-
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 const auth = firebase.auth();
 
 // contextの作成
@@ -38,6 +39,14 @@ export const AuthProvider = ({ children }) => {
   };
 
   /**
+   * Test only: Do not use in production.
+   */
+  const signInMock = () => {
+    setCurrentUser(true);
+    setIsReady(true);
+  };
+
+  /**
    * Sign-out
    */
   const signOut = async () => {
@@ -59,6 +68,7 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         signInWithRedirect: signInWithRedirect,
+        signInMock: signInMock,
         signOut: signOut,
         currentUser,
         isReady,
