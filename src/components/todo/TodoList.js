@@ -16,6 +16,7 @@ import TodoEditForm from "./TodoEditForm";
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: theme.palette.background.default,
+    padding: theme.spacing(0, 1),
   },
   index: {
     margin: theme.spacing(1, 0, 1),

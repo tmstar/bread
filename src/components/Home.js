@@ -1,31 +1,21 @@
 import AppBar from "@material-ui/core/AppBar";
-import Divider from "@material-ui/core/Divider";
 import Drawer from "@material-ui/core/Drawer";
 import IconButton from "@material-ui/core/IconButton";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
 import { makeStyles } from "@material-ui/core/styles";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import AllInboxIcon from "@material-ui/icons/AllInbox";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import DeleteIcon from "@material-ui/icons/Delete";
-import InboxIcon from "@material-ui/icons/Inbox";
-import ListAltIcon from "@material-ui/icons/ListAlt";
-import MoreIcon from "@material-ui/icons/MoreVert";
 import PlaylistAddIcon from "@material-ui/icons/PlaylistAdd";
 import clsx from "clsx";
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import useTodo from "../hooks/useTodo";
-import AlertDialog from "./AlertDialog";
-import TodoForm from "./TodoForm";
-import TodoList from "./TodoList";
+import TodoView from "./todo/TodoView";
+import MenuIcon from "@material-ui/icons/Menu";
+import Divider from "@material-ui/core/Divider";
 
-const drawerWidth = 240;
+const drawerWidth = "100%";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,8 +33,8 @@ const useStyles = makeStyles((theme) => ({
     }),
   },
   appBarShift: {
-    width: `calc(100% - ${drawerWidth}px)`,
-    marginLeft: drawerWidth,
+    width: 0, //`calc(100% - ${drawerWidth})`,
+    marginRight: drawerWidth,
     transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
@@ -54,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(2),
   },
   sectionMobile: {
-    display: "flex",
+    // display: "flex",
     marginLeft: "auto",
   },
   hide: {
@@ -62,226 +52,102 @@ const useStyles = makeStyles((theme) => ({
   },
   drawer: {
     width: drawerWidth,
-    flexShrink: 0,
+    // flexShrink: 0,
   },
   drawerPaper: {
     width: drawerWidth,
+    backgroundColor: theme.palette.background.default,
   },
   drawerHeader: {
     display: "flex",
     alignItems: "center",
-    padding: theme.spacing(0, 1),
+    padding: theme.spacing(0),
     // necessary for content to be below app bar
     ...theme.mixins.toolbar,
-    justifyContent: "flex-end",
+    justifyContent: "flex-start",
   },
   content: {
     flexGrow: 1,
-    padding: theme.spacing(3),
+    padding: theme.spacing(0, 1),
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-    marginLeft: -drawerWidth,
+    // marginRight: "-100%",
   },
   contentShift: {
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
-    marginLeft: 0,
+    marginRight: 0,
+  },
+  title: {
+    flexGrow: 1,
+  },
+  list: {
+    flexGrow: 1,
+    padding: theme.spacing(0, 1),
   },
 }));
 
 function Home() {
   const classes = useStyles();
-
   const [open, setOpen] = useState(false);
-  const [alertOpen, setAlertOpen] = useState(false);
-  const [filter, setFilter] = useState("active");
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
-  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const td = useTodo();
+  const { lists, addList, setSelectedListIndex } = td;
 
-  const {
-    todos,
-    lists,
-    selectedListIndex,
-    setSelectedListIndex,
-    toggleTodo,
-    hideTodo,
-    updateTodo,
-    deleteTodo,
-    deleteList,
-    addTodo,
-    addList,
-  } = useTodo();
-
-  const filteredTodos = useMemo(() => {
-    switch (filter) {
-      case "active":
-        return todos.filter((todo) => todo.is_active);
-      case "inProgress":
-        return todos.filter((todo) => todo.is_active && !todo.completed);
-      case "completed":
-        return todos.filter((todo) => todo.is_active && todo.completed);
-      case "all":
-      default:
-        return todos;
-    }
-  }, [todos, filter]);
-
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
-
-  const handleMobileMenuOpen = (event) => {
-    setMobileMoreAnchorEl(event.currentTarget);
-  };
-
-  const handleFilter = (newValue) => {
-    if (newValue !== null) {
-      setFilter(newValue);
-    }
-    setMobileMoreAnchorEl(null);
-  };
-
-  const handleDeleteListOk = () => {
-    deleteList(lists[selectedListIndex].id);
-  };
-
-  const mobileMenuId = "primary-search-account-menu-mobile";
-  const renderMobileMenu = (
-    <Menu
-      anchorEl={mobileMoreAnchorEl}
-      anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      id={mobileMenuId}
-      keepMounted
-      transformOrigin={{ vertical: "top", horizontal: "right" }}
-      open={isMobileMenuOpen}
-      onClose={() => setMobileMoreAnchorEl(null)}
-    >
-      <MenuItem onClick={() => handleFilter("all")}>
-        <IconButton aria-label="show all" color="inherit">
-          <ListAltIcon />
-        </IconButton>
-        <p>リストの編集</p>
-      </MenuItem>
-      <MenuItem
-        onClick={() => {
-          setAlertOpen(true);
-          setMobileMoreAnchorEl(null);
-        }}
-      >
-        <IconButton aria-label="delete this list" color="inherit">
-          <DeleteIcon />
-        </IconButton>
-        <p>リストの削除</p>
-      </MenuItem>
-      <MenuItem onClick={() => handleFilter("active")}>
-        <IconButton aria-label="show active" color="inherit">
-          <AllInboxIcon />
-        </IconButton>
-        <p>完了済みを表示</p>
-      </MenuItem>
-      <MenuItem onClick={() => handleFilter("inProgress")}>
-        <IconButton aria-label="show inProgress" color="inherit">
-          <InboxIcon />
-        </IconButton>
-        <p>完了済みを非表示</p>
-      </MenuItem>
-    </Menu>
-  );
+  const listContents = lists.map((list, index) => {
+    const rowLength = lists.length;
+    return (
+      <div key={list.id + "-div"}>
+        <ListItem
+          key={list.id}
+          button
+          onClick={() => {
+            setSelectedListIndex(index);
+            setOpen(true);
+          }}
+        >
+          <ListItemText primary={list.name} secondary={new Date(list.updated_at).toLocaleString("ja-JP")} />
+        </ListItem>
+        {index + 1 !== rowLength ? <Divider /> : ""}
+      </div>
+    );
+  });
 
   return (
     <div className={classes.root}>
-      <AppBar
-        position="fixed"
-        className={clsx(classes.appBar, {
-          [classes.appBarShift]: open,
-        })}
-      >
+      <AppBar position="fixed" className={clsx(classes.appBar, { [classes.appBarShift]: open })}>
         <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={open ? handleDrawerClose : handleDrawerOpen}
-            edge="start"
-            className={classes.menuButton}
-          >
-            {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+          <IconButton color="inherit" edge="start" className={classes.menuButton}>
+            <MenuIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
-            {lists[selectedListIndex] ? lists[selectedListIndex].name : ""}
+            リスト一覧
           </Typography>
-          <div className={classes.sectionMobile}>
-            <IconButton
-              aria-label="show more"
-              aria-controls={mobileMenuId}
-              aria-haspopup="true"
-              onClick={handleMobileMenuOpen}
-              color="inherit"
-            >
-              <MoreIcon />
+          <div className={classes.drawerHeader}>
+            <IconButton edge="end" onClick={() => addList("新規リスト")}>
+              <PlaylistAddIcon />
             </IconButton>
           </div>
         </Toolbar>
       </AppBar>
-      {renderMobileMenu}
+      <main className={clsx(classes.content, { [classes.contentShift]: open })}>
+        <div className={classes.list}>
+          <Toolbar />
+          <List>{listContents}</List>
+        </div>
+      </main>
       <Drawer
         className={classes.drawer}
-        variant="persistent"
-        anchor="left"
+        // variant="persistent"
+        anchor="right"
         open={open}
         classes={{ paper: classes.drawerPaper }}
       >
-        <div className={classes.drawerHeader}>
-          <IconButton onClick={() => addList("新規リスト")}>
-            <PlaylistAddIcon />
-          </IconButton>
-        </div>
-        <Divider />
-        <List>
-          {lists.map((list, index) => (
-            <ListItem
-              button
-              key={list.id}
-              selected={index === selectedListIndex}
-              onClick={() => setSelectedListIndex(index)}
-            >
-              <ListItemText primary={list.name} secondary={new Date(list.updated_at).toLocaleString("ja-JP")} />
-            </ListItem>
-          ))}
-        </List>
+        <TodoView setOpen={setOpen} td={td} />
       </Drawer>
-      <main
-        className={clsx(classes.content, {
-          [classes.contentShift]: open,
-        })}
-      >
-        <div className={classes.drawerHeader} />
-        <div>
-          <TodoForm addTodo={addTodo} />
-          <TodoList
-            todos={filteredTodos}
-            toggleTodo={toggleTodo}
-            hideTodo={hideTodo}
-            updateTodo={updateTodo}
-            deleteTodo={deleteTodo}
-            hideSwitch={filter !== "all"}
-          />
-          <AlertDialog
-            open={alertOpen}
-            setOpen={setAlertOpen}
-            title="リストの削除"
-            msg="リスト内にあるチェック項目はすべて削除されます。よろしいですか。"
-            handleOk={handleDeleteListOk}
-          />
-        </div>
-      </main>
     </div>
   );
 }

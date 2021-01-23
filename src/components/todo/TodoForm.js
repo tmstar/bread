@@ -27,8 +27,8 @@ const useStyles = makeStyles((theme) => ({
 function TodoForm({ addTodo }) {
   const classes = useStyles();
   const [value, setValue] = useState("");
-  const [open, setOpen] = React.useState(false);
-  const [openForm, setOpenForm] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [openForm, setOpenForm] = useState(false);
 
   const handleSubmit = (event) => {
     event.preventDefault();
