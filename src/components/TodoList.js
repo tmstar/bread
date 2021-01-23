@@ -1,4 +1,5 @@
 import Checkbox from "@material-ui/core/Checkbox";
+import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -6,18 +7,19 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemText from "@material-ui/core/ListItemText";
 import { makeStyles } from "@material-ui/core/styles";
+import Typography from "@material-ui/core/Typography";
+import CommentIcon from "@material-ui/icons/Comment";
 import DeleteIcon from "@material-ui/icons/Delete";
 import React, { useState } from "react";
-import Switch from "@material-ui/core/Switch";
-import ListSubheader from "@material-ui/core/ListSubheader";
-import CommentIcon from "@material-ui/icons/Comment";
 import TodoEditForm from "./TodoEditForm";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: "100%",
-    maxWidth: 720,
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: theme.palette.background.default,
+  },
+  index: {
+    margin: theme.spacing(1, 0, 1),
+    width: 30,
   },
   text: {
     paddingRight: 60,
@@ -29,64 +31,53 @@ function TodoList({ todos, toggleTodo, hideTodo, deleteTodo, hideSwitch, updateT
   const [selectedTodo, setSelectedTodo] = useState([]);
   const [openForm, setOpenForm] = useState(false);
 
-  const listItemMain = (todo) => {
+  const listSecondaryAction = (todo) => {
     return (
-      <>
-        <ListItemIcon>
-          <Checkbox
-            edge="start"
-            disableRipple
-            checked={todo.completed}
-            onChange={() => toggleTodo(todo.id, todo.completed)}
-          />
-        </ListItemIcon>
-        <ListItemText primary={todo.title} secondary={todo.note} />
-      </>
+      <ListItemSecondaryAction>
+        <IconButton
+          edge="end"
+          onClick={() => {
+            setSelectedTodo(todo);
+            setOpenForm(true);
+          }}
+        >
+          <CommentIcon />
+        </IconButton>
+        <IconButton edge="end" onClick={() => deleteTodo(todo.id)}>
+          <DeleteIcon />
+        </IconButton>
+      </ListItemSecondaryAction>
     );
   };
 
-  const listItemSwitch = (todo) => {
+  const todoList = todos.map((todo, index) => {
+    const rowLength = todos.length;
     return (
-      <>
-        <ListItemIcon>
-          <Switch
-            edge="start"
-            disableRipple
-            onChange={() => hideTodo(todo.id, todo.is_active)}
-            checked={todo.is_active}
-          />
-        </ListItemIcon>
-        <ListItemText className={classes.text} primary={todo.title} secondary={todo.note} />
-        <ListItemSecondaryAction>
-          <IconButton
-            edge="end"
-            onClick={() => {
-              setSelectedTodo(todo);
-              setOpenForm(true);
-            }}
-          >
-            <CommentIcon />
-          </IconButton>
-          <IconButton edge="end" onClick={() => deleteTodo(todo.id)}>
-            <DeleteIcon />
-          </IconButton>
-        </ListItemSecondaryAction>
-      </>
+      <div key={todo.id + "-div"}>
+        <ListItem key={todo.id}>
+          <ListItemIcon>
+            <Checkbox
+              edge="start"
+              disableRipple
+              checked={todo.completed}
+              onChange={() => toggleTodo(todo.id, todo.completed)}
+              disabled={!hideSwitch}
+            />
+            <Typography variant="h6" className={classes.index}>
+              {index + 1}
+            </Typography>
+          </ListItemIcon>
+          <ListItemText primary={todo.title} secondary={todo.note} />
+          {hideSwitch ? "" : listSecondaryAction(todo)}
+        </ListItem>
+        {index + 1 !== rowLength ? <Divider /> : ""}
+      </div>
     );
-  };
-
-  const todoList = todos.map((todo) => {
-    return <ListItem key={todo.id}>{hideSwitch ? listItemMain(todo) : listItemSwitch(todo)}</ListItem>;
   });
 
   return (
     <>
-      <List
-        className={classes.root}
-        subheader={<ListSubheader>{!hideSwitch ? "表示する食材を選んでください." : ""}</ListSubheader>}
-      >
-        {todoList}
-      </List>
+      <List className={classes.root}>{todoList}</List>
       <TodoEditForm todo={selectedTodo} openForm={openForm} setOpenForm={setOpenForm} updateTodo={updateTodo} />
     </>
   );
