@@ -71,7 +71,6 @@ export default function useTodo() {
 
   const deleteList = (id) => {
     ListService.delete(id).then((deletedListId) => {
-      console.log(id);
       const newLists = lists.filter((list) => list.id !== deletedListId);
       setLists(newLists);
     });
@@ -100,6 +99,7 @@ export default function useTodo() {
   return {
     todos,
     lists,
+    setLists,
     selectedListIndex,
     setSelectedListIndex,
     toggleTodo,

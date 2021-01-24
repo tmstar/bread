@@ -1,21 +1,22 @@
+import { gql } from "@apollo/client";
+import AppBar from "@material-ui/core/AppBar";
+import IconButton from "@material-ui/core/IconButton";
+import InputBase from "@material-ui/core/InputBase";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import { makeStyles } from "@material-ui/core/styles";
+import Toolbar from "@material-ui/core/Toolbar";
+import AllInboxIcon from "@material-ui/icons/AllInbox";
+import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import DeleteIcon from "@material-ui/icons/Delete";
+import InboxIcon from "@material-ui/icons/Inbox";
+import ListAltIcon from "@material-ui/icons/ListAlt";
+import MoreIcon from "@material-ui/icons/MoreVert";
+import React, { useMemo, useState } from "react";
+import { graphql } from "react-apollo";
 import AlertDialog from "./AlertDialog";
 import TodoForm from "./TodoForm";
 import TodoList from "./TodoList";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import IconButton from "@material-ui/core/IconButton";
-import MoreIcon from "@material-ui/icons/MoreVert";
-import useTodo from "../../hooks/useTodo";
-import { makeStyles } from "@material-ui/core/styles";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import Typography from "@material-ui/core/Typography";
-import MenuItem from "@material-ui/core/MenuItem";
-import AllInboxIcon from "@material-ui/icons/AllInbox";
-import InboxIcon from "@material-ui/icons/Inbox";
-import DeleteIcon from "@material-ui/icons/Delete";
-import ListAltIcon from "@material-ui/icons/ListAlt";
-import Menu from "@material-ui/core/Menu";
-import React, { useState, useMemo } from "react";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -45,14 +46,37 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function TodoView({ td, setOpen }) {
+const UPDATE_LIST = gql`
+  mutation UpdateList($id: uuid!, $name: String!) {
+    update_item_list_by_pk(pk_columns: { id: $id }, _set: { name: $name }) {
+      id
+      updated_at
+      name
+    }
+  }
+`;
+
+function TodoView({ td, setOpen, mutate }) {
   const classes = useStyles();
-  const { lists, selectedListIndex, todos, toggleTodo, hideTodo, updateTodo, deleteTodo, deleteList, addTodo } = td;
+  const {
+    lists,
+    setLists,
+    selectedListIndex,
+    todos,
+    toggleTodo,
+    hideTodo,
+    updateTodo,
+    deleteTodo,
+    deleteList,
+    addTodo,
+  } = td;
 
   const [filter, setFilter] = useState("active");
   const [alertOpen, setAlertOpen] = useState(false);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+  const [title, setTitle] = useState("");
 
   const handleDrawerClose = () => {
     setOpen(false);
@@ -64,6 +88,7 @@ function TodoView({ td, setOpen }) {
 
   const handleDeleteListOk = () => {
     deleteList(lists[selectedListIndex].id);
+    setOpen(false);
   };
 
   const handleFilter = (newValue) => {
@@ -71,6 +96,18 @@ function TodoView({ td, setOpen }) {
       setFilter(newValue);
     }
     setMobileMoreAnchorEl(null);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log("handleSubmit");
+    mutate({
+      variables: { id: lists[selectedListIndex].id, name: title },
+    }).then((result) => {
+      const updated = result.data.update_item_list_by_pk;
+      const updatedLists = lists.map((list) => (list.id !== updated.id ? list : updated));
+      setLists(updatedLists);
+    });
   };
 
   const filteredTodos = useMemo(() => {
@@ -143,9 +180,15 @@ function TodoView({ td, setOpen }) {
           >
             <ChevronRightIcon />
           </IconButton>
-          <Typography className={classes.title} variant="h6" noWrap>
-            {lists[selectedListIndex] ? lists[selectedListIndex].name : ""}
-          </Typography>
+          <form onSubmit={handleSubmit}>
+            <InputBase
+              className={classes.title}
+              defaultValue={lists[selectedListIndex] ? lists[selectedListIndex].name : ""}
+              placeholder="リストのタイトル"
+              inputProps={{ "aria-label": "naked" }}
+              onChange={(event) => setTitle(event.target.value)}
+            />
+          </form>
           <div className={classes.sectionMobile}>
             <IconButton
               aria-label="show more"
@@ -184,4 +227,4 @@ function TodoView({ td, setOpen }) {
   );
 }
 
-export default TodoView;
+export default graphql(UPDATE_LIST)(TodoView);

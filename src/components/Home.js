@@ -127,7 +127,13 @@ function Home() {
             リスト一覧
           </Typography>
           <div className={classes.drawerHeader}>
-            <IconButton edge="end" onClick={() => addList("新規リスト")}>
+            <IconButton
+              edge="end"
+              onClick={() => {
+                addList("新規リスト");
+                setOpen(true);
+              }}
+            >
               <PlaylistAddIcon />
             </IconButton>
           </div>
