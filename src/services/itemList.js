@@ -11,7 +11,7 @@ const headers = {
 
 const ALL_LISTS = gql`
   query AllLists {
-    item_list {
+    item_list(order_by: { updated_at: desc }) {
       id
       updated_at
       name
