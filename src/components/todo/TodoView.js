@@ -1,4 +1,3 @@
-import { gql } from "@apollo/client";
 import AppBar from "@material-ui/core/AppBar";
 import IconButton from "@material-ui/core/IconButton";
 import InputBase from "@material-ui/core/InputBase";
@@ -9,11 +8,10 @@ import Toolbar from "@material-ui/core/Toolbar";
 import AllInboxIcon from "@material-ui/icons/AllInbox";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import DeleteIcon from "@material-ui/icons/Delete";
-import InboxIcon from "@material-ui/icons/Inbox";
+import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import ListAltIcon from "@material-ui/icons/ListAlt";
 import MoreIcon from "@material-ui/icons/MoreVert";
 import React, { useMemo, useState } from "react";
-import { graphql } from "react-apollo";
 import AlertDialog from "./AlertDialog";
 import TodoForm from "./TodoForm";
 import TodoList from "./TodoList";
@@ -46,37 +44,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const UPDATE_LIST = gql`
-  mutation UpdateList($id: uuid!, $name: String!) {
-    update_item_list_by_pk(pk_columns: { id: $id }, _set: { name: $name }) {
-      id
-      updated_at
-      name
-    }
-  }
-`;
-
-function TodoView({ td, setOpen, mutate }) {
+function TodoView({ td, setOpen, title, setTitle }) {
   const classes = useStyles();
-  const {
-    lists,
-    setLists,
-    selectedListIndex,
-    todos,
-    toggleTodo,
-    hideTodo,
-    updateTodo,
-    deleteTodo,
-    deleteList,
-    addTodo,
-  } = td;
+  const { todos, selectedList, toggleTodo, hideTodo, updateTodo, updateList, deleteTodo, deleteCompletedTodos, deleteList, addTodo } = td;
 
   const [filter, setFilter] = useState("active");
+  const isListEdit = filter === "all";
+
   const [alertOpen, setAlertOpen] = useState(false);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
-  const [title, setTitle] = useState("");
 
   const handleDrawerClose = () => {
     setOpen(false);
@@ -87,7 +64,7 @@ function TodoView({ td, setOpen, mutate }) {
   };
 
   const handleDeleteListOk = () => {
-    deleteList(lists[selectedListIndex].id);
+    deleteList(selectedList.id);
     setOpen(false);
   };
 
@@ -98,16 +75,14 @@ function TodoView({ td, setOpen, mutate }) {
     setMobileMoreAnchorEl(null);
   };
 
+  const handleDeleteCompleted = () => {
+    deleteCompletedTodos(selectedList.id);
+    setMobileMoreAnchorEl(null);
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log("handleSubmit");
-    mutate({
-      variables: { id: lists[selectedListIndex].id, name: title },
-    }).then((result) => {
-      const updated = result.data.update_item_list_by_pk;
-      const updatedLists = lists.map((list) => (list.id !== updated.id ? list : updated));
-      setLists(updatedLists);
-    });
+    updateList(selectedList.id, title);
   };
 
   const filteredTodos = useMemo(() => {
@@ -135,11 +110,26 @@ function TodoView({ td, setOpen, mutate }) {
       open={isMobileMenuOpen}
       onClose={() => setMobileMoreAnchorEl(null)}
     >
-      <MenuItem onClick={() => handleFilter("all")}>
-        <IconButton aria-label="show all" color="inherit">
-          <ListAltIcon />
+      {isListEdit ? (
+        <MenuItem onClick={() => handleFilter("active")}>
+          <IconButton aria-label="show active" color="inherit">
+            <AllInboxIcon />
+          </IconButton>
+          <p>リストの編集を終了</p>
+        </MenuItem>
+      ) : (
+        <MenuItem onClick={() => handleFilter("all")}>
+          <IconButton aria-label="show all" color="inherit">
+            <ListAltIcon />
+          </IconButton>
+          <p>リストを編集</p>
+        </MenuItem>
+      )}
+      <MenuItem onClick={() => handleDeleteCompleted()}>
+        <IconButton aria-label="delete completed" color="inherit">
+          <DeleteIcon />
         </IconButton>
-        <p>リストの編集</p>
+        <p>完了済みを削除</p>
       </MenuItem>
       <MenuItem
         onClick={() => {
@@ -148,21 +138,9 @@ function TodoView({ td, setOpen, mutate }) {
         }}
       >
         <IconButton aria-label="delete this list" color="inherit">
-          <DeleteIcon />
+          <DeleteForeverIcon />
         </IconButton>
-        <p>リストの削除</p>
-      </MenuItem>
-      <MenuItem onClick={() => handleFilter("active")}>
-        <IconButton aria-label="show active" color="inherit">
-          <AllInboxIcon />
-        </IconButton>
-        <p>完了済みを表示</p>
-      </MenuItem>
-      <MenuItem onClick={() => handleFilter("inProgress")}>
-        <IconButton aria-label="show inProgress" color="inherit">
-          <InboxIcon />
-        </IconButton>
-        <p>完了済みを非表示</p>
+        <p>リストを削除</p>
       </MenuItem>
     </Menu>
   );
@@ -171,19 +149,13 @@ function TodoView({ td, setOpen, mutate }) {
     <>
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerClose}
-            edge="start"
-            className={classes.menuButton}
-          >
+          <IconButton color="inherit" aria-label="open drawer" onClick={handleDrawerClose} edge="start" className={classes.menuButton}>
             <ChevronRightIcon />
           </IconButton>
           <form onSubmit={handleSubmit}>
             <InputBase
               className={classes.title}
-              defaultValue={lists[selectedListIndex] ? lists[selectedListIndex].name : ""}
+              value={title}
               placeholder="リストのタイトル"
               inputProps={{ "aria-label": "naked" }}
               onChange={(event) => setTitle(event.target.value)}
@@ -227,4 +199,4 @@ function TodoView({ td, setOpen, mutate }) {
   );
 }
 
-export default graphql(UPDATE_LIST)(TodoView);
+export default TodoView;

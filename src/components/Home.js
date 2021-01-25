@@ -1,4 +1,5 @@
 import AppBar from "@material-ui/core/AppBar";
+import Divider from "@material-ui/core/Divider";
 import Drawer from "@material-ui/core/Drawer";
 import IconButton from "@material-ui/core/IconButton";
 import List from "@material-ui/core/List";
@@ -7,13 +8,12 @@ import ListItemText from "@material-ui/core/ListItemText";
 import { makeStyles } from "@material-ui/core/styles";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
+import MenuIcon from "@material-ui/icons/Menu";
 import PlaylistAddIcon from "@material-ui/icons/PlaylistAdd";
 import clsx from "clsx";
 import React, { useState } from "react";
 import useTodo from "../hooks/useTodo";
 import TodoView from "./todo/TodoView";
-import MenuIcon from "@material-ui/icons/Menu";
-import Divider from "@material-ui/core/Divider";
 
 const drawerWidth = "100%";
 
@@ -95,7 +95,8 @@ function Home() {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const td = useTodo();
-  const { lists, addList, setSelectedListIndex } = td;
+  const { lists, addList, setSelectedList } = td;
+  const [title, setTitle] = useState();
 
   const listContents = lists.map((list, index) => {
     const rowLength = lists.length;
@@ -105,7 +106,8 @@ function Home() {
           key={list.id}
           button
           onClick={() => {
-            setSelectedListIndex(index);
+            setTitle(list.name);
+            setSelectedList(list);
             setOpen(true);
           }}
         >
@@ -130,8 +132,11 @@ function Home() {
             <IconButton
               edge="end"
               onClick={() => {
-                addList("新規リスト");
-                setOpen(true);
+                const newName = "新規リスト";
+                addList(newName).then(() => {
+                  setTitle(newName);
+                  setOpen(true);
+                });
               }}
             >
               <PlaylistAddIcon />
@@ -145,14 +150,8 @@ function Home() {
           <List>{listContents}</List>
         </div>
       </main>
-      <Drawer
-        className={classes.drawer}
-        // variant="persistent"
-        anchor="right"
-        open={open}
-        classes={{ paper: classes.drawerPaper }}
-      >
-        <TodoView setOpen={setOpen} td={td} />
+      <Drawer className={classes.drawer} anchor="right" open={open} classes={{ paper: classes.drawerPaper }}>
+        <TodoView td={td} setOpen={setOpen} title={title} setTitle={setTitle} />
       </Drawer>
     </div>
   );

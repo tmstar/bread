@@ -61,6 +61,16 @@ export default function useTodo() {
     });
   };
 
+  const updateList = (id, name) => {
+    const list = lists.find((list) => list.id === id);
+    const newList = { ...list, name: name };
+
+    return ListService.update(id, newList).then((updatedList) => {
+      const newLists = lists.map((list) => (list.id !== updatedList.id ? list : updatedList));
+      setLists(newLists);
+    });
+  };
+
   const deleteTodo = (id) => {
     TodoService.delete(id).then((deletedTodoId) => {
       const newTodos = todos.filter((todo) => todo.id !== deletedTodoId);
@@ -105,14 +115,13 @@ export default function useTodo() {
 
   return {
     todos,
-    setTodos,
     lists,
-    setLists,
     selectedList,
     setSelectedList,
     toggleTodo,
     hideTodo,
     updateTodo,
+    updateList,
     deleteTodo,
     deleteCompletedTodos,
     deleteList,
