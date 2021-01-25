@@ -66,9 +66,9 @@ function TodoForm({ addTodo }) {
       />
       <Dialog open={openForm} onClose={handleCloseForm} aria-labelledby="form-dialog-title">
         <form onSubmit={handleSubmit}>
-          <DialogTitle id="form-dialog-title">買うもの</DialogTitle>
+          <DialogTitle id="form-dialog-title">アイテムの追加</DialogTitle>
           <DialogContent>
-            <DialogContentText>追加する食材を入力してください.</DialogContentText>
+            <DialogContentText>アイテムの名前を入力してください.</DialogContentText>
             <TextField
               autoFocus
               margin="dense"

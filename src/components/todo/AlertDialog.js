@@ -24,10 +24,10 @@ export default function AlertDialog({ open, setOpen, title, msg, handleOk }) {
         <DialogContentText id="alert-dialog-description">{msg}</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} color="primary" autoFocus>
+        <Button onClick={handleClose} color="primary">
           Cancel
         </Button>
-        <Button onClick={handleCloseOk} color="primary">
+        <Button onClick={handleCloseOk} color="primary" autoFocus>
           OK
         </Button>
       </DialogActions>
