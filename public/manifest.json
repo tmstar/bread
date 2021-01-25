@@ -1,6 +1,6 @@
 {
-  "short_name": "ShoDo",
-  "name": "Easy to Share Your Shopping List",
+  "short_name": "Bread",
+  "name": "Keep and Share Your Bullet List",
   "icons": [
     {
       "src": "favicon.ico",
@@ -20,6 +20,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#ff7272",
+  "background_color": "#ff7272"
 }
