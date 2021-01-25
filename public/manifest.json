@@ -1,6 +1,6 @@
 {
   "short_name": "Bread",
-  "name": "Keep and Share Your Bullet List",
+  "name": "Bread",
   "icons": [
     {
       "src": "favicon.ico",
@@ -18,7 +18,7 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
   "theme_color": "#ff7272",
   "background_color": "#ff7272"
