@@ -6,23 +6,22 @@ import ListService from "../services/itemList";
 export default function useTodo() {
   const [todos, setTodos] = useState([]);
   const [lists, setLists] = useState([]);
-  const [selectedListIndex, setSelectedListIndex] = useState(0);
+  const [selectedList, setSelectedList] = useState();
 
   useEffect(() => {
-    console.log("useEffect");
     ListService.getAll().then((itemLists) => {
-      setLists(itemLists.reverse());
+      setLists(itemLists);
     });
   }, []);
 
   useEffect(() => {
-    if (!lists.length) {
+    if (!selectedList) {
       return;
     }
-    TodoService.getAll(lists[selectedListIndex].id).then((todos) => {
+    TodoService.getAll(selectedList.id).then((todos) => {
       setTodos(todos.reverse());
     });
-  }, [lists, selectedListIndex]);
+  }, [selectedList]);
 
   const toggleTodo = (id, completed) => {
     const todo = todos.find((todo) => todo.id === id);
@@ -69,6 +68,13 @@ export default function useTodo() {
     });
   };
 
+  const deleteCompletedTodos = (listId) => {
+    TodoService.deleteCompleted(listId).then((deletedTodos) => {
+      const newTodos = todos.filter((todo) => !deletedTodos.some((d) => d.id === todo.id));
+      setTodos(newTodos);
+    });
+  };
+
   const deleteList = (id) => {
     ListService.delete(id).then((deletedListId) => {
       const newLists = lists.filter((list) => list.id !== deletedListId);
@@ -82,7 +88,7 @@ export default function useTodo() {
       completed: false,
       is_active: true,
       id: uuid_v4(),
-      item_list_id: lists[selectedListIndex].id,
+      item_list_id: selectedList.id,
     };
     return TodoService.add(newTodo).then((addedTodo) => {
       setTodos([addedTodo].concat(todos));
@@ -93,19 +99,22 @@ export default function useTodo() {
     const newItemList = { name: listName, id: uuid_v4() };
     return ListService.add(newItemList).then((addedList) => {
       setLists([addedList].concat(lists));
+      setSelectedList(addedList);
     });
   };
 
   return {
     todos,
+    setTodos,
     lists,
     setLists,
-    selectedListIndex,
-    setSelectedListIndex,
+    selectedList,
+    setSelectedList,
     toggleTodo,
     hideTodo,
     updateTodo,
     deleteTodo,
+    deleteCompletedTodos,
     deleteList,
     addTodo,
     addList,

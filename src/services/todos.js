@@ -23,9 +23,7 @@ const ALL_TODOS = gql`
 
 const CREATE_TODO = gql`
   mutation CreateTodo($id: uuid!, $title: String!, $completed: Boolean!, $is_active: Boolean!, $item_list_id: uuid!) {
-    insert_item_one(
-      object: { id: $id, title: $title, completed: $completed, is_active: $is_active, item_list_id: $item_list_id }
-    ) {
+    insert_item_one(object: { id: $id, title: $title, completed: $completed, is_active: $is_active, item_list_id: $item_list_id }) {
       id
       title
       note
@@ -38,10 +36,7 @@ const CREATE_TODO = gql`
 
 const UPDATE_TODO = gql`
   mutation UpdateTodo($id: uuid!, $note: String, $title: String!, $completed: Boolean!, $is_active: Boolean!) {
-    update_item_by_pk(
-      pk_columns: { id: $id }
-      _set: { note: $note, title: $title, completed: $completed, is_active: $is_active }
-    ) {
+    update_item_by_pk(pk_columns: { id: $id }, _set: { note: $note, title: $title, completed: $completed, is_active: $is_active }) {
       id
       title
       note
@@ -55,6 +50,16 @@ const DELETE_TODO = gql`
   mutation DeleteTodo($id: uuid!) {
     delete_item_by_pk(id: $id) {
       id
+    }
+  }
+`;
+
+const DELETE_COMPLETED_TODOS = gql`
+  mutation DeleteCompletedTodos($item_list_id: uuid!) {
+    delete_item(where: { item_list_id: { _eq: $item_list_id }, completed: { _eq: true } }) {
+      returning {
+        id
+      }
     }
   }
 `;
@@ -92,7 +97,7 @@ const update = async (id, newTodo) => {
 };
 
 const _delete = async (id) => {
-  await axios.post(
+  const response = await axios.post(
     `${gqlUrl}`,
     {
       query: print(DELETE_TODO),
@@ -100,7 +105,19 @@ const _delete = async (id) => {
     },
     { headers: headers }
   );
-  return id;
+  return response.data.data.delete_item_by_pk;
+};
+
+const deleteCompleted = async (listId) => {
+  const response = await axios.post(
+    `${gqlUrl}`,
+    {
+      query: print(DELETE_COMPLETED_TODOS),
+      variables: { item_list_id: listId },
+    },
+    { headers: headers }
+  );
+  return response.data.data.delete_item.returning;
 };
 
 const add = async (newTodo) => {
@@ -121,5 +138,5 @@ const add = async (newTodo) => {
   return response.data.data.insert_item_one;
 };
 
-const api = { getAll, update, delete: _delete, add };
+const api = { getAll, update, delete: _delete, deleteCompleted, add };
 export default api;
