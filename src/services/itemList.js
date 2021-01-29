@@ -1,13 +1,7 @@
 import axios from "axios";
 import { print } from "graphql";
 import gql from "graphql-tag";
-
-const gqlUrl = process.env.REACT_APP_HASURA_SERVER_URL;
-
-const headers = {
-  "content-type": "application/json",
-  "x-hasura-admin-secret": process.env.REACT_APP_HASURA_ADMIN_SECRET,
-};
+import Hasura from "./hasura";
 
 const ALL_LISTS = gql`
   query AllLists {
@@ -20,9 +14,10 @@ const ALL_LISTS = gql`
 `;
 
 const CREATE_LIST = gql`
-  mutation CreateList($id: uuid!, $name: String!) {
-    insert_item_list_one(object: { id: $id, name: $name }) {
+  mutation CreateList($id: uuid!, $user_id: String!, $name: String!) {
+    insert_item_list_one(object: { id: $id, user_id: $user_id, name: $name }) {
       id
+      user_id
       updated_at
       name
     }
@@ -53,28 +48,29 @@ const DELETE_LIST = gql`
 `;
 
 const getAll = async () => {
-  const response = await axios.post(`${gqlUrl}`, { query: print(ALL_LISTS) }, { headers: headers });
+  const response = await axios.post(`${Hasura.url}`, { query: print(ALL_LISTS) }, { headers: Hasura.headers });
   return response.data.data.item_list;
 };
 
 const add = async (newList) => {
   const response = await axios.post(
-    `${gqlUrl}`,
+    `${Hasura.url}`,
     {
       query: print(CREATE_LIST),
       variables: {
         id: newList.id,
+        user_id: Hasura.currentUid(),
         name: newList.name,
       },
     },
-    { headers: headers }
+    { headers: Hasura.headers }
   );
   return response.data.data.insert_item_list_one;
 };
 
 const update = async (id, newList) => {
   const response = await axios.post(
-    `${gqlUrl}`,
+    `${Hasura.url}`,
     {
       query: print(UPDATE_LIST),
       variables: {
@@ -82,19 +78,19 @@ const update = async (id, newList) => {
         name: newList.name,
       },
     },
-    { headers: headers }
+    { headers: Hasura.headers }
   );
   return response.data.data.update_item_list_by_pk;
 };
 
 const _delete = async (id) => {
   await axios.post(
-    `${gqlUrl}`,
+    `${Hasura.url}`,
     {
       query: print(DELETE_LIST),
       variables: { id: id },
     },
-    { headers: headers }
+    { headers: Hasura.headers }
   );
   return id;
 };

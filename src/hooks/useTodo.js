@@ -2,13 +2,15 @@ import { useEffect, useState } from "react";
 import { v4 as uuid_v4 } from "uuid";
 import TodoService from "../services/todos";
 import ListService from "../services/itemList";
+import Hasura from "../services/hasura";
 
-export default function useTodo() {
+export default function useTodo(uid) {
   const [todos, setTodos] = useState([]);
   const [lists, setLists] = useState([]);
   const [selectedList, setSelectedList] = useState();
 
   useEffect(() => {
+    Hasura.initialize(uid);
     ListService.getAll().then((itemLists) => {
       setLists(itemLists);
     });

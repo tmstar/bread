@@ -11,9 +11,10 @@ import Typography from "@material-ui/core/Typography";
 import MenuIcon from "@material-ui/icons/Menu";
 import PlaylistAddIcon from "@material-ui/icons/PlaylistAdd";
 import clsx from "clsx";
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import useTodo from "../hooks/useTodo";
 import TodoView from "./todo/TodoView";
+import { AuthContext } from "../services/authProvider";
 
 const drawerWidth = "100%";
 
@@ -94,7 +95,8 @@ const useStyles = makeStyles((theme) => ({
 function Home() {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
-  const td = useTodo();
+  const { currentUser } = useContext(AuthContext);
+  const td = useTodo(currentUser.uid);
   const { lists, addList, setSelectedList } = td;
   const [title, setTitle] = useState();
 
