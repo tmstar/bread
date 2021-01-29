@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, createContext } from "react";
 import firebase from "firebase/app";
 import "firebase/auth";
+import UserService from "./users";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_KEY,
@@ -16,7 +17,7 @@ if (!firebase.apps.length) {
 const auth = firebase.auth();
 
 // contextの作成
-export const AuthContext = React.createContext();
+export const AuthContext = createContext();
 
 /**
  * A provider for accessing to Firebase Auth
@@ -59,8 +60,11 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     auth.onAuthStateChanged((result) => {
-      setCurrentUser(result);
-      setIsReady(true);
+      const newUser = { id: result.uid, name: result.displayName };
+      UserService.add(newUser).then(() => {
+        setCurrentUser(result);
+        setIsReady(true);
+      });
     });
   }, []);
 
