@@ -1,13 +1,7 @@
 import axios from "axios";
 import { print } from "graphql";
 import gql from "graphql-tag";
-
-const gqlUrl = process.env.REACT_APP_HASURA_SERVER_URL;
-
-const headers = {
-  "content-type": "application/json",
-  "x-hasura-admin-secret": process.env.REACT_APP_HASURA_ADMIN_SECRET,
-};
+import Hasura from "./hasura";
 
 const CREATE_USER = gql`
   mutation CreateUser($id: String!, $name: String!) {
@@ -20,7 +14,7 @@ const CREATE_USER = gql`
 
 const add = async (newUser) => {
   const response = await axios.post(
-    `${gqlUrl}`,
+    `${Hasura.url}`,
     {
       query: print(CREATE_USER),
       variables: {
@@ -28,7 +22,7 @@ const add = async (newUser) => {
         name: newUser.name,
       },
     },
-    { headers: headers }
+    { headers: Hasura.headers }
   );
   return response.data.data.insert_users_one;
 };

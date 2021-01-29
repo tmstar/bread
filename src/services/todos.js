@@ -1,13 +1,7 @@
 import axios from "axios";
 import { print } from "graphql";
 import gql from "graphql-tag";
-
-const gqlUrl = process.env.REACT_APP_HASURA_SERVER_URL;
-
-const headers = {
-  "content-type": "application/json",
-  "x-hasura-admin-secret": process.env.REACT_APP_HASURA_ADMIN_SECRET,
-};
+import Hasura from "./hasura";
 
 const ALL_TODOS = gql`
   query AllTodos($item_list_id: uuid!) {
@@ -66,21 +60,21 @@ const DELETE_COMPLETED_TODOS = gql`
 
 const getAll = async (listId) => {
   const response = await axios.post(
-    `${gqlUrl}`,
+    `${Hasura.url}`,
     {
       query: print(ALL_TODOS),
       variables: {
         item_list_id: listId,
       },
     },
-    { headers: headers }
+    { headers: Hasura.headers }
   );
   return response.data.data.item;
 };
 
 const update = async (id, newTodo) => {
   const response = await axios.post(
-    `${gqlUrl}`,
+    `${Hasura.url}`,
     {
       query: print(UPDATE_TODO),
       variables: {
@@ -91,38 +85,38 @@ const update = async (id, newTodo) => {
         is_active: newTodo.is_active,
       },
     },
-    { headers: headers }
+    { headers: Hasura.headers }
   );
   return response.data.data.update_item_by_pk;
 };
 
 const _delete = async (id) => {
   const response = await axios.post(
-    `${gqlUrl}`,
+    `${Hasura.url}`,
     {
       query: print(DELETE_TODO),
       variables: { id: id },
     },
-    { headers: headers }
+    { headers: Hasura.headers }
   );
   return response.data.data.delete_item_by_pk;
 };
 
 const deleteCompleted = async (listId) => {
   const response = await axios.post(
-    `${gqlUrl}`,
+    `${Hasura.url}`,
     {
       query: print(DELETE_COMPLETED_TODOS),
       variables: { item_list_id: listId },
     },
-    { headers: headers }
+    { headers: Hasura.headers }
   );
   return response.data.data.delete_item.returning;
 };
 
 const add = async (newTodo) => {
   const response = await axios.post(
-    `${gqlUrl}`,
+    `${Hasura.url}`,
     {
       query: print(CREATE_TODO),
       variables: {
@@ -133,7 +127,7 @@ const add = async (newTodo) => {
         item_list_id: newTodo.item_list_id,
       },
     },
-    { headers: headers }
+    { headers: Hasura.headers }
   );
   return response.data.data.insert_item_one;
 };
