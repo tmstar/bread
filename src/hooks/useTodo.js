@@ -95,6 +95,10 @@ export default function useTodo(uid) {
     });
   };
 
+  const removeTag = (tagId) => {
+    TagService.remove(selectedList.id, tagId).then((removedTag) => {});
+  };
+
   const addTodo = (todo) => {
     const newTodo = {
       title: todo,
@@ -143,6 +147,7 @@ export default function useTodo(uid) {
     deleteTodo,
     deleteCompletedTodos,
     deleteList,
+    removeTag,
     addTodo,
     addList,
     addTag,

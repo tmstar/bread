@@ -25,6 +25,30 @@ const CREATE_TAG = gql`
   }
 `;
 
+const REMOVE_TAG = gql`
+  mutation RemoveTag($item_list_id: uuid!, $tag_id: uuid!) {
+    delete_item_list_tag_by_pk(item_list_id: $item_list_id, tag_id: $tag_id) {
+      item_list_id
+      tag_id
+      tag {
+        item_list_tags_aggregate {
+          aggregate {
+            count
+          }
+        }
+      }
+    }
+  }
+`;
+
+const DELETE_TAG = gql`
+  mutation DeleteTag($tag_id: uuid!) {
+    delete_tag_by_pk(id: $tag_id) {
+      id
+    }
+  }
+`;
+
 const add = async (listId, newTag) => {
   const response = await axios.post(
     `${Hasura.url}`,
@@ -42,5 +66,29 @@ const add = async (listId, newTag) => {
   return response.data.data.insert_tag_one;
 };
 
-const api = { add };
+const remove = async (listId, tagId) => {
+  const response = await axios.post(
+    `${Hasura.url}`,
+    {
+      query: print(REMOVE_TAG),
+      variables: { item_list_id: listId, tag_id: tagId },
+    },
+    { headers: Hasura.headers }
+  );
+  const removed = response.data.data.delete_item_list_tag_by_pk;
+  const hasLists = removed.tag.item_list_tags_aggregate.aggregate.count;
+  if (!hasLists) {
+    await axios.post(
+      `${Hasura.url}`,
+      {
+        query: print(DELETE_TAG),
+        variables: { tag_id: tagId },
+      },
+      { headers: Hasura.headers }
+    );
+  }
+  return removed;
+};
+
+const api = { add, remove };
 export default api;

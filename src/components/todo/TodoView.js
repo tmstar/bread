@@ -51,7 +51,19 @@ const useStyles = makeStyles((theme) => ({
 
 function TodoView({ td, setOpen, title, setTitle }) {
   const classes = useStyles();
-  const { todos, selectedList, toggleTodo, hideTodo, updateTodo, updateList, deleteTodo, deleteCompletedTodos, deleteList, addTodo } = td;
+  const {
+    todos,
+    selectedList,
+    toggleTodo,
+    hideTodo,
+    updateTodo,
+    updateList,
+    deleteTodo,
+    deleteCompletedTodos,
+    deleteList,
+    removeTag,
+    addTodo,
+  } = td;
 
   const [filter, setFilter] = useState("active");
   const isListEdit = filter === "all";
@@ -152,9 +164,13 @@ function TodoView({ td, setOpen, title, setTitle }) {
     </Menu>
   );
 
+  const handleChipDelete = (id) => {
+    removeTag(id);
+  };
+
   const tagList = selectedList.item_list_tags.map((listTag) => {
     const tag = listTag.tag;
-    return <Chip key={tag.id} variant="outlined" size="small" label={tag.name} onDelete={() => {}} />;
+    return <Chip key={tag.id} variant="outlined" size="small" label={tag.name} onDelete={() => handleChipDelete(tag.id)} />;
   });
 
   return (
