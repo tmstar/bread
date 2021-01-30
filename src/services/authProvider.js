@@ -36,6 +36,7 @@ export const AuthProvider = ({ children }) => {
       await auth.signInWithRedirect(provider);
     } catch (error) {
       alert(error);
+      setIsReady(true);
     }
   };
 
@@ -59,12 +60,16 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    auth.onAuthStateChanged((result) => {
-      const newUser = { id: result.uid, name: result.displayName };
-      UserService.add(newUser).then(() => {
-        setCurrentUser(result);
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        const newUser = { id: user.uid, name: user.displayName };
+        UserService.add(newUser).then(() => {
+          setCurrentUser(user);
+          setIsReady(true);
+        });
+      } else {
         setIsReady(true);
-      });
+      }
     });
   }, []);
 

@@ -1,4 +1,4 @@
-import CircularProgress from "@material-ui/core/CircularProgress";
+import LinearProgress from "@material-ui/core/LinearProgress";
 import React, { useContext } from "react";
 import { Redirect } from "react-router-dom";
 import { AuthContext } from "../services/authProvider";
@@ -9,7 +9,7 @@ function Login() {
 
   if (!isReady) {
     // loading
-    return <CircularProgress />;
+    return <LinearProgress />;
   }
 
   if (currentUser) {
