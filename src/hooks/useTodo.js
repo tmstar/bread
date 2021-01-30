@@ -15,7 +15,7 @@ export default function useTodo(uid) {
     ListService.getAll().then((itemLists) => {
       setLists(itemLists);
     });
-  }, []);
+  }, [uid]);
 
   useEffect(() => {
     if (!selectedList) {
@@ -118,12 +118,17 @@ export default function useTodo(uid) {
 
   const addTag = (listId, tag) => {
     if (!tag) {
-      // empty tag ignored
+      // ignore empty tag
       return;
     }
-
     const newTag = { id: uuid_v4(), name: tag };
-    return TagService.add(listId, newTag).then(() => {});
+    return TagService.add(listId, newTag).then((addedTag) => {
+      const listTags = selectedList.item_list_tags;
+      if (!listTags.some((taglist) => taglist.tag.name === addedTag.name)) {
+        listTags.push({ tag: { id: addedTag.id, name: addedTag.name } });
+        setSelectedList(selectedList);
+      }
+    });
   };
 
   return {

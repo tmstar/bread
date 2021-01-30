@@ -17,6 +17,7 @@ import TodoForm from "./TodoForm";
 import TodoList from "./TodoList";
 import TagEditForm from "./TagEditForm";
 import LocalOfferIcon from "@material-ui/icons/LocalOffer";
+import Chip from "@material-ui/core/Chip";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -42,6 +43,9 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     flexGrow: 1,
+  },
+  tagList: {
+    margin: theme.spacing(0, 2),
   },
 }));
 
@@ -148,6 +152,11 @@ function TodoView({ td, setOpen, title, setTitle }) {
     </Menu>
   );
 
+  const tagList = selectedList.item_list_tags.map((listTag) => {
+    const tag = listTag.tag;
+    return <Chip key={tag.id} variant="outlined" size="small" label={tag.name} onDelete={() => {}} />;
+  });
+
   return (
     <>
       <AppBar position="fixed" className={classes.appBar}>
@@ -166,16 +175,6 @@ function TodoView({ td, setOpen, title, setTitle }) {
           </form>
           <div className={classes.sectionMobile}>
             <IconButton
-              aria-label="add tag"
-              onClick={() => {
-                setBottomDrawerOpen(true);
-              }}
-              color="inherit"
-              edge="end"
-            >
-              <LocalOfferIcon />
-            </IconButton>
-            <IconButton
               aria-label="show more"
               aria-controls={mobileMenuId}
               aria-haspopup="true"
@@ -191,6 +190,18 @@ function TodoView({ td, setOpen, title, setTitle }) {
       {renderMobileMenu}
       <div className={classes.drawerHeader} />
       <div>
+        <div className={classes.tagList}>
+          <IconButton
+            aria-label="add tag"
+            onClick={() => {
+              setBottomDrawerOpen(true);
+            }}
+            color="inherit"
+          >
+            <LocalOfferIcon fontSize="small" />
+          </IconButton>
+          {tagList}
+        </div>
         <TagEditForm td={td} listId={selectedList.id} open={BottomDrawerOpen} setOpen={setBottomDrawerOpen} />
         <TodoForm addTodo={addTodo} />
         <TodoList

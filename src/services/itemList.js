@@ -9,6 +9,12 @@ const ALL_LISTS = gql`
       id
       updated_at
       name
+      item_list_tags {
+        tag {
+          id
+          name
+        }
+      }
     }
   }
 `;

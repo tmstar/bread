@@ -18,18 +18,14 @@ export default function TagEditForm({ td, open, setOpen, listId }) {
   const { addTag } = td;
 
   const [tag, setTag] = useState("");
-  const toggleDrawer = (isOpen) => (event) => {
-    if (event && event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
-      return;
-    }
-
+  const toggleDrawer = (isOpen) => () => {
     setOpen(isOpen);
   };
 
   const handleTagSubmit = (event) => {
     event.preventDefault();
     addTag(listId, tag).then(() => {
-      toggleDrawer(false);
+      setOpen(false);
     });
   };
 
@@ -49,7 +45,7 @@ export default function TagEditForm({ td, open, setOpen, listId }) {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={toggleDrawer(false)} color="primary">
+            <Button type="submit" color="primary">
               保存
             </Button>
           </DialogActions>
