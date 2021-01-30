@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { v4 as uuid_v4 } from "uuid";
 import TodoService from "../services/todos";
 import ListService from "../services/itemList";
+import TagService from "../services/tags";
 import Hasura from "../services/hasura";
 
 export default function useTodo(uid) {
@@ -115,6 +116,16 @@ export default function useTodo(uid) {
     });
   };
 
+  const addTag = (listId, tag) => {
+    if (!tag) {
+      // empty tag ignored
+      return;
+    }
+
+    const newTag = { id: uuid_v4(), name: tag };
+    return TagService.add(listId, newTag).then(() => {});
+  };
+
   return {
     todos,
     lists,
@@ -129,5 +140,6 @@ export default function useTodo(uid) {
     deleteList,
     addTodo,
     addList,
+    addTag,
   };
 }

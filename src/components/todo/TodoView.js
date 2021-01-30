@@ -15,6 +15,8 @@ import React, { useMemo, useState } from "react";
 import AlertDialog from "./AlertDialog";
 import TodoForm from "./TodoForm";
 import TodoList from "./TodoList";
+import TagEditForm from "./TagEditForm";
+import LocalOfferIcon from "@material-ui/icons/LocalOffer";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -28,7 +30,6 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(2),
   },
   sectionMobile: {
-    // display: "flex",
     marginLeft: "auto",
   },
   drawerHeader: {
@@ -50,6 +51,8 @@ function TodoView({ td, setOpen, title, setTitle }) {
 
   const [filter, setFilter] = useState("active");
   const isListEdit = filter === "all";
+
+  const [BottomDrawerOpen, setBottomDrawerOpen] = useState(false);
 
   const [alertOpen, setAlertOpen] = useState(false);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
@@ -157,11 +160,21 @@ function TodoView({ td, setOpen, title, setTitle }) {
               className={classes.title}
               value={title}
               placeholder="リストのタイトル"
-              inputProps={{ "aria-label": "naked" }}
+              inputProps={{ "aria-label": "edit title" }}
               onChange={(event) => setTitle(event.target.value)}
             />
           </form>
           <div className={classes.sectionMobile}>
+            <IconButton
+              aria-label="add tag"
+              onClick={() => {
+                setBottomDrawerOpen(true);
+              }}
+              color="inherit"
+              edge="end"
+            >
+              <LocalOfferIcon />
+            </IconButton>
             <IconButton
               aria-label="show more"
               aria-controls={mobileMenuId}
@@ -178,6 +191,7 @@ function TodoView({ td, setOpen, title, setTitle }) {
       {renderMobileMenu}
       <div className={classes.drawerHeader} />
       <div>
+        <TagEditForm td={td} listId={selectedList.id} open={BottomDrawerOpen} setOpen={setBottomDrawerOpen} />
         <TodoForm addTodo={addTodo} />
         <TodoList
           todos={filteredTodos}
