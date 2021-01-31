@@ -26,6 +26,12 @@ const CREATE_LIST = gql`
       user_id
       updated_at
       name
+      item_list_tags {
+        tag {
+          id
+          name
+        }
+      }
     }
   }
 `;
@@ -36,6 +42,12 @@ const UPDATE_LIST = gql`
       id
       updated_at
       name
+      item_list_tags {
+        tag {
+          id
+          name
+        }
+      }
     }
   }
 `;

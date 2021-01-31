@@ -11,13 +11,14 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import ListAltIcon from "@material-ui/icons/ListAlt";
 import MoreIcon from "@material-ui/icons/MoreVert";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useContext } from "react";
 import AlertDialog from "./AlertDialog";
 import TodoForm from "./TodoForm";
 import TodoList from "./TodoList";
 import TagEditForm from "./TagEditForm";
 import LocalOfferIcon from "@material-ui/icons/LocalOffer";
 import Chip from "@material-ui/core/Chip";
+import { ItemContext } from "../../hooks/useTodo";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -49,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function TodoView({ td, setOpen, title, setTitle }) {
+function TodoView({ setOpen, title, setTitle }) {
   const classes = useStyles();
   const {
     todos,
@@ -63,7 +64,7 @@ function TodoView({ td, setOpen, title, setTitle }) {
     deleteList,
     removeTag,
     addTodo,
-  } = td;
+  } = useContext(ItemContext);
 
   const [filter, setFilter] = useState("active");
   const isListEdit = filter === "all";
@@ -218,7 +219,7 @@ function TodoView({ td, setOpen, title, setTitle }) {
           </IconButton>
           {tagList}
         </div>
-        <TagEditForm td={td} listId={selectedList.id} open={BottomDrawerOpen} setOpen={setBottomDrawerOpen} />
+        <TagEditForm listId={selectedList.id} open={BottomDrawerOpen} setOpen={setBottomDrawerOpen} />
         <TodoForm addTodo={addTodo} />
         <TodoList
           todos={filteredTodos}

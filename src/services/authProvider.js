@@ -2,6 +2,7 @@ import React, { useEffect, useState, createContext } from "react";
 import firebase from "firebase/app";
 import "firebase/auth";
 import UserService from "./users";
+import Hasura from "../services/hasura";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_KEY,
@@ -16,7 +17,6 @@ if (!firebase.apps.length) {
 }
 const auth = firebase.auth();
 
-// contextの作成
 export const AuthContext = createContext();
 
 /**
@@ -65,6 +65,7 @@ export const AuthProvider = ({ children }) => {
         const newUser = { id: user.uid, name: user.displayName };
         UserService.add(newUser).then(() => {
           setCurrentUser(user);
+          Hasura.initialize(user.uid);
           setIsReady(true);
         });
       } else {

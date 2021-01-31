@@ -1,21 +1,21 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, createContext } from "react";
 import { v4 as uuid_v4 } from "uuid";
 import TodoService from "../services/todos";
 import ListService from "../services/itemList";
 import TagService from "../services/tags";
-import Hasura from "../services/hasura";
 
-export default function useTodo(uid) {
+export const ItemContext = createContext();
+
+export const ItemProvider = ({ children }) => {
   const [todos, setTodos] = useState([]);
   const [lists, setLists] = useState([]);
   const [selectedList, setSelectedList] = useState();
 
   useEffect(() => {
-    Hasura.initialize(uid);
     ListService.getAll().then((itemLists) => {
       setLists(itemLists);
     });
-  }, [uid]);
+  }, []);
 
   useEffect(() => {
     if (!selectedList) {
@@ -135,21 +135,27 @@ export default function useTodo(uid) {
     });
   };
 
-  return {
-    todos,
-    lists,
-    selectedList,
-    setSelectedList,
-    toggleTodo,
-    hideTodo,
-    updateTodo,
-    updateList,
-    deleteTodo,
-    deleteCompletedTodos,
-    deleteList,
-    removeTag,
-    addTodo,
-    addList,
-    addTag,
-  };
-}
+  return (
+    <ItemContext.Provider
+      value={{
+        setSelectedList: setSelectedList,
+        toggleTodo: toggleTodo,
+        hideTodo: hideTodo,
+        updateTodo: updateTodo,
+        updateList: updateList,
+        deleteTodo: deleteTodo,
+        deleteCompletedTodos: deleteCompletedTodos,
+        deleteList: deleteList,
+        removeTag: removeTag,
+        addTodo: addTodo,
+        addList: addList,
+        addTag: addTag,
+        todos,
+        lists,
+        selectedList,
+      }}
+    >
+      {children}
+    </ItemContext.Provider>
+  );
+};

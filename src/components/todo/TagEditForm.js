@@ -5,6 +5,8 @@ import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
+import { ItemContext } from "../../hooks/useTodo";
+import { useContext } from "react";
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -13,9 +15,9 @@ const useStyles = makeStyles((theme) => ({
   tag: {},
 }));
 
-export default function TagEditForm({ td, open, setOpen, listId }) {
+export default function TagEditForm({ open, setOpen, listId }) {
   const classes = useStyles();
-  const { addTag } = td;
+  const { addTag } = useContext(ItemContext);
 
   const [tag, setTag] = useState("");
   const toggleDrawer = (isOpen) => () => {
