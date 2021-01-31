@@ -7,8 +7,9 @@ import TagService from "../services/tags";
 export const ItemContext = createContext();
 
 export const ItemProvider = ({ children }) => {
-  const [todos, setTodos] = useState([]);
   const [lists, setLists] = useState([]);
+  const [todos, setTodos] = useState([]);
+  const [tags, setTags] = useState([]);
   const [selectedList, setSelectedList] = useState();
 
   useEffect(() => {
@@ -21,6 +22,11 @@ export const ItemProvider = ({ children }) => {
     if (!selectedList) {
       return;
     }
+    const newTags = selectedList.item_list_tags.map((listTag) => {
+      const tag = listTag.tag;
+      return { id: tag.id, name: tag.name };
+    });
+    setTags(newTags);
     TodoService.getAll(selectedList.id).then((todos) => {
       setTodos(todos.reverse());
     });
@@ -96,7 +102,10 @@ export const ItemProvider = ({ children }) => {
   };
 
   const removeTag = (tagId) => {
-    TagService.remove(selectedList.id, tagId).then((removedTag) => {});
+    TagService.remove(selectedList.id, tagId).then((removedTag) => {
+      const newTags = tags.filter((tag) => tag.id !== removedTag.tag_id);
+      setTags(newTags);
+    });
   };
 
   const addTodo = (todo) => {
@@ -127,10 +136,8 @@ export const ItemProvider = ({ children }) => {
     }
     const newTag = { id: uuid_v4(), name: tag };
     return TagService.add(listId, newTag).then((addedTag) => {
-      const listTags = selectedList.item_list_tags;
-      if (!listTags.some((taglist) => taglist.tag.name === addedTag.name)) {
-        listTags.push({ tag: { id: addedTag.id, name: addedTag.name } });
-        setSelectedList(selectedList);
+      if (!tags.some((tag) => tag.name === addedTag.name)) {
+        setTags(tags.concat([addedTag]));
       }
     });
   };
@@ -153,6 +160,7 @@ export const ItemProvider = ({ children }) => {
         todos,
         lists,
         selectedList,
+        tags,
       }}
     >
       {children}

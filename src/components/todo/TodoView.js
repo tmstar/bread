@@ -55,6 +55,7 @@ function TodoView({ setOpen, title, setTitle }) {
   const {
     todos,
     selectedList,
+    tags,
     toggleTodo,
     hideTodo,
     updateTodo,
@@ -169,8 +170,7 @@ function TodoView({ setOpen, title, setTitle }) {
     removeTag(id);
   };
 
-  const tagList = selectedList.item_list_tags.map((listTag) => {
-    const tag = listTag.tag;
+  const tagList = tags.map((tag) => {
     return <Chip key={tag.id} variant="outlined" size="small" label={tag.name} onDelete={() => handleChipDelete(tag.id)} />;
   });
 
