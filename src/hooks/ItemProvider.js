@@ -3,7 +3,7 @@ import { v4 as uuid_v4 } from "uuid";
 import TodoService from "../services/todos";
 import ListService from "../services/itemList";
 import TagService from "../services/tags";
-import { AuthContext } from "../services/authProvider";
+import { AuthContext } from "./AuthProvider";
 
 export const ItemContext = createContext();
 

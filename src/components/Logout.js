@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { AuthContext } from "../services/authProvider";
+import { AuthContext } from "../hooks/AuthProvider";
 import { Redirect } from "react-router-dom";
 
 function Logout() {

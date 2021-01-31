@@ -1,7 +1,7 @@
 import React, { useEffect, useState, createContext } from "react";
 import firebase from "firebase/app";
 import "firebase/auth";
-import UserService from "./users";
+import UserService from "../services/users";
 import Hasura from "../services/hasura";
 
 const firebaseConfig = {

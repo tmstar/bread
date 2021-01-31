@@ -13,7 +13,7 @@ import Typography from "@material-ui/core/Typography";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import React, { useContext } from "react";
 import { FacebookLoginButton, GoogleLoginButton } from "react-social-login-buttons";
-import { AuthContext } from "../services/authProvider";
+import { AuthContext } from "../hooks/AuthProvider";
 
 function Copyright() {
   return (

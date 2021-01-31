@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Route } from "react-router-dom";
-import { AuthContext } from "../services/authProvider";
+import { AuthContext } from "../hooks/AuthProvider";
 import Login from "./Login";
 
 const AuthRoute = ({ component: RouteComponent, ...options }) => {

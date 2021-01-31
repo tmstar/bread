@@ -10,8 +10,8 @@ import AuthRoute from "./components/AuthRoute";
 import Home from "./components/Home";
 import Login from "./components/Login";
 import Logout from "./components/Logout";
-import { AuthProvider } from "./services/authProvider";
-import { ItemProvider } from "./hooks/useTodo";
+import { AuthProvider } from "./hooks/AuthProvider";
+import { ItemProvider } from "./hooks/ItemProvider";
 
 const darkTheme = createMuiTheme({
   palette: {
