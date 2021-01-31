@@ -13,7 +13,6 @@ import ListAltIcon from "@material-ui/icons/ListAlt";
 import MoreIcon from "@material-ui/icons/MoreVert";
 import React, { useMemo, useState, useContext } from "react";
 import AlertDialog from "./AlertDialog";
-import TodoForm from "./TodoForm";
 import TodoList from "./TodoList";
 import TagEditForm from "./TagEditForm";
 import LocalOfferIcon from "@material-ui/icons/LocalOffer";
@@ -52,25 +51,12 @@ const useStyles = makeStyles((theme) => ({
 
 function TodoView({ setOpen, title, setTitle }) {
   const classes = useStyles();
-  const {
-    todos,
-    selectedList,
-    tags,
-    toggleTodo,
-    hideTodo,
-    updateTodo,
-    updateList,
-    deleteTodo,
-    deleteCompletedTodos,
-    deleteList,
-    removeTag,
-    addTodo,
-  } = useContext(ItemContext);
+  const { todos, selectedList, tags, updateList, deleteCompletedTodos, deleteList, removeTag } = useContext(ItemContext);
 
   const [filter, setFilter] = useState("active");
   const isListEdit = filter === "all";
 
-  const [BottomDrawerOpen, setBottomDrawerOpen] = useState(false);
+  const [bottomDrawerOpen, setBottomDrawerOpen] = useState(false);
 
   const [alertOpen, setAlertOpen] = useState(false);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
@@ -219,16 +205,8 @@ function TodoView({ setOpen, title, setTitle }) {
           </IconButton>
           {tagList}
         </div>
-        <TagEditForm listId={selectedList.id} open={BottomDrawerOpen} setOpen={setBottomDrawerOpen} />
-        <TodoForm addTodo={addTodo} />
-        <TodoList
-          todos={filteredTodos}
-          toggleTodo={toggleTodo}
-          hideTodo={hideTodo}
-          updateTodo={updateTodo}
-          deleteTodo={deleteTodo}
-          hideSwitch={filter !== "all"}
-        />
+        <TagEditForm listId={selectedList.id} open={bottomDrawerOpen} setOpen={setBottomDrawerOpen} />
+        <TodoList todos={filteredTodos} hideSwitch={filter !== "all"} />
         <AlertDialog
           open={alertOpen}
           setOpen={setAlertOpen}

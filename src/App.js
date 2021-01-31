@@ -37,6 +37,9 @@ const darkTheme = createMuiTheme({
     MuiSwitch: {
       color: "primary",
     },
+    MuiFab: {
+      color: "primary",
+    },
     MuiList: {
       dense: true,
     },

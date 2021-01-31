@@ -10,8 +10,11 @@ import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import CommentIcon from "@material-ui/icons/Comment";
 import DeleteIcon from "@material-ui/icons/Delete";
-import React, { useState } from "react";
-import TodoEditForm from "./TodoEditForm";
+import React, { useContext, useState } from "react";
+import { ItemContext } from "../../hooks/ItemProvider";
+import SpeedDialIcon from "@material-ui/lab/SpeedDialIcon";
+import Fab from "@material-ui/core/Fab";
+import ItemEditForm from "./ItemEditForm";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,12 +28,23 @@ const useStyles = makeStyles((theme) => ({
   text: {
     paddingRight: 60,
   },
+  speedDial: {
+    position: "fixed",
+    bottom: theme.spacing(2),
+    right: theme.spacing(2),
+  },
 }));
 
-function TodoList({ todos, toggleTodo, hideTodo, deleteTodo, hideSwitch, updateTodo }) {
+function TodoList({ todos, hideSwitch }) {
   const classes = useStyles();
-  const [selectedTodo, setSelectedTodo] = useState([]);
+  const { toggleTodo, deleteTodo } = useContext(ItemContext);
+  const [selectedTodo, setSelectedTodo] = useState();
   const [openForm, setOpenForm] = useState(false);
+
+  const handleClickOpen = () => {
+    setSelectedTodo(null);
+    setOpenForm(true);
+  };
 
   const listSecondaryAction = (todo) => {
     return (
@@ -78,8 +92,11 @@ function TodoList({ todos, toggleTodo, hideTodo, deleteTodo, hideSwitch, updateT
 
   return (
     <>
+      <ItemEditForm todo={selectedTodo} open={openForm} setOpen={setOpenForm} />
       <List className={classes.root}>{todoList}</List>
-      <TodoEditForm todo={selectedTodo} openForm={openForm} setOpenForm={setOpenForm} updateTodo={updateTodo} />
+      <Fab aria-label="add item" className={classes.speedDial} onClick={handleClickOpen}>
+        <SpeedDialIcon />
+      </Fab>
     </>
   );
 }
