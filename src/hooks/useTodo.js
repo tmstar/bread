@@ -1,8 +1,9 @@
-import { useEffect, useState, createContext } from "react";
+import { useEffect, useState, createContext, useContext } from "react";
 import { v4 as uuid_v4 } from "uuid";
 import TodoService from "../services/todos";
 import ListService from "../services/itemList";
 import TagService from "../services/tags";
+import { AuthContext } from "../services/authProvider";
 
 export const ItemContext = createContext();
 
@@ -11,12 +12,16 @@ export const ItemProvider = ({ children }) => {
   const [todos, setTodos] = useState([]);
   const [tags, setTags] = useState([]);
   const [selectedList, setSelectedList] = useState();
+  const { currentUser } = useContext(AuthContext);
 
   useEffect(() => {
+    if (!currentUser) {
+      return;
+    }
     ListService.getAll().then((itemLists) => {
       setLists(itemLists);
     });
-  }, []);
+  }, [currentUser]);
 
   useEffect(() => {
     if (!selectedList) {

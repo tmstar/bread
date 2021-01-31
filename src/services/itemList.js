@@ -4,8 +4,11 @@ import gql from "graphql-tag";
 import Hasura from "./hasura";
 
 const ALL_LISTS = gql`
-  query AllLists {
-    item_list(order_by: { updated_at: desc }) {
+  query AllLists($user_id: String!, $user_email: String!) {
+    item_list(
+      order_by: { updated_at: desc }
+      where: { _or: [{ user_id: { _eq: $user_id } }, { item_list_tags: { tag: { name: { _eq: $user_email } } } }] }
+    ) {
       id
       updated_at
       name
@@ -66,7 +69,17 @@ const DELETE_LIST = gql`
 `;
 
 const getAll = async () => {
-  const response = await axios.post(`${Hasura.url}`, { query: print(ALL_LISTS) }, { headers: Hasura.headers });
+  const response = await axios.post(
+    `${Hasura.url}`,
+    {
+      query: print(ALL_LISTS),
+      variables: {
+        user_id: Hasura.currentUid,
+        user_email: Hasura.currentEmail,
+      },
+    },
+    { headers: Hasura.headers }
+  );
   return response.data.data.item_list;
 };
 
@@ -77,7 +90,7 @@ const add = async (newList) => {
       query: print(CREATE_LIST),
       variables: {
         id: newList.id,
-        user_id: Hasura.currentUid(),
+        user_id: Hasura.currentUid,
         name: newList.name,
       },
     },

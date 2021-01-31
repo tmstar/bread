@@ -62,10 +62,10 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       if (user) {
+        Hasura.initialize(user);
         const newUser = { id: user.uid, name: user.displayName };
         UserService.add(newUser).then(() => {
           setCurrentUser(user);
-          Hasura.initialize(user.uid);
           setIsReady(true);
         });
       } else {

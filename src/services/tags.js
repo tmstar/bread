@@ -56,7 +56,7 @@ const add = async (listId, newTag) => {
       query: print(CREATE_TAG),
       variables: {
         id: newTag.id,
-        user_id: Hasura.currentUid(),
+        user_id: Hasura.currentUid,
         name: newTag.name,
         item_list_id: listId,
       },
