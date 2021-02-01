@@ -25,11 +25,15 @@ const CREATE_TODO = gql`
       is_active
       item_list_id
     }
+    update_item_list_by_pk(pk_columns: { id: $item_list_id }, _set: { updated_at: "2021-01-01" }) {
+      id
+      updated_at
+    }
   }
 `;
 
 const UPDATE_TODO = gql`
-  mutation UpdateTodo($id: uuid!, $note: String, $title: String!, $completed: Boolean!, $is_active: Boolean!) {
+  mutation UpdateTodo($id: uuid!, $note: String, $title: String!, $completed: Boolean!, $is_active: Boolean!, $item_list_id: uuid!) {
     update_item_by_pk(pk_columns: { id: $id }, _set: { note: $note, title: $title, completed: $completed, is_active: $is_active }) {
       id
       title
@@ -37,13 +41,21 @@ const UPDATE_TODO = gql`
       completed
       is_active
     }
+    update_item_list_by_pk(pk_columns: { id: $item_list_id }, _set: { updated_at: "2021-01-01" }) {
+      id
+      updated_at
+    }
   }
 `;
 
 const DELETE_TODO = gql`
-  mutation DeleteTodo($id: uuid!) {
+  mutation DeleteTodo($id: uuid!, $item_list_id: uuid!) {
     delete_item_by_pk(id: $id) {
       id
+    }
+    update_item_list_by_pk(pk_columns: { id: $item_list_id }, _set: { updated_at: "2021-01-01" }) {
+      id
+      updated_at
     }
   }
 `;
@@ -54,6 +66,10 @@ const DELETE_COMPLETED_TODOS = gql`
       returning {
         id
       }
+    }
+    update_item_list_by_pk(pk_columns: { id: $item_list_id }, _set: { updated_at: "2021-01-01" }) {
+      id
+      updated_at
     }
   }
 `;
@@ -72,7 +88,7 @@ const getAll = async (listId) => {
   return response.data.data.item;
 };
 
-const update = async (id, newTodo) => {
+const update = async (id, newTodo, listId) => {
   const response = await axios.post(
     `${Hasura.url}`,
     {
@@ -83,23 +99,24 @@ const update = async (id, newTodo) => {
         note: newTodo.note,
         completed: newTodo.completed,
         is_active: newTodo.is_active,
+        item_list_id: listId,
       },
     },
     { headers: Hasura.headers }
   );
-  return response.data.data.update_item_by_pk;
+  return { item: response.data.data.update_item_by_pk, itemList: response.data.data.update_item_list_by_pk };
 };
 
-const _delete = async (id) => {
+const _delete = async (id, listId) => {
   const response = await axios.post(
     `${Hasura.url}`,
     {
       query: print(DELETE_TODO),
-      variables: { id: id },
+      variables: { id: id, item_list_id: listId },
     },
     { headers: Hasura.headers }
   );
-  return response.data.data.delete_item_by_pk;
+  return { item: response.data.data.delete_item_by_pk, itemList: response.data.data.update_item_list_by_pk };
 };
 
 const deleteCompleted = async (listId) => {
@@ -111,7 +128,7 @@ const deleteCompleted = async (listId) => {
     },
     { headers: Hasura.headers }
   );
-  return response.data.data.delete_item.returning;
+  return { items: response.data.data.delete_item.returning, itemList: response.data.data.update_item_list_by_pk };
 };
 
 const add = async (newTodo) => {
@@ -129,7 +146,7 @@ const add = async (newTodo) => {
     },
     { headers: Hasura.headers }
   );
-  return response.data.data.insert_item_one;
+  return { item: response.data.data.insert_item_one, itemList: response.data.data.update_item_list_by_pk };
 };
 
 const api = { getAll, update, delete: _delete, deleteCompleted, add };

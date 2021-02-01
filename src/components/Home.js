@@ -14,6 +14,8 @@ import clsx from "clsx";
 import React, { useState, useContext } from "react";
 import { ItemContext } from "../hooks/ItemProvider";
 import TodoView from "./todo/TodoView";
+import moment from "moment";
+import "moment/locale/ja";
 
 const drawerWidth = "100%";
 
@@ -111,7 +113,7 @@ function Home() {
             setOpen(true);
           }}
         >
-          <ListItemText primary={list.name} secondary={new Date(list.updated_at).toLocaleString("ja-JP")} />
+          <ListItemText primary={list.name} secondary={moment(list.updated_at).fromNow()} />
         </ListItem>
         {index + 1 !== rowLength ? <Divider /> : ""}
       </div>

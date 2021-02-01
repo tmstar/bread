@@ -1,5 +1,5 @@
 {
-  "name": "shopping-list",
+  "name": "bread",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -16,6 +16,7 @@
     "graphql": "^15.4.0",
     "graphql-tag": "^2.11.0",
     "json-server": "^0.16.3",
+    "moment": "^2.29.1",
     "react": "^17.0.1",
     "react-apollo": "^3.1.5",
     "react-dom": "^17.0.1",

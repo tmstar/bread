@@ -14,6 +14,15 @@ export const ItemProvider = ({ children }) => {
   const [selectedList, setSelectedList] = useState();
   const { currentUser } = useContext(AuthContext);
 
+  const _modifyUpdatedAt = (updatedList) => {
+    const list = lists.find((list) => list.id === updatedList.id);
+    const latestList = { ...list, updated_at: updatedList.updated_at };
+    const newLists = lists
+      .map((list) => (list.id !== latestList.id ? list : latestList))
+      .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+    setLists(newLists);
+  };
+
   useEffect(() => {
     if (!currentUser) {
       return;
@@ -45,9 +54,10 @@ export const ItemProvider = ({ children }) => {
     const toggledTodos = todos.map((todo) => (todo.id !== newTodo.id ? todo : newTodo));
     setTodos(toggledTodos);
 
-    TodoService.update(id, newTodo).then((updatedTodo) => {
-      const newTodos = todos.map((todo) => (todo.id !== updatedTodo.id ? todo : updatedTodo));
+    TodoService.update(id, newTodo, selectedList.id).then((result) => {
+      const newTodos = todos.map((todo) => (todo.id !== result.item.id ? todo : result.item));
       setTodos(newTodos);
+      _modifyUpdatedAt(result.itemList);
     });
   };
 
@@ -59,9 +69,10 @@ export const ItemProvider = ({ children }) => {
     const hidedTodos = todos.map((todo) => (todo.id !== newTodo.id ? todo : newTodo));
     setTodos(hidedTodos);
 
-    TodoService.update(id, newTodo).then((updatedTodo) => {
-      const newTodos = todos.map((todo) => (todo.id !== updatedTodo.id ? todo : updatedTodo));
+    TodoService.update(id, newTodo, selectedList.id).then((result) => {
+      const newTodos = todos.map((todo) => (todo.id !== result.item.id ? todo : result.item));
       setTodos(newTodos);
+      _modifyUpdatedAt(result.itemList);
     });
   };
 
@@ -69,9 +80,10 @@ export const ItemProvider = ({ children }) => {
     const todo = todos.find((todo) => todo.id === id);
     const newTodo = { ...todo, title: title, note: note };
 
-    return TodoService.update(id, newTodo).then((updatedTodo) => {
-      const newTodos = todos.map((todo) => (todo.id !== updatedTodo.id ? todo : updatedTodo));
+    return TodoService.update(id, newTodo, selectedList.id).then((result) => {
+      const newTodos = todos.map((todo) => (todo.id !== result.item.id ? todo : result.item));
       setTodos(newTodos);
+      _modifyUpdatedAt(result.itemList);
     });
   };
 
@@ -86,16 +98,18 @@ export const ItemProvider = ({ children }) => {
   };
 
   const deleteTodo = (id) => {
-    TodoService.delete(id).then((deletedTodoId) => {
-      const newTodos = todos.filter((todo) => todo.id !== deletedTodoId);
+    TodoService.delete(id, selectedList.id).then((result) => {
+      const newTodos = todos.filter((todo) => todo.id !== result.item.id);
       setTodos(newTodos);
+      _modifyUpdatedAt(result.itemList);
     });
   };
 
   const deleteCompletedTodos = (listId) => {
-    TodoService.deleteCompleted(listId).then((deletedTodos) => {
-      const newTodos = todos.filter((todo) => !deletedTodos.some((d) => d.id === todo.id));
+    TodoService.deleteCompleted(listId).then((result) => {
+      const newTodos = todos.filter((todo) => !result.items.some((d) => d.id === todo.id));
       setTodos(newTodos);
+      _modifyUpdatedAt(result.itemList);
     });
   };
 
@@ -121,8 +135,9 @@ export const ItemProvider = ({ children }) => {
       id: uuid_v4(),
       item_list_id: selectedList.id,
     };
-    return TodoService.add(newTodo).then((addedTodo) => {
-      setTodos([addedTodo].concat(todos));
+    return TodoService.add(newTodo).then((result) => {
+      setTodos([result.item].concat(todos));
+      _modifyUpdatedAt(result.itemList);
     });
   };
 
