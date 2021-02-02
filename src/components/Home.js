@@ -134,7 +134,7 @@ function Home() {
             <IconButton
               edge="end"
               onClick={() => {
-                const newName = moment().format("MMM Do");
+                const newName = moment().format("M/D");
                 addList(newName).then(() => {
                   setTitle(newName);
                   setOpen(true);
