@@ -41,6 +41,7 @@ export const ItemProvider = ({ children }) => {
       return { id: tag.id, name: tag.name };
     });
     setTags(newTags);
+    setTodos([]);
     TodoService.getAll(selectedList.id).then((todos) => {
       setTodos(todos.reverse());
     });
