@@ -12,7 +12,7 @@ const ALL_LISTS = gql`
       id
       updated_at
       name
-      item_list_tags {
+      item_list_tags(where: { tag: { user_id: { _eq: $user_id } } }) {
         tag {
           id
           name
