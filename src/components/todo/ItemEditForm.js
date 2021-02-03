@@ -83,6 +83,9 @@ export default function ItemEditForm({ open, setOpen, todo }) {
             )}
           </DialogContent>
           <DialogActions>
+            <Button color="primary" onClick={toggleDrawer(false)}>
+              キャンセル
+            </Button>
             <Button type="submit" color="primary">
               保存
             </Button>
