@@ -15,6 +15,7 @@ import { ItemContext } from "../../hooks/ItemProvider";
 import SpeedDialIcon from "@material-ui/lab/SpeedDialIcon";
 import Fab from "@material-ui/core/Fab";
 import ItemEditForm from "./ItemEditForm";
+import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,6 +33,9 @@ const useStyles = makeStyles((theme) => ({
     position: "fixed",
     bottom: theme.spacing(2),
     right: theme.spacing(2),
+  },
+  icon: {
+    color: theme.palette.background.default,
   },
 }));
 
@@ -69,14 +73,15 @@ function TodoList({ todos, hideSwitch }) {
     const rowLength = todos.length;
     return (
       <div key={todo.id + "-div"}>
-        <ListItem key={todo.id}>
+        <ListItem key={todo.id} button onClick={() => toggleTodo(todo.id, todo.completed)}>
           <ListItemIcon>
             <Checkbox
               edge="start"
               disableRipple
               checked={todo.completed}
-              onChange={() => toggleTodo(todo.id, todo.completed)}
               disabled={!hideSwitch}
+              checkedIcon={<CheckCircleOutlineIcon />}
+              icon={<CheckCircleOutlineIcon className={classes.icon} />}
             />
             <Typography variant="h6" className={classes.index}>
               {index + 1}
