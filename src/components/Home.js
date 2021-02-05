@@ -1,7 +1,7 @@
 import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
 import MenuDrawer from "./Home/MenuDrawer";
-import HomeMain from "./HomeMain";
+import HomeMain from "./Home/HomeMain";
 import { HomeProvider } from "../context/HomeProvider";
 
 const useStyles = makeStyles((theme) => ({

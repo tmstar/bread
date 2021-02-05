@@ -12,12 +12,11 @@ import MenuIcon from "@material-ui/icons/Menu";
 import PlaylistAddIcon from "@material-ui/icons/PlaylistAdd";
 import clsx from "clsx";
 import React, { useState, useContext } from "react";
-import { ItemContext } from "../hooks/ItemProvider";
-import TodoView from "./todo/TodoView";
+import { ItemContext } from "../../hooks/ItemProvider";
+import TodoView from "../todo/TodoView";
 import moment from "moment";
 import "moment/locale/ja";
-import { HomeContext } from "../context/HomeProvider";
-import MenuDrawer from "./Home/MenuDrawer";
+import { HomeContext } from "../../context/HomeProvider";
 
 const drawerWidth = "100%";
 
