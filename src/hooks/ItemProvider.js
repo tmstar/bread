@@ -8,9 +8,10 @@ import { AuthContext } from "./AuthProvider";
 export const ItemContext = createContext();
 
 export const ItemProvider = ({ children }) => {
-  const [lists, setLists] = useState([]);
-  const [todos, setTodos] = useState([]);
-  const [tags, setTags] = useState([]);
+  const [uniqueTags, setUniqueTags] = useState([]);
+  const [lists, setLists] = useState([]); // lists in a tag
+  const [todos, setTodos] = useState([]); // todos in a list
+  const [tagsInList, setTagsInList] = useState([]); // tags in a list
   const [selectedList, setSelectedList] = useState();
   const { currentUser } = useContext(AuthContext);
 
@@ -27,6 +28,9 @@ export const ItemProvider = ({ children }) => {
     if (!currentUser) {
       return;
     }
+    TagService.getAll().then((tagLists) => {
+      setUniqueTags(tagLists);
+    });
     ListService.getAll().then((itemLists) => {
       setLists(itemLists);
     });
@@ -40,7 +44,7 @@ export const ItemProvider = ({ children }) => {
       const tag = listTag.tag;
       return { id: tag.id, name: tag.name };
     });
-    setTags(newTags);
+    setTagsInList(newTags);
     setTodos([]);
     TodoService.getAll(selectedList.id).then((todos) => {
       setTodos(todos.reverse());
@@ -123,8 +127,8 @@ export const ItemProvider = ({ children }) => {
 
   const removeTag = (tagId) => {
     TagService.remove(selectedList.id, tagId).then((removedTag) => {
-      const newTags = tags.filter((tag) => tag.id !== removedTag.tag_id);
-      setTags(newTags);
+      const newTags = tagsInList.filter((tag) => tag.id !== removedTag.tag_id);
+      setTagsInList(newTags);
     });
   };
 
@@ -157,8 +161,8 @@ export const ItemProvider = ({ children }) => {
     }
     const newTag = { id: uuid_v4(), name: tag };
     return TagService.add(listId, newTag).then((addedTag) => {
-      if (!tags.some((tag) => tag.name === addedTag.name)) {
-        setTags(tags.concat([addedTag]));
+      if (!tagsInList.some((tag) => tag.name === addedTag.name)) {
+        setTagsInList(tagsInList.concat([addedTag]));
       }
     });
   };
@@ -179,9 +183,10 @@ export const ItemProvider = ({ children }) => {
         addList: addList,
         addTag: addTag,
         todos,
+        uniqueTags,
         lists,
         selectedList,
-        tags,
+        tags: tagsInList,
       }}
     >
       {children}

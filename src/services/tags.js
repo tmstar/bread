@@ -3,6 +3,16 @@ import { print } from "graphql";
 import gql from "graphql-tag";
 import Hasura from "./hasura";
 
+const ALL_TAGS = gql`
+  query AllTags($user_id: String!) {
+    tag(order_by: { name: asc }, where: { user_id: { _eq: $user_id } }) {
+      id
+      name
+      user_id
+    }
+  }
+`;
+
 const CREATE_TAG = gql`
   mutation CreateTag($id: uuid!, $user_id: String!, $name: String!, $item_list_id: uuid!) {
     insert_tag_one(
@@ -49,6 +59,20 @@ const DELETE_TAG = gql`
   }
 `;
 
+const getAll = async () => {
+  const response = await axios.post(
+    `${Hasura.url}`,
+    {
+      query: print(ALL_TAGS),
+      variables: {
+        user_id: Hasura.currentUid,
+      },
+    },
+    { headers: Hasura.headers }
+  );
+  return response.data.data.tag;
+};
+
 const add = async (listId, newTag) => {
   const response = await axios.post(
     `${Hasura.url}`,
@@ -90,5 +114,5 @@ const remove = async (listId, tagId) => {
   return removed;
 };
 
-const api = { add, remove };
+const api = { getAll, add, remove };
 export default api;
