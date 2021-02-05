@@ -12,7 +12,6 @@ import Login from "./components/Login";
 import Logout from "./components/Logout";
 import { AuthProvider } from "./hooks/AuthProvider";
 import { ItemProvider } from "./hooks/ItemProvider";
-import { HomeProvider } from "./context/HomeProvider";
 
 const darkTheme = createMuiTheme({
   palette: {
@@ -77,16 +76,14 @@ function App() {
           <header>
             <AuthProvider>
               <ItemProvider>
-                <HomeProvider>
-                  <BrowserRouter>
-                    <Switch>
-                      <Redirect exact path="/" to="/login" />
-                      <Route path="/login" component={Login} />
-                      <Route path="/logout" component={Logout} />
-                      <AuthRoute exact path="/home" component={Home} />
-                    </Switch>
-                  </BrowserRouter>
-                </HomeProvider>
+                <BrowserRouter>
+                  <Switch>
+                    <Redirect exact path="/" to="/login" />
+                    <Route path="/login" component={Login} />
+                    <Route path="/logout" component={Logout} />
+                    <AuthRoute exact path="/home" component={Home} />
+                  </Switch>
+                </BrowserRouter>
               </ItemProvider>
             </AuthProvider>
           </header>
