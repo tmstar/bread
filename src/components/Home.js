@@ -16,6 +16,8 @@ import { ItemContext } from "../hooks/ItemProvider";
 import TodoView from "./todo/TodoView";
 import moment from "moment";
 import "moment/locale/ja";
+import { HomeContext } from "../context/HomeProvider";
+import MenuDrawer from "./Home/MenuDrawer";
 
 const drawerWidth = "100%";
 
@@ -97,6 +99,7 @@ function Home() {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const { lists, addList, setSelectedList } = useContext(ItemContext);
+  const { toggleMenu } = useContext(HomeContext);
 
   const [title, setTitle] = useState();
 
@@ -124,7 +127,7 @@ function Home() {
     <div className={classes.root}>
       <AppBar position="fixed" className={clsx(classes.appBar, { [classes.appBarShift]: open })}>
         <Toolbar>
-          <IconButton color="inherit" edge="start" className={classes.menuButton}>
+          <IconButton color="inherit" edge="start" className={classes.menuButton} onClick={toggleMenu(true)}>
             <MenuIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
@@ -152,6 +155,7 @@ function Home() {
           <List>{listContents}</List>
         </div>
       </main>
+      <MenuDrawer />
       <Drawer className={classes.drawer} anchor="right" open={open} classes={{ paper: classes.drawerPaper }}>
         <TodoView setOpen={setOpen} title={title} setTitle={setTitle} />
       </Drawer>
