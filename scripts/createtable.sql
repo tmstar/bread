@@ -9,6 +9,7 @@ CREATE TABLE item (
   id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
   title text NOT NULL,
   note text,
+  color text DEFAULT 'default',
   completed boolean NOT NULL DEFAULT false,
   is_active boolean NOT NULL DEFAULT true,
   item_list_id uuid REFERENCES item_list(id)

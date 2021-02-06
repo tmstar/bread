@@ -89,9 +89,9 @@ export const ItemProvider = ({ children }) => {
     });
   };
 
-  const updateTodo = (id, title, note) => {
+  const updateTodo = (id, title, note, color) => {
     const todo = todos.find((todo) => todo.id === id);
-    const newTodo = { ...todo, title: title, note: note };
+    const newTodo = { ...todo, title: title, note: note, color: color };
 
     return TodoService.update(id, newTodo, selectedList.id).then((result) => {
       const newTodos = todos.map((todo) => (todo.id !== result.item.id ? todo : result.item));

@@ -9,6 +9,7 @@ const ALL_TODOS = gql`
       id
       title
       note
+      color
       completed
       is_active
     }
@@ -21,6 +22,7 @@ const CREATE_TODO = gql`
       id
       title
       note
+      color
       completed
       is_active
       item_list_id
@@ -33,11 +35,23 @@ const CREATE_TODO = gql`
 `;
 
 const UPDATE_TODO = gql`
-  mutation UpdateTodo($id: uuid!, $note: String, $title: String!, $completed: Boolean!, $is_active: Boolean!, $item_list_id: uuid!) {
-    update_item_by_pk(pk_columns: { id: $id }, _set: { note: $note, title: $title, completed: $completed, is_active: $is_active }) {
+  mutation UpdateTodo(
+    $id: uuid!
+    $title: String!
+    $note: String
+    $color: String
+    $completed: Boolean!
+    $is_active: Boolean!
+    $item_list_id: uuid!
+  ) {
+    update_item_by_pk(
+      pk_columns: { id: $id }
+      _set: { title: $title, note: $note, color: $color, completed: $completed, is_active: $is_active }
+    ) {
       id
       title
       note
+      color
       completed
       is_active
     }
@@ -97,6 +111,7 @@ const update = async (id, newTodo, listId) => {
         id: id,
         title: newTodo.title,
         note: newTodo.note,
+        color: newTodo.color,
         completed: newTodo.completed,
         is_active: newTodo.is_active,
         item_list_id: listId,
