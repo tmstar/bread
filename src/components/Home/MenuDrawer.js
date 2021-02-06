@@ -19,13 +19,13 @@ const useStyles = makeStyles({
 
 function MenuDrawer() {
   const classes = useStyles();
-  const { uniqueTags } = useContext(ItemContext);
+  const { uniqueTags, selectTag } = useContext(ItemContext);
   const { openMenu, toggleMenu } = useContext(HomeContext);
 
   const list = () => (
     <div className={classes.list} onClick={toggleMenu(false)}>
       <List>
-        <ListItem button>
+        <ListItem button onClick={selectTag([])}>
           <ListItemIcon>
             <InboxIcon />
           </ListItemIcon>
@@ -35,7 +35,7 @@ function MenuDrawer() {
       <Divider />
       <List>
         {uniqueTags.map((tag) => (
-          <ListItem button key={tag.id}>
+          <ListItem button key={tag.id} onClick={selectTag(tag)}>
             <ListItemIcon>
               <LocalOfferIcon />
             </ListItemIcon>

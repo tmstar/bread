@@ -97,7 +97,7 @@ const useStyles = makeStyles((theme) => ({
 function HomeMain() {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
-  const { lists, addList, setSelectedList } = useContext(ItemContext);
+  const { lists, addList, selectList } = useContext(ItemContext);
   const { toggleMenu } = useContext(HomeContext);
 
   const [title, setTitle] = useState();
@@ -111,7 +111,7 @@ function HomeMain() {
           button
           onClick={() => {
             setTitle(list.name);
-            setSelectedList(list);
+            selectList(list);
             setOpen(true);
           }}
         >

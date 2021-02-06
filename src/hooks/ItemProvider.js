@@ -12,6 +12,7 @@ export const ItemProvider = ({ children }) => {
   const [lists, setLists] = useState([]); // lists in a tag
   const [todos, setTodos] = useState([]); // todos in a list
   const [tagsInList, setTagsInList] = useState([]); // tags in a list
+  const [selectedTag, setSelectedTag] = useState();
   const [selectedList, setSelectedList] = useState();
   const { currentUser } = useContext(AuthContext);
 
@@ -31,10 +32,17 @@ export const ItemProvider = ({ children }) => {
     TagService.getAll().then((tagLists) => {
       setUniqueTags(tagLists);
     });
-    ListService.getAll().then((itemLists) => {
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (!currentUser) {
+      return;
+    }
+    setLists([]);
+    ListService.getAll(selectedTag?.id).then((itemLists) => {
       setLists(itemLists);
     });
-  }, [currentUser]);
+  }, [currentUser, selectedTag]);
 
   useEffect(() => {
     if (!selectedList) {
@@ -50,6 +58,14 @@ export const ItemProvider = ({ children }) => {
       setTodos(todos.reverse());
     });
   }, [selectedList]);
+
+  const selectTag = (tag) => () => {
+    setSelectedTag(tag);
+  };
+
+  const selectList = (list) => () => {
+    setSelectedList(list);
+  };
 
   const toggleTodo = (id, completed) => {
     const todo = todos.find((todo) => todo.id === id);
@@ -170,7 +186,8 @@ export const ItemProvider = ({ children }) => {
   return (
     <ItemContext.Provider
       value={{
-        setSelectedList: setSelectedList,
+        selectTag: selectTag,
+        selectList: selectList,
         toggleTodo: toggleTodo,
         hideTodo: hideTodo,
         updateTodo: updateTodo,
