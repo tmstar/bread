@@ -28,9 +28,6 @@ const darkTheme = createMuiTheme({
     },
   },
   props: {
-    MuiCheckbox: {
-      color: "primary",
-    },
     MuiRadio: {
       color: "primary",
     },
