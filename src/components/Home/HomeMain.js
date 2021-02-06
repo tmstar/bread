@@ -98,7 +98,7 @@ function HomeMain() {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const { lists, addList, selectList } = useContext(ItemContext);
-  const { toggleMenu } = useContext(HomeContext);
+  const { toggleMenu, mainTitle } = useContext(HomeContext);
 
   const [title, setTitle] = useState();
 
@@ -130,7 +130,7 @@ function HomeMain() {
             <MenuIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
-            リスト一覧
+            {mainTitle}
           </Typography>
           <div className={classes.drawerHeader}>
             <IconButton

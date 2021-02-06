@@ -59,14 +59,6 @@ export const ItemProvider = ({ children }) => {
     });
   }, [selectedList]);
 
-  const selectTag = (tag) => () => {
-    setSelectedTag(tag);
-  };
-
-  const selectList = (list) => () => {
-    setSelectedList(list);
-  };
-
   const toggleTodo = (id, completed) => {
     const todo = todos.find((todo) => todo.id === id);
     const newTodo = { ...todo, completed: !completed };
@@ -186,8 +178,8 @@ export const ItemProvider = ({ children }) => {
   return (
     <ItemContext.Provider
       value={{
-        selectTag: selectTag,
-        selectList: selectList,
+        selectTag: setSelectedTag,
+        selectList: setSelectedList,
         toggleTodo: toggleTodo,
         hideTodo: hideTodo,
         updateTodo: updateTodo,
