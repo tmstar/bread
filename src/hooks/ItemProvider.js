@@ -90,6 +90,10 @@ export const ItemProvider = ({ children }) => {
   };
 
   const updateTodo = (id, title, note, color) => {
+    if (!title) {
+      // ignore empty title
+      return Promise.resolve();
+    }
     const todo = todos.find((todo) => todo.id === id);
     const newTodo = { ...todo, title: title, note: note, color: color };
 
@@ -101,6 +105,10 @@ export const ItemProvider = ({ children }) => {
   };
 
   const updateList = (id, name) => {
+    if (!name) {
+      // ignore empty name
+      return Promise.resolve();
+    }
     const list = lists.find((list) => list.id === id);
     const newList = { ...list, name: name };
 
@@ -140,9 +148,13 @@ export const ItemProvider = ({ children }) => {
     });
   };
 
-  const addTodo = (todo) => {
+  const addTodo = (title) => {
+    if (!title) {
+      // ignore empty title
+      return Promise.resolve();
+    }
     const newTodo = {
-      title: todo,
+      title: title,
       completed: false,
       is_active: true,
       id: uuid_v4(),
@@ -165,7 +177,7 @@ export const ItemProvider = ({ children }) => {
   const addTag = (listId, tag) => {
     if (!tag) {
       // ignore empty tag
-      return;
+      return Promise.resolve();
     }
     const newTag = { id: uuid_v4(), name: tag };
     return TagService.add(listId, newTag).then((addedTag) => {
