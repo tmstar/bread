@@ -9,13 +9,19 @@ import Divider from "@material-ui/core/Divider";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
+import Typography from "@material-ui/core/Typography";
+import Toolbar from "@material-ui/core/Toolbar";
 import InboxIcon from "@material-ui/icons/MoveToInbox";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   list: {
     width: 250,
+    padding: theme.spacing(1),
   },
-});
+  tag: {
+    paddingLeft: theme.spacing(4),
+  },
+}));
 
 function MenuDrawer() {
   const classes = useStyles();
@@ -34,14 +40,13 @@ function MenuDrawer() {
           <ListItemIcon>
             <InboxIcon />
           </ListItemIcon>
-          <ListItemText primary={defaultMainTitle} />
+          <ListItemText primary={<Typography>{defaultMainTitle}</Typography>} />
         </ListItem>
       </List>
-      <Divider />
       <List subheader={<ListSubheader>タグ</ListSubheader>}>
         {uniqueTags.map((tag) => (
-          <ListItem button key={tag.id} onClick={handleListClick(tag)}>
-            <ListItemText primary={tag.name} />
+          <ListItem button key={tag.id} onClick={handleListClick(tag)} className={classes.tag}>
+            <ListItemText primary={<Typography>{tag.name}</Typography>} />
           </ListItem>
         ))}
       </List>
@@ -50,6 +55,8 @@ function MenuDrawer() {
 
   return (
     <SwipeableDrawer anchor="left" open={openMenu} onClose={toggleMenu(false)} onOpen={toggleMenu(true)}>
+      <Toolbar />
+      <Divider />
       {list()}
     </SwipeableDrawer>
   );
