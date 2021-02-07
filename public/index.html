@@ -53,12 +53,23 @@
 
       window.addEventListener('load', () => {
         if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.register("/serviceWorker.js")
-            .then((registration) => {
-              console.log("serviceWorker registed.");
+          navigator.serviceWorker.register("/sw.js")
+            .then((reg) => {
+              console.log("SW registed.", reg);
+              reg.addEventListener('updatefound', () => {
+                console.log("updated SW found.");
+
+                const newWorker = reg.installing;
+                newWorker.addEventListener('statechange', () => {
+                  console.log("new SW state has changed.");
+                });
+              });
             }).catch((error) => {
-              console.warn("serviceWorker error.", error);
+              console.warn("SW error.", error);
             });
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            console.log("controller changed.");
+          });
         }
       });
     </script>
