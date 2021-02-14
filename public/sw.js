@@ -1,8 +1,11 @@
-const cacheName = "bread-v0.2";
+const cacheName = "bread-v0.3";
 const urlsToCache = [
   "/static/js/bundle.js",
+  "/static/js/bundle.js.map",
   "/static/js/0.chunk.js",
+  "/static/js/0.chunk.js.map",
   "/static/js/main.chunk.js",
+  "/static/js/main.chunk.js.map",
   "/favicon.ico",
   "/home",
   "/manifest.json",
