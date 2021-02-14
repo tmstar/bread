@@ -4,7 +4,26 @@ import gql from "graphql-tag";
 import Hasura from "./hasura";
 
 const ALL_LISTS = gql`
-  query AllLists($user_id: String!, $user_email: String!, $tag_id: uuid) {
+  query AllLists($user_id: String!, $user_email: String!) {
+    item_list(
+      order_by: { updated_at: desc }
+      where: { _or: [{ user_id: { _eq: $user_id } }, { item_list_tags: { tag: { name: { _eq: $user_email } } } }] }
+    ) {
+      id
+      updated_at
+      name
+      item_list_tags(where: { tag: { user_id: { _eq: $user_id } } }) {
+        tag {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+
+const TAG_LISTS = gql`
+  query AllLists($user_id: String!, $user_email: String!, $tag_id: uuid!) {
     item_list(
       order_by: { updated_at: desc }
       where: {
@@ -77,7 +96,7 @@ const getAll = async (tagId) => {
   const response = await axios.post(
     `${Hasura.url}`,
     {
-      query: print(ALL_LISTS),
+      query: print(tagId ? TAG_LISTS : ALL_LISTS),
       variables: {
         user_id: Hasura.currentUid,
         user_email: Hasura.currentEmail,
