@@ -68,7 +68,7 @@ const getAll = async () => {
         user_id: Hasura.currentUid,
       },
     },
-    { headers: Hasura.headers }
+    { headers: Hasura.getHeaders() }
   );
   return response.data.data.tag;
 };
@@ -85,7 +85,7 @@ const add = async (listId, newTag) => {
         item_list_id: listId,
       },
     },
-    { headers: Hasura.headers }
+    { headers: Hasura.getHeaders() }
   );
   return response.data.data.insert_tag_one;
 };
@@ -97,7 +97,7 @@ const remove = async (listId, tagId) => {
       query: print(REMOVE_TAG),
       variables: { item_list_id: listId, tag_id: tagId },
     },
-    { headers: Hasura.headers }
+    { headers: Hasura.getHeaders() }
   );
   const removed = response.data.data.delete_item_list_tag_by_pk;
   const hasLists = removed.tag.item_list_tags_aggregate.aggregate.count;
@@ -108,7 +108,7 @@ const remove = async (listId, tagId) => {
         query: print(DELETE_TAG),
         variables: { tag_id: tagId },
       },
-      { headers: Hasura.headers }
+      { headers: Hasura.getHeaders() }
     );
   }
   return removed;

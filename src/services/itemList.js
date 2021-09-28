@@ -103,7 +103,7 @@ const getAll = async (tagId) => {
         ...(tagId && { tag_id: tagId }),
       },
     },
-    { headers: Hasura.headers }
+    { headers: Hasura.getHeaders() }
   );
   return response.data.data.item_list;
 };
@@ -119,7 +119,7 @@ const add = async (newList) => {
         name: newList.name,
       },
     },
-    { headers: Hasura.headers }
+    { headers: Hasura.getHeaders() }
   );
   return response.data.data.insert_item_list_one;
 };
@@ -134,7 +134,7 @@ const update = async (id, newList) => {
         name: newList.name,
       },
     },
-    { headers: Hasura.headers }
+    { headers: Hasura.getHeaders() }
   );
   return response.data.data.update_item_list_by_pk;
 };
@@ -146,7 +146,7 @@ const _delete = async (id) => {
       query: print(DELETE_LIST),
       variables: { id: id },
     },
-    { headers: Hasura.headers }
+    { headers: Hasura.getHeaders() }
   );
   return id;
 };

@@ -97,7 +97,7 @@ const getAll = async (listId) => {
         item_list_id: listId,
       },
     },
-    { headers: Hasura.headers }
+    { headers: Hasura.getHeaders() }
   );
   return response.data.data.item;
 };
@@ -117,7 +117,7 @@ const update = async (id, newTodo, listId) => {
         item_list_id: listId,
       },
     },
-    { headers: Hasura.headers }
+    { headers: Hasura.getHeaders() }
   );
   return { item: response.data.data.update_item_by_pk, itemList: response.data.data.update_item_list_by_pk };
 };
@@ -129,7 +129,7 @@ const _delete = async (id, listId) => {
       query: print(DELETE_TODO),
       variables: { id: id, item_list_id: listId },
     },
-    { headers: Hasura.headers }
+    { headers: Hasura.getHeaders() }
   );
   return { item: response.data.data.delete_item_by_pk, itemList: response.data.data.update_item_list_by_pk };
 };
@@ -141,7 +141,7 @@ const deleteCompleted = async (listId) => {
       query: print(DELETE_COMPLETED_TODOS),
       variables: { item_list_id: listId },
     },
-    { headers: Hasura.headers }
+    { headers: Hasura.getHeaders() }
   );
   return { items: response.data.data.delete_item.returning, itemList: response.data.data.update_item_list_by_pk };
 };
@@ -159,7 +159,7 @@ const add = async (newTodo) => {
         item_list_id: newTodo.item_list_id,
       },
     },
-    { headers: Hasura.headers }
+    { headers: Hasura.getHeaders() }
   );
   return { item: response.data.data.insert_item_one, itemList: response.data.data.update_item_list_by_pk };
 };

@@ -1,9 +1,10 @@
-import { useEffect, useState, createContext, useContext } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
+import { createContext, useEffect, useState } from "react";
 import { v4 as uuid_v4 } from "uuid";
-import TodoService from "../services/todos";
+import Hasura from "../services/hasura";
 import ListService from "../services/itemList";
 import TagService from "../services/tags";
-import { AuthContext } from "./AuthProvider";
+import TodoService from "../services/todos";
 
 export const ItemContext = createContext();
 
@@ -14,7 +15,8 @@ export const ItemProvider = ({ children }) => {
   const [tagsInList, setTagsInList] = useState([]); // tags in a list
   const [selectedTag, setSelectedTag] = useState();
   const [selectedList, setSelectedList] = useState();
-  const { currentUser } = useContext(AuthContext);
+  const { user, isAuthenticated, getIdTokenClaims } = useAuth0();
+  const [idToken, setIdToken] = useState();
 
   const _modifyUpdatedAt = (updatedList) => {
     const list = lists.find((list) => list.id === updatedList.id);
@@ -26,23 +28,33 @@ export const ItemProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    if (!currentUser) {
+    if (!isAuthenticated || !user) {
+      return;
+    }
+    getIdTokenClaims().then((token) => {
+      Hasura.initialize(user, token.__raw);
+      setIdToken(token.__raw);
+    });
+  }, [isAuthenticated, user, getIdTokenClaims]);
+
+  useEffect(() => {
+    if (!idToken) {
       return;
     }
     TagService.getAll().then((tagLists) => {
       setUniqueTags(tagLists);
     });
-  }, [currentUser]);
+  }, [idToken]);
 
   useEffect(() => {
-    if (!currentUser) {
+    if (!idToken) {
       return;
     }
     setLists([]);
     ListService.getAll(selectedTag?.id).then((itemLists) => {
       setLists(itemLists);
     });
-  }, [currentUser, selectedTag]);
+  }, [idToken, selectedTag]);
 
   useEffect(() => {
     if (!selectedList) {
