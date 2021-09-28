@@ -1,13 +1,9 @@
-import React, { useContext } from "react";
+import { withAuthenticationRequired } from "@auth0/auth0-react";
+import React from "react";
 import { Route } from "react-router-dom";
-import { AuthContext } from "../hooks/AuthProvider";
-import Login from "./Login";
 
-const AuthRoute = ({ component: RouteComponent, ...options }) => {
-  const { currentUser } = useContext(AuthContext);
-
-  const Component = currentUser ? RouteComponent : Login;
-  return <Route {...options} component={Component} />;
+const AuthRoute = ({ component, ...options }) => {
+  return <Route {...options} component={withAuthenticationRequired(component, {})} />;
 };
 
 export default AuthRoute;

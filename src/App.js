@@ -4,13 +4,10 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import { MuiThemeProvider, unstable_createMuiStrictModeTheme as createMuiTheme } from "@material-ui/core/styles";
 import React from "react";
 import { ApolloProvider } from "react-apollo";
-import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Switch } from "react-router-dom";
 import "./App.css";
 import AuthRoute from "./components/AuthRoute";
 import Home from "./components/Home";
-import Login from "./components/Login";
-import Logout from "./components/Logout";
-import { AuthProvider } from "./hooks/AuthProvider";
 import { ItemProvider } from "./hooks/ItemProvider";
 
 const darkTheme = createMuiTheme({
@@ -52,7 +49,7 @@ const authMiddleware = new ApolloLink((operation, forward) => {
   operation.setContext(({ headers = {} }) => ({
     headers: {
       ...headers,
-      "x-hasura-admin-secret": process.env.REACT_APP_HASURA_ADMIN_SECRET,
+      // "x-hasura-admin-secret": process.env.REACT_APP_HASURA_ADMIN_SECRET,
     },
   }));
 
@@ -71,18 +68,13 @@ function App() {
       <ApolloProvider client={client}>
         <div className="App">
           <header>
-            <AuthProvider>
-              <ItemProvider>
-                <BrowserRouter>
-                  <Switch>
-                    <Redirect exact path="/" to="/login" />
-                    <Route path="/login" component={Login} />
-                    <Route path="/logout" component={Logout} />
-                    <AuthRoute exact path="/home" component={Home} />
-                  </Switch>
-                </BrowserRouter>
-              </ItemProvider>
-            </AuthProvider>
+            <ItemProvider>
+              <BrowserRouter>
+                <Switch>
+                  <AuthRoute exact path="/" component={Home} />
+                </Switch>
+              </BrowserRouter>
+            </ItemProvider>
           </header>
         </div>
       </ApolloProvider>
