@@ -22,7 +22,7 @@ const add = async (newUser) => {
         name: newUser.name,
       },
     },
-    { headers: Hasura.headers }
+    { headers: Hasura.getHeaders() }
   );
   return response.data.data.insert_users_one;
 };

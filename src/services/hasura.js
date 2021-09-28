@@ -1,21 +1,25 @@
 let uid;
 let email;
+let token;
 
 const url = process.env.REACT_APP_HASURA_SERVER_URL;
+const customTokenUrl = process.env.REACT_APP_HASURA_TOKEN_KEY;
 
-const headers = {
-  "content-type": "application/json",
-  "x-hasura-admin-secret": process.env.REACT_APP_HASURA_ADMIN_SECRET,
+const initialize = (user, idToken) => {
+  uid = user[customTokenUrl]["x-hasura-user-id"];
+  email = user.email;
+  token = idToken;
 };
 
-const initialize = (user) => {
-  uid = user.uid;
-  email = user.email;
+const getHeaders = () => {
+  return {
+    "content-type": "application/json",
+    Authorization: `Bearer ${token}`,
+  };
 };
 
 const gql = {
   url,
-  headers,
   get currentUid() {
     return uid;
   },
@@ -23,5 +27,6 @@ const gql = {
     return email;
   },
   initialize,
+  getHeaders,
 };
 export default gql;
