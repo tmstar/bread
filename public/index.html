@@ -52,6 +52,7 @@
       }
 
       window.addEventListener('load', () => {
+        window.history.pushState({ noBackExitsApp: true }, '');
         if ('serviceWorker' in navigator) {
           navigator.serviceWorker.register("/sw.js")
             .then((reg) => {
@@ -72,6 +73,12 @@
           });
         }
       });
+
+      // window.addEventListener('popstate', (event) => {
+      //   if (event.state && event.state.noBackExitsApp) {
+      //    window.history.pushState({ noBackExitsApp: true }, '')
+      //   }
+      // });
     </script>
   </body>
 </html>
