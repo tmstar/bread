@@ -1,4 +1,4 @@
-const cacheName = "bread-v0.4";
+const cacheName = "bread-v0.5";
 const urlsToCache = [
   "/",
   "/static/js/bundle.js",
