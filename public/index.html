@@ -74,11 +74,11 @@
         }
       });
 
-      // window.addEventListener('popstate', (event) => {
-      //   if (event.state && event.state.noBackExitsApp) {
-      //    window.history.pushState({ noBackExitsApp: true }, '')
-      //   }
-      // });
+      window.addEventListener('popstate', (event) => {
+        if (event.state && event.state.noBackExitsApp) {
+         window.history.pushState({ noBackExitsApp: true }, '')
+        }
+      });
     </script>
   </body>
 </html>
