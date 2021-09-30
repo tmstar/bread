@@ -30,6 +30,10 @@ const CREATE_TODO = gql`
     update_item_list_by_pk(pk_columns: { id: $item_list_id }, _set: { updated_at: "2021-01-01" }) {
       id
       updated_at
+      items {
+        id
+        completed
+      }
     }
   }
 `;
@@ -58,6 +62,10 @@ const UPDATE_TODO = gql`
     update_item_list_by_pk(pk_columns: { id: $item_list_id }, _set: { updated_at: "2021-01-01" }) {
       id
       updated_at
+      items {
+        id
+        completed
+      }
     }
   }
 `;
@@ -70,6 +78,10 @@ const DELETE_TODO = gql`
     update_item_list_by_pk(pk_columns: { id: $item_list_id }, _set: { updated_at: "2021-01-01" }) {
       id
       updated_at
+      items {
+        id
+        completed
+      }
     }
   }
 `;
@@ -84,6 +96,10 @@ const DELETE_COMPLETED_TODOS = gql`
     update_item_list_by_pk(pk_columns: { id: $item_list_id }, _set: { updated_at: "2021-01-01" }) {
       id
       updated_at
+      items {
+        id
+        completed
+      }
     }
   }
 `;
