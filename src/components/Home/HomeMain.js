@@ -1,4 +1,5 @@
 import AppBar from "@material-ui/core/AppBar";
+import Box from "@material-ui/core/Box";
 import Divider from "@material-ui/core/Divider";
 import Drawer from "@material-ui/core/Drawer";
 import IconButton from "@material-ui/core/IconButton";
@@ -11,12 +12,12 @@ import Typography from "@material-ui/core/Typography";
 import MenuIcon from "@material-ui/icons/Menu";
 import PlaylistAddIcon from "@material-ui/icons/PlaylistAdd";
 import clsx from "clsx";
-import React, { useState, useContext } from "react";
-import { ItemContext } from "../../hooks/ItemProvider";
-import TodoView from "../todo/TodoView";
 import moment from "moment";
 import "moment/locale/ja";
+import React, { useContext, useState } from "react";
 import { HomeContext } from "../../context/HomeProvider";
+import { ItemContext } from "../../hooks/ItemProvider";
+import TodoView from "../todo/TodoView";
 
 const drawerWidth = "100%";
 
@@ -92,6 +93,12 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     padding: theme.spacing(0, 1),
   },
+  timeCaptionBox: {
+    marginTop: -22,
+  },
+  timeCaption: {
+    fontSize: "1em",
+  },
 }));
 
 function HomeMain() {
@@ -104,6 +111,7 @@ function HomeMain() {
 
   const listContents = lists.map((list, index) => {
     const rowLength = lists.length;
+    const remainCount = list.items_aggregate?.aggregate.count;
     return (
       <div key={list.id + "-div"}>
         <ListItem
@@ -115,7 +123,20 @@ function HomeMain() {
             setOpen(true);
           }}
         >
-          <ListItemText primary={list.name} secondary={moment(list.updated_at).fromNow()} />
+          <ListItemText
+            primary={list.name}
+            primaryTypographyProps={{
+              color: "primary",
+              fontWeight: "medium",
+              variant: "body1",
+            }}
+            secondary={remainCount ? `あと ${remainCount} 件` : "なし"}
+          />
+          <Box className={classes.timeCaptionBox}>
+            <Typography variant="caption" color="textSecondary" className={classes.timeCaption}>
+              {moment(list.updated_at).fromNow()}
+            </Typography>
+          </Box>
         </ListItem>
         {index + 1 !== rowLength ? <Divider /> : ""}
       </div>
