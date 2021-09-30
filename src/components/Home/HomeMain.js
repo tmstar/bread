@@ -94,7 +94,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(0, 1),
   },
   timeCaptionBox: {
-    marginTop: -23,
+    marginTop: -22,
   },
   timeCaption: {
     fontSize: "1em",
