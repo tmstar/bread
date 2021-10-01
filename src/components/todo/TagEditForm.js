@@ -28,6 +28,7 @@ export default function TagEditForm({ open, setOpen, listId }) {
     event.preventDefault();
     addTag(listId, tag).then(() => {
       setOpen(false);
+      setTag("");
     });
   };
 
