@@ -46,7 +46,7 @@ function MenuDrawer() {
       <List subheader={<ListSubheader>タグ</ListSubheader>}>
         {uniqueTags.map((tag) => (
           <ListItem button key={tag.id} onClick={handleListClick(tag)} className={classes.tag}>
-            <ListItemText primary={<Typography>{tag.name}</Typography>} />
+            <ListItemText primary={<Typography noWrap>{tag.name}</Typography>} />
           </ListItem>
         ))}
       </List>
