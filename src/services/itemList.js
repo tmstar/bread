@@ -86,6 +86,11 @@ const UPDATE_LIST = gql`
 
 const DELETE_LIST = gql`
   mutation DeleteList($id: uuid!) {
+    delete_item_list_tag(where: { item_list_id: { _eq: $id } }) {
+      returning {
+        tag_id
+      }
+    }
     delete_item(where: { item_list_id: { _eq: $id } }) {
       returning {
         id
@@ -145,7 +150,7 @@ const update = async (id, newList) => {
 };
 
 const _delete = async (id) => {
-  await axios.post(
+  const response = await axios.post(
     `${Hasura.url}`,
     {
       query: print(DELETE_LIST),
@@ -153,7 +158,7 @@ const _delete = async (id) => {
     },
     { headers: Hasura.getHeaders() }
   );
-  return id;
+  return response.data.data.delete_item_list_by_pk.id;
 };
 
 const api = { getAll, add, update, delete: _delete };
