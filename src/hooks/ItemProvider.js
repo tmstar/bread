@@ -55,7 +55,7 @@ export const ItemProvider = ({ children }) => {
     TagService.getAll().then((tagLists) => {
       setUniqueTags(tagLists);
     });
-  }, [idToken]);
+  }, [idToken, tagsInList]);
 
   useEffect(() => {
     if (!idToken) {
