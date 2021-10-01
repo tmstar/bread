@@ -190,20 +190,29 @@ export const ItemProvider = ({ children }) => {
 
   const addList = (listName) => {
     const newItemList = { name: listName, id: uuid_v4() };
-    return ListService.add(newItemList).then((addedList) => {
-      addedList.items_aggregate = { aggregate: { count: 0 } };
-      setLists([addedList].concat(lists));
-      setSelectedList(addedList);
-    });
+    return ListService.add(newItemList)
+      .then((addedList) => {
+        addedList.items_aggregate = { aggregate: { count: 0 } };
+        setLists([addedList].concat(lists));
+        setSelectedList(addedList);
+
+        if (selectedTag?.name) {
+          const newTag = { id: uuid_v4(), name: selectedTag.name };
+          return TagService.add(addedList.id, newTag);
+        }
+      })
+      .then((addedTag) => {
+        setTagsInList(addedTag ? [addedTag] : []);
+      });
   };
 
-  const addTag = (listId, tag) => {
-    if (!tag) {
+  const addTag = (tagName) => {
+    if (!tagName) {
       // ignore empty tag
       return Promise.resolve();
     }
-    const newTag = { id: uuid_v4(), name: tag };
-    return TagService.add(listId, newTag).then((addedTag) => {
+    const newTag = { id: uuid_v4(), name: tagName };
+    return TagService.add(selectedList.id, newTag).then((addedTag) => {
       if (!tagsInList.some((tag) => tag.name === addedTag.name)) {
         setTagsInList(tagsInList.concat([addedTag]));
       }

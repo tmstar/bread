@@ -205,7 +205,7 @@ function TodoView({ setOpen, title, setTitle }) {
           </IconButton>
           {tagList}
         </div>
-        <TagEditForm listId={selectedList.id} open={bottomDrawerOpen} setOpen={setBottomDrawerOpen} />
+        <TagEditForm open={bottomDrawerOpen} setOpen={setBottomDrawerOpen} />
         <TodoList todos={filteredTodos} hideSwitch={filter !== "all"} />
         <AlertDialog
           open={alertOpen}

@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
   tag: {},
 }));
 
-export default function TagEditForm({ open, setOpen, listId }) {
+export default function TagEditForm({ open, setOpen }) {
   const classes = useStyles();
   const { addTag } = useContext(ItemContext);
 
@@ -26,7 +26,7 @@ export default function TagEditForm({ open, setOpen, listId }) {
 
   const handleTagSubmit = (event) => {
     event.preventDefault();
-    addTag(listId, tag).then(() => {
+    addTag(tag).then(() => {
       setOpen(false);
       setTag("");
     });
