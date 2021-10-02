@@ -173,15 +173,26 @@ export const ItemProvider = ({ children }) => {
   };
 
   const removeTag = (tagId) => {
-    TagService.remove(selectedList.id, tagId).then((removedTag) => {
-      const newTags = tagsInList.filter((tag) => tag.id !== removedTag.tag_id);
-      setTagsInList(newTags);
+    TagService.remove(selectedList.id, tagId)
+      .then((removedTag) => {
+        const newTags = tagsInList.filter((tag) => tag.id !== removedTag.tag_id);
+        setTagsInList(newTags);
 
-      setLists([]);
-      ListService.getAll(selectedTag?.id).then((itemLists) => {
+        const hasLists = removedTag.tag.item_list_tags_aggregate.aggregate.count;
+        if (!hasLists) {
+          return TagService.delete(tagId);
+        }
+      })
+      .then((deleteTag) => {
+        if (deleteTag) {
+          const newTags = uniqueTags.filter((tag) => tag.id !== deleteTag.id).sort((a, b) => a.name.localeCompare(b.name));
+          setUniqueTags(newTags);
+        }
+        return ListService.getAll(selectedTag?.id);
+      })
+      .then((itemLists) => {
         setLists(itemLists);
       });
-    });
   };
 
   const addTodo = (title) => {
