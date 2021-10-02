@@ -59,6 +59,16 @@ const DELETE_TAG = gql`
   }
 `;
 
+const DELETE_TAGS = gql`
+  mutation DeleteTags($tag_ids: [uuid!]) {
+    delete_tag(where: { id: { _in: $tag_ids } }) {
+      returning {
+        id
+      }
+    }
+  }
+`;
+
 const getAll = async () => {
   const response = await axios.post(
     `${Hasura.url}`,
@@ -114,5 +124,17 @@ const remove = async (listId, tagId) => {
   return removed;
 };
 
-const api = { getAll, add, remove };
+const deleteAll = async (tagIds) => {
+  const response = await axios.post(
+    `${Hasura.url}`,
+    {
+      query: print(DELETE_TAGS),
+      variables: { tag_ids: tagIds },
+    },
+    { headers: Hasura.getHeaders() }
+  );
+  return response.data.data.delete_tag.returning;
+};
+
+const api = { getAll, add, remove, deleteAll };
 export default api;

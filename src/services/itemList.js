@@ -89,6 +89,13 @@ const DELETE_LIST = gql`
     delete_item_list_tag(where: { item_list_id: { _eq: $id } }) {
       returning {
         tag_id
+        tag {
+          item_list_tags_aggregate {
+            aggregate {
+              count
+            }
+          }
+        }
       }
     }
     delete_item(where: { item_list_id: { _eq: $id } }) {
@@ -158,7 +165,8 @@ const _delete = async (id) => {
     },
     { headers: Hasura.getHeaders() }
   );
-  return response.data.data.delete_item_list_by_pk.id;
+  const data = response.data.data;
+  return { itemListId: data.delete_item_list_by_pk.id, tags: data.delete_item_list_tag.returning };
 };
 
 const api = { getAll, add, update, delete: _delete };
