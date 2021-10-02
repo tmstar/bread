@@ -1,25 +1,37 @@
-import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
-import React, { useContext } from "react";
-import { HomeContext } from "../../context/HomeProvider";
-import { ItemContext } from "../../hooks/ItemProvider";
-import { makeStyles } from "@material-ui/core/styles";
-import List from "@material-ui/core/List";
-import ListSubheader from "@material-ui/core/ListSubheader";
 import Divider from "@material-ui/core/Divider";
+import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import Typography from "@material-ui/core/Typography";
+import { makeStyles } from "@material-ui/core/styles";
+import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
 import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
+import LocalOfferIcon from "@material-ui/icons/LocalOffer";
 import InboxIcon from "@material-ui/icons/MoveToInbox";
+import React, { useContext } from "react";
+import { HomeContext } from "../../context/HomeProvider";
+import { ItemContext } from "../../hooks/ItemProvider";
 
 const useStyles = makeStyles((theme) => ({
+  title: {
+    paddingLeft: theme.spacing(4.7),
+  },
   list: {
     width: 250,
-    padding: theme.spacing(1),
+  },
+  listItemTop: {
+    paddingBottom: theme.spacing(1),
+  },
+  listItem: {
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
+  },
+  menu: {
+    marginLeft: theme.spacing(-2.5),
   },
   tag: {
-    paddingLeft: theme.spacing(4),
+    paddingLeft: theme.spacing(6.9),
   },
 }));
 
@@ -36,17 +48,34 @@ function MenuDrawer() {
   const list = () => (
     <div className={classes.list} onClick={toggleMenu(false)}>
       <List>
-        <ListItem button onClick={handleListClick([])}>
+        <ListItem button onClick={handleListClick([])} className={classes.listItemTop}>
           <ListItemIcon>
             <InboxIcon />
           </ListItemIcon>
-          <ListItemText primary={<Typography>{defaultMainTitle}</Typography>} />
+          <ListItemText
+            className={classes.menu}
+            primary={defaultMainTitle}
+            primaryTypographyProps={{
+              variant: "body1",
+            }}
+          />
         </ListItem>
-      </List>
-      <List subheader={<ListSubheader>タグ</ListSubheader>}>
+        <Divider />
+        <ListItem className={classes.listItem}>
+          <ListItemIcon>
+            <LocalOfferIcon />
+          </ListItemIcon>
+          <ListItemText
+            className={classes.menu}
+            primary={"タグ"}
+            primaryTypographyProps={{
+              variant: "body1",
+            }}
+          />
+        </ListItem>
         {uniqueTags.map((tag) => (
           <ListItem button key={tag.id} onClick={handleListClick(tag)} className={classes.tag}>
-            <ListItemText primary={<Typography noWrap>{tag.name}</Typography>} />
+            <ListItemText primary={tag.name} primaryTypographyProps={{ noWrap: true }} />
           </ListItem>
         ))}
       </List>
@@ -55,7 +84,11 @@ function MenuDrawer() {
 
   return (
     <SwipeableDrawer anchor="left" open={openMenu} onClose={toggleMenu(false)} onOpen={toggleMenu(true)}>
-      <Toolbar />
+      <Toolbar>
+        <Typography variant="body1" color="textSecondary" className={classes.title}>
+          {"Bread"}
+        </Typography>
+      </Toolbar>
       <Divider />
       {list()}
     </SwipeableDrawer>

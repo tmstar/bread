@@ -230,6 +230,7 @@ export const ItemProvider = ({ children }) => {
 
   const addList = (listName) => {
     setTagsInList([]);
+    setTodos([]);
     const newItemList = { name: listName, id: uuid_v4() };
     return ListService.add(newItemList).then((addedList) => {
       addedList.items_aggregate = { aggregate: { count: 0 } };
