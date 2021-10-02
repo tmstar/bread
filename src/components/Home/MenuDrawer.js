@@ -20,6 +20,9 @@ const useStyles = makeStyles((theme) => ({
   list: {
     width: 250,
   },
+  listItemTop: {
+    paddingBottom: theme.spacing(1),
+  },
   listItem: {
     paddingTop: theme.spacing(1),
     paddingBottom: theme.spacing(1),
@@ -45,7 +48,7 @@ function MenuDrawer() {
   const list = () => (
     <div className={classes.list} onClick={toggleMenu(false)}>
       <List>
-        <ListItem button onClick={handleListClick([])} className={classes.listItem}>
+        <ListItem button onClick={handleListClick([])} className={classes.listItemTop}>
           <ListItemIcon>
             <InboxIcon />
           </ListItemIcon>
@@ -82,7 +85,7 @@ function MenuDrawer() {
   return (
     <SwipeableDrawer anchor="left" open={openMenu} onClose={toggleMenu(false)} onOpen={toggleMenu(true)}>
       <Toolbar>
-        <Typography variant="h5" color="textSecondary" className={classes.title}>
+        <Typography variant="body1" color="textSecondary" className={classes.title}>
           {"Bread"}
         </Typography>
       </Toolbar>
