@@ -38,6 +38,22 @@ export const ItemProvider = ({ children }) => {
     setLists(newLists);
   };
 
+  const _addTag = (listId, tagName, isReplaced) => {
+    console.log("check!", tagsInList);
+    const newTag = { id: uuid_v4(), name: tagName };
+    return TagService.add(listId, newTag).then((addedTag) => {
+      if (isReplaced) {
+        setTagsInList([addedTag]);
+      } else if (!tagsInList.some((tag) => tag.name === addedTag.name)) {
+        setTagsInList(tagsInList.concat([addedTag]));
+      }
+      if (!uniqueTags.some((tag) => tag.name === addedTag.name)) {
+        const newTags = uniqueTags.concat([addedTag]).sort((a, b) => a.name.localeCompare(b.name));
+        setUniqueTags(newTags);
+      }
+    });
+  };
+
   useEffect(() => {
     if (!isAuthenticated || !user) {
       return;
@@ -55,7 +71,7 @@ export const ItemProvider = ({ children }) => {
     TagService.getAll().then((tagLists) => {
       setUniqueTags(tagLists);
     });
-  }, [idToken, tagsInList]);
+  }, [idToken]);
 
   useEffect(() => {
     if (!idToken) {
@@ -157,17 +173,41 @@ export const ItemProvider = ({ children }) => {
   };
 
   const deleteList = (id) => {
-    ListService.delete(id).then((deletedListId) => {
-      const newLists = lists.filter((list) => list.id !== deletedListId);
+    ListService.delete(id).then((result) => {
+      const newLists = lists.filter((list) => list.id !== result.itemListId);
       setLists(newLists);
+
+      const unUsedTagIds = result.tags.filter((t) => !t.tag.item_list_tags_aggregate.aggregate.count).map((t) => t.tag_id);
+      if (!unUsedTagIds.length) {
+        return;
+      }
+      TagService.deleteAll(unUsedTagIds).then((deletedTags) => {
+        const newTags = uniqueTags.filter((tag) => !deletedTags.some((t) => t.id === tag.id));
+        setUniqueTags(newTags);
+      });
     });
   };
 
   const removeTag = (tagId) => {
-    TagService.remove(selectedList.id, tagId).then((removedTag) => {
-      const newTags = tagsInList.filter((tag) => tag.id !== removedTag.tag_id);
-      setTagsInList(newTags);
-    });
+    TagService.remove(selectedList.id, tagId)
+      .then((removedTag) => {
+        const newTags = tagsInList.filter((tag) => tag.id !== removedTag.tag_id);
+        setTagsInList(newTags);
+
+        const hasLists = removedTag.tag.item_list_tags_aggregate.aggregate.count;
+        if (!hasLists) {
+          return TagService.delete(tagId);
+        }
+      })
+      .then((deleteTag) => {
+        if (deleteTag) {
+          const newTags = uniqueTags.filter((tag) => tag.id !== deleteTag.id).sort((a, b) => a.name.localeCompare(b.name));
+          setUniqueTags(newTags);
+        }
+        return ListService.getAll(selectedTag?.id).then((itemLists) => {
+          setLists(itemLists);
+        });
+      });
   };
 
   const addTodo = (title) => {
@@ -189,25 +229,25 @@ export const ItemProvider = ({ children }) => {
   };
 
   const addList = (listName) => {
+    setTagsInList([]);
     const newItemList = { name: listName, id: uuid_v4() };
     return ListService.add(newItemList).then((addedList) => {
       addedList.items_aggregate = { aggregate: { count: 0 } };
       setLists([addedList].concat(lists));
       setSelectedList(addedList);
+
+      if (selectedTag?.name) {
+        _addTag(addedList.id, selectedTag.name, true);
+      }
     });
   };
 
-  const addTag = (listId, tag) => {
-    if (!tag) {
+  const addTag = (tagName) => {
+    if (!tagName) {
       // ignore empty tag
       return Promise.resolve();
     }
-    const newTag = { id: uuid_v4(), name: tag };
-    return TagService.add(listId, newTag).then((addedTag) => {
-      if (!tagsInList.some((tag) => tag.name === addedTag.name)) {
-        setTagsInList(tagsInList.concat([addedTag]));
-      }
-    });
+    return _addTag(selectedList.id, tagName);
   };
 
   return (
