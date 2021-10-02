@@ -38,6 +38,22 @@ export const ItemProvider = ({ children }) => {
     setLists(newLists);
   };
 
+  const _addTag = (listId, tagName, isReplaced) => {
+    console.log("check!", tagsInList);
+    const newTag = { id: uuid_v4(), name: tagName };
+    return TagService.add(listId, newTag).then((addedTag) => {
+      if (isReplaced) {
+        setTagsInList([addedTag]);
+      } else if (!tagsInList.some((tag) => tag.name === addedTag.name)) {
+        setTagsInList(tagsInList.concat([addedTag]));
+      }
+      if (!uniqueTags.some((tag) => tag.name === addedTag.name)) {
+        const newTags = uniqueTags.concat([addedTag]).sort((a, b) => a.name.localeCompare(b.name));
+        setUniqueTags(newTags);
+      }
+    });
+  };
+
   useEffect(() => {
     if (!isAuthenticated || !user) {
       return;
@@ -166,8 +182,8 @@ export const ItemProvider = ({ children }) => {
         return;
       }
       TagService.deleteAll(unUsedTagIds).then((deletedTags) => {
-        const newTags = tagsInList.filter((tag) => !deletedTags.some((t) => t.id === tag.id));
-        setTagsInList(newTags);
+        const newTags = uniqueTags.filter((tag) => !deletedTags.some((t) => t.id === tag.id));
+        setUniqueTags(newTags);
       });
     });
   };
@@ -188,10 +204,9 @@ export const ItemProvider = ({ children }) => {
           const newTags = uniqueTags.filter((tag) => tag.id !== deleteTag.id).sort((a, b) => a.name.localeCompare(b.name));
           setUniqueTags(newTags);
         }
-        return ListService.getAll(selectedTag?.id);
-      })
-      .then((itemLists) => {
-        setLists(itemLists);
+        return ListService.getAll(selectedTag?.id).then((itemLists) => {
+          setLists(itemLists);
+        });
       });
   };
 
@@ -214,21 +229,17 @@ export const ItemProvider = ({ children }) => {
   };
 
   const addList = (listName) => {
+    setTagsInList([]);
     const newItemList = { name: listName, id: uuid_v4() };
-    return ListService.add(newItemList)
-      .then((addedList) => {
-        addedList.items_aggregate = { aggregate: { count: 0 } };
-        setLists([addedList].concat(lists));
-        setSelectedList(addedList);
+    return ListService.add(newItemList).then((addedList) => {
+      addedList.items_aggregate = { aggregate: { count: 0 } };
+      setLists([addedList].concat(lists));
+      setSelectedList(addedList);
 
-        if (selectedTag?.name) {
-          const newTag = { id: uuid_v4(), name: selectedTag.name };
-          return TagService.add(addedList.id, newTag);
-        }
-      })
-      .then((addedTag) => {
-        setTagsInList(addedTag ? [addedTag] : []);
-      });
+      if (selectedTag?.name) {
+        _addTag(addedList.id, selectedTag.name, true);
+      }
+    });
   };
 
   const addTag = (tagName) => {
@@ -236,14 +247,7 @@ export const ItemProvider = ({ children }) => {
       // ignore empty tag
       return Promise.resolve();
     }
-    const newTag = { id: uuid_v4(), name: tagName };
-    return TagService.add(selectedList.id, newTag).then((addedTag) => {
-      if (!tagsInList.some((tag) => tag.name === addedTag.name)) {
-        setTagsInList(tagsInList.concat([addedTag]));
-      }
-      const newTags = uniqueTags.concat([addedTag]).sort((a, b) => a.name.localeCompare(b.name));
-      setUniqueTags(newTags);
-    });
+    return _addTag(selectedList.id, tagName);
   };
 
   return (
