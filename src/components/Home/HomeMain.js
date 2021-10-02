@@ -106,8 +106,14 @@ function HomeMain() {
   const [open, setOpen] = useState(false);
   const { lists, addList, selectList } = useContext(ItemContext);
   const { toggleMenu, mainTitle } = useContext(HomeContext);
-
   const [title, setTitle] = useState();
+
+  const handleNewList = () => () => {
+    const newName = moment().format("M/D");
+    setTitle(newName);
+    setOpen(true);
+    addList(newName);
+  };
 
   const listContents = lists.map((list, index) => {
     const rowLength = lists.length;
@@ -154,16 +160,7 @@ function HomeMain() {
             {mainTitle}
           </Typography>
           <div className={classes.drawerHeader}>
-            <IconButton
-              edge="end"
-              onClick={() => {
-                const newName = moment().format("M/D");
-                addList(newName).then(() => {
-                  setTitle(newName);
-                  setOpen(true);
-                });
-              }}
-            >
+            <IconButton edge="end" onClick={handleNewList()}>
               <PlaylistAddIcon />
             </IconButton>
           </div>
