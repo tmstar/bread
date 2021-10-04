@@ -33,6 +33,9 @@ const useStyles = makeStyles((theme) => ({
   text: {
     paddingRight: 60,
   },
+  label: {
+    marginRight: theme.spacing(4),
+  },
   speedDial: {
     position: "fixed",
     bottom: theme.spacing(2),
@@ -121,7 +124,7 @@ function TodoList({ todos, hideSwitch }) {
               {index + 1}
             </Typography>
           </ListItemIcon>
-          <ListItemText primary={todo.title} secondary={todo.note} />
+          <ListItemText primary={todo.title} secondary={todo.note} className={hideSwitch ? "" : classes.label} />
           {hideSwitch ? "" : listSecondaryAction(todo)}
         </ListItem>
         {index + 1 !== rowLength ? <Divider /> : ""}
