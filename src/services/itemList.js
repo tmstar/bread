@@ -47,6 +47,11 @@ const TAG_LISTS = gql`
           name
         }
       }
+      items_aggregate(where: { completed: { _eq: false } }) {
+        aggregate {
+          count
+        }
+      }
     }
   }
 `;
