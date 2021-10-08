@@ -1,6 +1,10 @@
-[{
-        "relation": ["delegate_permission/common.handle_all_urls"],
-        "target" : { "namespace": "android_app", "package_name": "com.bread.android",
-                     "sha256_cert_fingerprints": ["95:B7:64:B8:43:09:88:53:47:BB:DA:30:E1:C7:41:C4:9A:67:D9:07:05:52:9F:A2:FC:B3:EF:3D:CC:4A:D8:CF"] }
-      }
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.bread.android",
+      "sha256_cert_fingerprints": ["CA:8F:05:12:90:94:42:97:DD:EF:6F:36:04:2C:89:8A:D9:D9:8C:2E:5F:54:CC:06:5B:1C:1F:77:1B:4D:7D:C2"]
+    }
+  }
 ]
