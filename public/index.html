@@ -47,11 +47,6 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
     <script>
-      const host = "afternoon-meadow-84782.herokuapp.com";
-      if(window.location.host === host && window.location.protocol !== "https:") {
-        window.location.protocol = "https";
-      }
-
       window.addEventListener('load', () => {
         if ('serviceWorker' in navigator) {
           navigator.serviceWorker.register("/sw.js")
