@@ -1,12 +1,13 @@
-import Button from "@material-ui/core/Button";
-import { amber, teal, yellow } from "@material-ui/core/colors";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import InputBase from "@material-ui/core/InputBase";
-import Radio from "@material-ui/core/Radio";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
+import Button from "@mui/material/Button";
+import { amber, teal, yellow } from "@mui/material/colors";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import InputBase from "@mui/material/InputBase";
+import Radio from "@mui/material/Radio";
+import makeStyles from '@mui/styles/makeStyles';
+import withStyles from '@mui/styles/withStyles';
+import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import React, { useContext, useEffect, useState } from "react";
 import { ItemContext } from "../../hooks/ItemProvider";
 

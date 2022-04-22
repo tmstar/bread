@@ -1,16 +1,16 @@
-import AppBar from "@material-ui/core/AppBar";
-import Box from "@material-ui/core/Box";
-import Divider from "@material-ui/core/Divider";
-import Drawer from "@material-ui/core/Drawer";
-import IconButton from "@material-ui/core/IconButton";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import { makeStyles } from "@material-ui/core/styles";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import MenuIcon from "@material-ui/icons/Menu";
-import PlaylistAddIcon from "@material-ui/icons/PlaylistAdd";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import Divider from "@mui/material/Divider";
+import Drawer from "@mui/material/Drawer";
+import IconButton from "@mui/material/IconButton";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import makeStyles from '@mui/styles/makeStyles';
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import MenuIcon from "@mui/icons-material/Menu";
+import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 import clsx from "clsx";
 import moment from "moment";
 import "moment/locale/ja";
@@ -149,34 +149,37 @@ function HomeMain() {
     );
   });
 
-  return (
-    <>
-      <AppBar position="fixed" className={clsx(classes.appBar, { [classes.appBarShift]: open })}>
-        <Toolbar>
-          <IconButton color="inherit" edge="start" className={classes.menuButton} onClick={toggleMenu(true)}>
-            <MenuIcon />
+  return <>
+    <AppBar position="fixed" className={clsx(classes.appBar, { [classes.appBarShift]: open })}>
+      <Toolbar>
+        <IconButton
+          color="inherit"
+          edge="start"
+          className={classes.menuButton}
+          onClick={toggleMenu(true)}
+          size="large">
+          <MenuIcon />
+        </IconButton>
+        <Typography className={classes.title} variant="h6" noWrap>
+          {mainTitle}
+        </Typography>
+        <div className={classes.drawerHeader}>
+          <IconButton edge="end" onClick={handleNewList()} size="large">
+            <PlaylistAddIcon />
           </IconButton>
-          <Typography className={classes.title} variant="h6" noWrap>
-            {mainTitle}
-          </Typography>
-          <div className={classes.drawerHeader}>
-            <IconButton edge="end" onClick={handleNewList()}>
-              <PlaylistAddIcon />
-            </IconButton>
-          </div>
-        </Toolbar>
-      </AppBar>
-      <main className={clsx(classes.content, { [classes.contentShift]: open })}>
-        <div className={classes.list}>
-          <Toolbar />
-          <List>{listContents}</List>
         </div>
-      </main>
-      <Drawer className={classes.drawer} anchor="right" open={open} classes={{ paper: classes.drawerPaper }}>
-        <TodoView setOpen={setOpen} title={title} setTitle={setTitle} />
-      </Drawer>
-    </>
-  );
+      </Toolbar>
+    </AppBar>
+    <main className={clsx(classes.content, { [classes.contentShift]: open })}>
+      <div className={classes.list}>
+        <Toolbar />
+        <List>{listContents}</List>
+      </div>
+    </main>
+    <Drawer className={classes.drawer} anchor="right" open={open} classes={{ paper: classes.drawerPaper }}>
+      <TodoView setOpen={setOpen} title={title} setTitle={setTitle} />
+    </Drawer>
+  </>;
 }
 
 export default HomeMain;

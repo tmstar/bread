@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
-import InputBase from "@material-ui/core/InputBase";
-import Button from "@material-ui/core/Button";
-import { makeStyles } from "@material-ui/core/styles";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
+import SwipeableDrawer from "@mui/material/SwipeableDrawer";
+import InputBase from "@mui/material/InputBase";
+import Button from "@mui/material/Button";
+import makeStyles from '@mui/styles/makeStyles';
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
 import { ItemContext } from "../../hooks/ItemProvider";
 import { useContext } from "react";
 

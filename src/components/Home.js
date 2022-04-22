@@ -1,12 +1,12 @@
-import { makeStyles } from "@material-ui/core/styles";
-import React from "react";
-import MenuDrawer from "./Home/MenuDrawer";
-import HomeMain from "./Home/HomeMain";
-import { HomeProvider } from "../context/HomeProvider";
+import makeStyles from '@mui/styles/makeStyles';
+import React from 'react';
+import MenuDrawer from './Home/MenuDrawer';
+import HomeMain from './Home/HomeMain';
+import { HomeProvider } from '../context/HomeProvider';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: "flex",
+    display: 'flex',
   },
 }));
 
