@@ -1,45 +1,45 @@
-import AppBar from "@mui/material/AppBar";
-import IconButton from "@mui/material/IconButton";
-import InputBase from "@mui/material/InputBase";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
+import AppBar from '@mui/material/AppBar';
+import IconButton from '@mui/material/IconButton';
+import InputBase from '@mui/material/InputBase';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import makeStyles from '@mui/styles/makeStyles';
-import Toolbar from "@mui/material/Toolbar";
-import AllInboxIcon from "@mui/icons-material/AllInbox";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import DeleteIcon from "@mui/icons-material/Delete";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import ListAltIcon from "@mui/icons-material/ListAlt";
-import MoreIcon from "@mui/icons-material/MoreVert";
-import React, { useMemo, useState, useContext } from "react";
-import AlertDialog from "./AlertDialog";
-import TodoList from "./TodoList";
-import TagEditForm from "./TagEditForm";
-import LocalOfferIcon from "@mui/icons-material/LocalOffer";
-import Chip from "@mui/material/Chip";
-import { ItemContext } from "../../hooks/ItemProvider";
+import Toolbar from '@mui/material/Toolbar';
+import AllInboxIcon from '@mui/icons-material/AllInbox';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import ListAltIcon from '@mui/icons-material/ListAlt';
+import MoreIcon from '@mui/icons-material/MoreVert';
+import React, { useMemo, useState, useContext } from 'react';
+import AlertDialog from './AlertDialog';
+import TodoList from './TodoList';
+import TagEditForm from './TagEditForm';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import Chip from '@mui/material/Chip';
+import { ItemContext } from '../../hooks/ItemProvider';
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
     color: theme.palette.text.primary,
     backgroundColor: theme.palette.background.default,
-    boxShadow: "none",
-    borderBottom: "1px solid",
+    boxShadow: 'none',
+    borderBottom: '1px solid',
     borderBottomColor: theme.palette.divider,
   },
   menuButton: {
     marginRight: theme.spacing(2),
   },
   sectionMobile: {
-    marginLeft: "auto",
+    marginLeft: 'auto',
   },
   drawerHeader: {
-    display: "flex",
-    alignItems: "center",
+    display: 'flex',
+    alignItems: 'center',
     padding: theme.spacing(0, 1),
     // necessary for content to be below app bar
     ...theme.mixins.toolbar,
-    justifyContent: "flex-start",
+    justifyContent: 'flex-start',
   },
   title: {
     flexGrow: 1,
@@ -53,8 +53,8 @@ function TodoView({ setOpen, title, setTitle }) {
   const classes = useStyles();
   const { todos, selectedList, tags, updateList, deleteCompletedTodos, deleteList, removeTag } = useContext(ItemContext);
 
-  const [filter, setFilter] = useState("active");
-  const isListEdit = filter === "all";
+  const [filter, setFilter] = useState('active');
+  const isListEdit = filter === 'all';
 
   const [bottomDrawerOpen, setBottomDrawerOpen] = useState(false);
 
@@ -94,38 +94,38 @@ function TodoView({ setOpen, title, setTitle }) {
 
   const filteredTodos = useMemo(() => {
     switch (filter) {
-      case "active":
+      case 'active':
         return todos.filter((todo) => todo.is_active);
-      case "inProgress":
+      case 'inProgress':
         return todos.filter((todo) => todo.is_active && !todo.completed);
-      case "completed":
+      case 'completed':
         return todos.filter((todo) => todo.is_active && todo.completed);
-      case "all":
+      case 'all':
       default:
         return todos;
     }
   }, [todos, filter]);
 
-  const mobileMenuId = "primary-search-account-menu-mobile";
+  const mobileMenuId = 'primary-search-account-menu-mobile';
   const renderMobileMenu = (
     <Menu
       anchorEl={mobileMoreAnchorEl}
-      anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       id={mobileMenuId}
       keepMounted
-      transformOrigin={{ vertical: "top", horizontal: "right" }}
+      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       open={isMobileMenuOpen}
       onClose={() => setMobileMoreAnchorEl(null)}
     >
       {isListEdit ? (
-        <MenuItem onClick={() => handleFilter("active")}>
+        <MenuItem onClick={() => handleFilter('active')}>
           <IconButton aria-label="show active" color="inherit" size="large">
             <AllInboxIcon />
           </IconButton>
           <p>リストの編集を終了</p>
         </MenuItem>
       ) : (
-        <MenuItem onClick={() => handleFilter("all")}>
+        <MenuItem onClick={() => handleFilter('all')}>
           <IconButton aria-label="show all" color="inherit" size="large">
             <ListAltIcon />
           </IconButton>
@@ -160,67 +160,72 @@ function TodoView({ setOpen, title, setTitle }) {
     return <Chip key={tag.id} variant="outlined" size="small" label={tag.name} onDelete={() => handleChipDelete(tag.id)} />;
   });
 
-  return <>
-    <AppBar position="fixed" className={classes.appBar}>
-      <Toolbar>
-        <IconButton
-          color="inherit"
-          aria-label="open drawer"
-          onClick={handleDrawerClose}
-          edge="start"
-          className={classes.menuButton}
-          size="large">
-          <ChevronRightIcon />
-        </IconButton>
-        <form onSubmit={handleSubmit}>
-          <InputBase
-            className={classes.title}
-            value={title}
-            placeholder="リストのタイトル"
-            inputProps={{ "aria-label": "edit title" }}
-            onChange={(event) => setTitle(event.target.value)}
-          />
-        </form>
-        <div className={classes.sectionMobile}>
+  return (
+    <>
+      <AppBar position="fixed" className={classes.appBar}>
+        <Toolbar>
           <IconButton
-            aria-label="show more"
-            aria-controls={mobileMenuId}
-            aria-haspopup="true"
-            onClick={handleMobileMenuOpen}
             color="inherit"
-            edge="end"
-            size="large">
-            <MoreIcon />
+            aria-label="open drawer"
+            onClick={handleDrawerClose}
+            edge="start"
+            className={classes.menuButton}
+            size="large"
+          >
+            <ChevronRightIcon />
           </IconButton>
+          <form onSubmit={handleSubmit}>
+            <InputBase
+              className={classes.title}
+              value={title}
+              placeholder="リストのタイトル"
+              inputProps={{ 'aria-label': 'edit title' }}
+              onChange={(event) => setTitle(event.target.value)}
+            />
+          </form>
+          <div className={classes.sectionMobile}>
+            <IconButton
+              aria-label="show more"
+              aria-controls={mobileMenuId}
+              aria-haspopup="true"
+              onClick={handleMobileMenuOpen}
+              color="inherit"
+              edge="end"
+              size="large"
+            >
+              <MoreIcon />
+            </IconButton>
+          </div>
+        </Toolbar>
+      </AppBar>
+      {renderMobileMenu}
+      <div className={classes.drawerHeader} />
+      <div>
+        <div className={classes.tagList}>
+          <IconButton
+            aria-label="add tag"
+            onClick={() => {
+              setBottomDrawerOpen(true);
+            }}
+            color="inherit"
+            size="large"
+          >
+            <LocalOfferIcon fontSize="small" />
+          </IconButton>
+          {tagList}
         </div>
-      </Toolbar>
-    </AppBar>
-    {renderMobileMenu}
-    <div className={classes.drawerHeader} />
-    <div>
-      <div className={classes.tagList}>
-        <IconButton
-          aria-label="add tag"
-          onClick={() => {
-            setBottomDrawerOpen(true);
-          }}
-          color="inherit"
-          size="large">
-          <LocalOfferIcon fontSize="small" />
-        </IconButton>
-        {tagList}
+        <TagEditForm open={bottomDrawerOpen} setOpen={setBottomDrawerOpen} />
+        <TodoList todos={filteredTodos} hideSwitch={filter !== 'all'} />
+        <AlertDialog
+          open={alertOpen}
+          setOpen={setAlertOpen}
+          title="リストの削除"
+          msg="リスト内にあるチェック項目はすべて削除されます。よろしいですか。"
+          handleOk={handleDeleteListOk}
+        />
       </div>
-      <TagEditForm open={bottomDrawerOpen} setOpen={setBottomDrawerOpen} />
-      <TodoList todos={filteredTodos} hideSwitch={filter !== "all"} />
-      <AlertDialog
-        open={alertOpen}
-        setOpen={setAlertOpen}
-        title="リストの削除"
-        msg="リスト内にあるチェック項目はすべて削除されます。よろしいですか。"
-        handleOk={handleDeleteListOk}
-      />
-    </div>
-  </>;
+    </>
+  );
 }
 
 export default TodoView;
