@@ -1,37 +1,37 @@
-import AppBar from "@material-ui/core/AppBar";
-import Box from "@material-ui/core/Box";
-import Divider from "@material-ui/core/Divider";
-import Drawer from "@material-ui/core/Drawer";
-import IconButton from "@material-ui/core/IconButton";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import { makeStyles } from "@material-ui/core/styles";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import MenuIcon from "@material-ui/icons/Menu";
-import PlaylistAddIcon from "@material-ui/icons/PlaylistAdd";
-import clsx from "clsx";
-import moment from "moment";
-import "moment/locale/ja";
-import React, { useContext, useState } from "react";
-import { HomeContext } from "../../context/HomeProvider";
-import { ItemContext } from "../../hooks/ItemProvider";
-import TodoView from "../todo/TodoView";
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import Drawer from '@mui/material/Drawer';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import makeStyles from '@mui/styles/makeStyles';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import MenuIcon from '@mui/icons-material/Menu';
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
+import clsx from 'clsx';
+import moment from 'moment';
+import 'moment/locale/ja';
+import React, { useContext, useState } from 'react';
+import { HomeContext } from '../../context/HomeProvider';
+import { ItemContext } from '../../hooks/ItemProvider';
+import TodoView from '../todo/TodoView';
 
-const drawerWidth = "100%";
+const drawerWidth = '100%';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: "flex",
+    display: 'flex',
   },
   appBar: {
     color: theme.palette.text.primary,
-    backgroundColor: theme.palette.background.default,
-    boxShadow: "none",
-    borderBottom: "1px solid",
+    backgroundImage: 'none',
+    boxShadow: 'none',
+    borderBottom: '1px solid',
     borderBottomColor: theme.palette.divider,
-    transition: theme.transitions.create(["margin", "width"], {
+    transition: theme.transitions.create(['margin', 'width'], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
   appBarShift: {
     width: 0, //`calc(100% - ${drawerWidth})`,
     marginRight: drawerWidth,
-    transition: theme.transitions.create(["margin", "width"], {
+    transition: theme.transitions.create(['margin', 'width'], {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
@@ -49,10 +49,10 @@ const useStyles = makeStyles((theme) => ({
   },
   sectionMobile: {
     // display: "flex",
-    marginLeft: "auto",
+    marginLeft: 'auto',
   },
   hide: {
-    display: "none",
+    display: 'none',
   },
   drawer: {
     width: drawerWidth,
@@ -60,27 +60,27 @@ const useStyles = makeStyles((theme) => ({
   },
   drawerPaper: {
     width: drawerWidth,
-    backgroundColor: theme.palette.background.default,
+    backgroundImage: 'none',
   },
   drawerHeader: {
-    display: "flex",
-    alignItems: "center",
+    display: 'flex',
+    alignItems: 'center',
     padding: theme.spacing(0),
     // necessary for content to be below app bar
     ...theme.mixins.toolbar,
-    justifyContent: "flex-start",
+    justifyContent: 'flex-start',
   },
   content: {
     flexGrow: 1,
     padding: theme.spacing(0, 1),
-    transition: theme.transitions.create("margin", {
+    transition: theme.transitions.create('margin', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
     // marginRight: "-100%",
   },
   contentShift: {
-    transition: theme.transitions.create("margin", {
+    transition: theme.transitions.create('margin', {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
@@ -97,7 +97,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: -22,
   },
   timeCaption: {
-    fontSize: "1em",
+    fontSize: '0.88em',
   },
 }));
 
@@ -109,7 +109,7 @@ function HomeMain() {
   const [title, setTitle] = useState();
 
   const handleNewList = () => () => {
-    const newName = moment().format("M/D");
+    const newName = moment().format('M/D');
     setTitle(newName);
     setOpen(true);
     addList(newName);
@@ -119,7 +119,7 @@ function HomeMain() {
     const rowLength = lists.length;
     const remainCount = list.items_aggregate?.aggregate.count;
     return (
-      <div key={list.id + "-div"}>
+      <div key={list.id + '-div'}>
         <ListItem
           key={list.id}
           button
@@ -132,11 +132,11 @@ function HomeMain() {
           <ListItemText
             primary={list.name}
             primaryTypographyProps={{
-              color: "primary",
-              fontWeight: "medium",
-              variant: "body1",
+              color: 'primary',
+              fontWeight: 'medium',
+              variant: 'body1',
             }}
-            secondary={remainCount ? `あと ${remainCount} 件` : "なし"}
+            secondary={remainCount ? `あと ${remainCount} 件` : 'なし'}
           />
           <Box className={classes.timeCaptionBox}>
             <Typography variant="caption" color="textSecondary" className={classes.timeCaption}>
@@ -144,7 +144,7 @@ function HomeMain() {
             </Typography>
           </Box>
         </ListItem>
-        {index + 1 !== rowLength ? <Divider /> : ""}
+        {index + 1 !== rowLength ? <Divider /> : ''}
       </div>
     );
   });
@@ -153,14 +153,14 @@ function HomeMain() {
     <>
       <AppBar position="fixed" className={clsx(classes.appBar, { [classes.appBarShift]: open })}>
         <Toolbar>
-          <IconButton color="inherit" edge="start" className={classes.menuButton} onClick={toggleMenu(true)}>
+          <IconButton color="inherit" edge="start" className={classes.menuButton} onClick={toggleMenu(true)} size="large">
             <MenuIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
             {mainTitle}
           </Typography>
           <div className={classes.drawerHeader}>
-            <IconButton edge="end" onClick={handleNewList()}>
+            <IconButton edge="end" onClick={handleNewList()} size="large">
               <PlaylistAddIcon />
             </IconButton>
           </div>

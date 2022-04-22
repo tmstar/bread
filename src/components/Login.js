@@ -1,8 +1,8 @@
-import LinearProgress from "@material-ui/core/LinearProgress";
-import React, { useContext } from "react";
-import { Redirect } from "react-router-dom";
-import { AuthContext } from "../hooks/AuthProvider";
-import SignIn from "./SignIn";
+import LinearProgress from '@mui/material/LinearProgress';
+import React, { useContext } from 'react';
+import { Redirect } from 'react-router-dom';
+import { AuthContext } from '../hooks/AuthProvider';
+import SignIn from './SignIn';
 
 function Login() {
   const { currentUser, isReady } = useContext(AuthContext);

@@ -1,41 +1,52 @@
-import { ApolloClient, ApolloLink, from, HttpLink, InMemoryCache } from "@apollo/client";
-import { blue, grey } from "@material-ui/core/colors";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import { MuiThemeProvider, unstable_createMuiStrictModeTheme as createMuiTheme } from "@material-ui/core/styles";
-import React from "react";
-import { ApolloProvider } from "react-apollo";
-import { BrowserRouter, Switch } from "react-router-dom";
-import "./App.css";
-import AuthRoute from "./components/AuthRoute";
-import Home from "./components/Home";
-import { ItemProvider } from "./hooks/ItemProvider";
+import { ApolloClient, ApolloLink, from, HttpLink, InMemoryCache } from '@apollo/client';
+import { blue, grey } from '@mui/material/colors';
+import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider, StyledEngineProvider, createTheme } from '@mui/material/styles';
+import React from 'react';
+import { ApolloProvider } from 'react-apollo';
+import { BrowserRouter, Switch } from 'react-router-dom';
+import AuthRoute from './components/AuthRoute';
+import Home from './components/Home';
+import { ItemProvider } from './hooks/ItemProvider';
 
-const darkTheme = createMuiTheme({
+const darkTheme = createTheme({
   palette: {
-    type: "dark",
+    mode: 'dark',
     primary: {
-      light: "#eeffff",
-      main: blue["100"],
-      dark: "#8aacc8",
+      light: '#eeffff',
+      main: blue['100'],
+      dark: '#8aacc8',
     },
     secondary: {
-      light: "#ffffff",
-      main: grey["300"],
-      dark: "#aeaeae",
+      light: '#ffffff',
+      main: grey['300'],
+      dark: '#aeaeae',
+    },
+    background: {
+      paper: '#303030',
+      default: '#303030',
     },
   },
-  props: {
+  components: {
     MuiRadio: {
-      color: "primary",
+      defaultProps: {
+        color: 'primary',
+      },
     },
     MuiSwitch: {
-      color: "primary",
+      defaultProps: {
+        color: 'primary',
+      },
     },
     MuiFab: {
-      color: "primary",
+      defaultProps: {
+        color: 'primary',
+      },
     },
     MuiList: {
-      dense: true,
+      defaultProps: {
+        dense: true,
+      },
     },
   },
   typography: {
@@ -63,10 +74,10 @@ function App() {
   });
 
   return (
-    <MuiThemeProvider theme={darkTheme}>
-      <CssBaseline />
-      <ApolloProvider client={client}>
-        <div className="App">
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={darkTheme}>
+        <CssBaseline />
+        <ApolloProvider client={client}>
           <header>
             <ItemProvider>
               <BrowserRouter>
@@ -76,9 +87,9 @@ function App() {
               </BrowserRouter>
             </ItemProvider>
           </header>
-        </div>
-      </ApolloProvider>
-    </MuiThemeProvider>
+        </ApolloProvider>
+      </ThemeProvider>
+    </StyledEngineProvider>
   );
 }
 
