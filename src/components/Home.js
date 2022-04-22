@@ -7,6 +7,7 @@ import { HomeProvider } from '../context/HomeProvider';
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
+    textAlign: 'center',
   },
 }));
 

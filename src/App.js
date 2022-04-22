@@ -1,54 +1,57 @@
 import { ApolloClient, ApolloLink, from, HttpLink, InMemoryCache } from '@apollo/client';
 import { blue, grey } from '@mui/material/colors';
 import CssBaseline from '@mui/material/CssBaseline';
-import {
-  ThemeProvider,
-  StyledEngineProvider,
-  unstable_createMuiStrictModeTheme as createMuiTheme,
-  adaptV4Theme,
-} from '@mui/material/styles';
+import { ThemeProvider, StyledEngineProvider, createTheme } from '@mui/material/styles';
 import React from 'react';
 import { ApolloProvider } from 'react-apollo';
 import { BrowserRouter, Switch } from 'react-router-dom';
-import './App.css';
 import AuthRoute from './components/AuthRoute';
 import Home from './components/Home';
 import { ItemProvider } from './hooks/ItemProvider';
 
-const darkTheme = createMuiTheme(
-  adaptV4Theme({
-    palette: {
-      mode: 'dark',
-      primary: {
-        light: '#eeffff',
-        main: blue['100'],
-        dark: '#8aacc8',
-      },
-      secondary: {
-        light: '#ffffff',
-        main: grey['300'],
-        dark: '#aeaeae',
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+    primary: {
+      light: '#eeffff',
+      main: blue['100'],
+      dark: '#8aacc8',
+    },
+    secondary: {
+      light: '#ffffff',
+      main: grey['300'],
+      dark: '#aeaeae',
+    },
+    background: {
+      default: '#2a2a2a',
+    },
+  },
+  components: {
+    MuiRadio: {
+      defaultProps: {
+        color: 'primary',
       },
     },
-    props: {
-      MuiRadio: {
+    MuiSwitch: {
+      defaultProps: {
         color: 'primary',
       },
-      MuiSwitch: {
+    },
+    MuiFab: {
+      defaultProps: {
         color: 'primary',
       },
-      MuiFab: {
-        color: 'primary',
-      },
-      MuiList: {
+    },
+    MuiList: {
+      defaultProps: {
         dense: true,
       },
     },
-    typography: {
-      fontFamily: `"Prompt","Yu Gothic Medium","游ゴシック Medium",YuGothic,"游ゴシック体","Roboto","Helvetica","Arial",sans-serif`,
-    },
-  })
-);
+  },
+  typography: {
+    fontFamily: `"Prompt","Yu Gothic Medium","游ゴシック Medium",YuGothic,"游ゴシック体","Roboto","Helvetica","Arial",sans-serif`,
+  },
+});
 
 const httpLink = new HttpLink({ uri: process.env.REACT_APP_HASURA_SERVER_URL });
 
@@ -74,17 +77,15 @@ function App() {
       <ThemeProvider theme={darkTheme}>
         <CssBaseline />
         <ApolloProvider client={client}>
-          <div className="App">
-            <header>
-              <ItemProvider>
-                <BrowserRouter>
-                  <Switch>
-                    <AuthRoute exact path="/" component={Home} />
-                  </Switch>
-                </BrowserRouter>
-              </ItemProvider>
-            </header>
-          </div>
+          <header>
+            <ItemProvider>
+              <BrowserRouter>
+                <Switch>
+                  <AuthRoute exact path="/" component={Home} />
+                </Switch>
+              </BrowserRouter>
+            </ItemProvider>
+          </header>
         </ApolloProvider>
       </ThemeProvider>
     </StyledEngineProvider>
