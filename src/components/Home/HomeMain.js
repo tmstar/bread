@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
   },
   appBar: {
     color: theme.palette.text.primary,
-    backgroundColor: theme.palette.background.default,
+    backgroundImage: 'none',
     boxShadow: 'none',
     borderBottom: '1px solid',
     borderBottomColor: theme.palette.divider,
@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
   },
   drawerPaper: {
     width: drawerWidth,
-    backgroundColor: theme.palette.background.default,
+    backgroundImage: 'none',
   },
   drawerHeader: {
     display: 'flex',

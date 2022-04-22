@@ -23,7 +23,6 @@ import ItemEditForm from './ItemEditForm';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    backgroundColor: theme.palette.background.default,
     padding: theme.spacing(0, 1),
   },
   index: {

@@ -22,7 +22,7 @@ import { ItemContext } from '../../hooks/ItemProvider';
 const useStyles = makeStyles((theme) => ({
   appBar: {
     color: theme.palette.text.primary,
-    backgroundColor: theme.palette.background.default,
+    backgroundImage: 'none',
     boxShadow: 'none',
     borderBottom: '1px solid',
     borderBottomColor: theme.palette.divider,

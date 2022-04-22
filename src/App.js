@@ -23,7 +23,8 @@ const darkTheme = createTheme({
       dark: '#aeaeae',
     },
     background: {
-      default: '#2a2a2a',
+      paper: '#303030',
+      default: '#303030',
     },
   },
   components: {
