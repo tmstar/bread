@@ -1,35 +1,35 @@
-const cacheName = "bread-v0.4";
+const cacheName = 'bread-v0.5';
 const urlsToCache = [
-  "/",
-  "/static/js/bundle.js",
-  "/static/js/bundle.js.map",
-  "/static/js/0.chunk.js",
-  "/static/js/0.chunk.js.map",
-  "/static/js/main.chunk.js",
-  "/static/js/main.chunk.js.map",
-  "/favicon.ico",
-  "/home",
-  "/manifest.json",
-  "/logo192.png",
+  '/',
+  '/static/js/bundle.js',
+  '/static/js/bundle.js.map',
+  '/static/js/0.chunk.js',
+  '/static/js/0.chunk.js.map',
+  '/static/js/main.chunk.js',
+  '/static/js/main.chunk.js.map',
+  '/favicon.ico',
+  '/home',
+  '/manifest.json',
+  '/logo192.png',
 ];
 
-self.addEventListener("install", (event) => {
-  console.log("auto installing...");
+self.addEventListener('install', (event) => {
+  console.log('auto installing...');
   self.skipWaiting();
   event.waitUntil(
     caches.open(cacheName).then((cache) => {
-      console.log("cache creating...");
+      console.log('cache creating...');
       cache.addAll(urlsToCache);
     })
   );
 });
 
-self.addEventListener("activate", (event) => {
+self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches
       .keys()
       .then((cacheNames) => {
-        console.log("old cache deleting...");
+        console.log('old cache deleting...');
         return Promise.all(cacheNames.filter((name) => name !== cacheName).map((name) => caches.delete(name)));
       })
       .then(() => {
@@ -38,7 +38,7 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-self.addEventListener("fetch", (event) => {
+self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
       return response || fetch(event.request);
