@@ -1,12 +1,10 @@
-import React, { useContext } from "react";
-import { AuthContext } from "../hooks/AuthProvider";
-import { Redirect } from "react-router-dom";
+import React from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
 
-function Logout() {
-  const { signOut } = useContext(AuthContext);
-  signOut();
+const LogoutButton = () => {
+  const { logout } = useAuth0();
 
-  return <Redirect to="/login" />;
-}
+  return <button onClick={() => logout({ returnTo: window.location.origin })}>Log Out</button>;
+};
 
-export default Logout;
+export default LogoutButton;
