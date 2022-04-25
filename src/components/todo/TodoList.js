@@ -66,6 +66,15 @@ function TodoList({ todos, hideSwitch }) {
   const [selectedTodo, setSelectedTodo] = useState();
   const [openForm, setOpenForm] = useState(false);
 
+  const handleClickListItem = (todo) => {
+    if (todo.updating) {
+      // ignore when updating
+      return;
+    }
+    todo.updating = true;
+    toggleTodo(todo.id, todo.completed);
+  };
+
   const handleClickOpen = () => {
     setSelectedTodo(null);
     setOpenForm(true);
@@ -95,7 +104,7 @@ function TodoList({ todos, hideSwitch }) {
     const rowLength = todos.length;
     return (
       <div key={todo.id + '-div'}>
-        <ListItem key={todo.id} button onClick={() => toggleTodo(todo.id, todo.completed)} disabled={todo.color === 'indeterminate'}>
+        <ListItem key={todo.id} button onClick={() => handleClickListItem(todo)} disabled={todo.color === 'indeterminate'}>
           <ListItemIcon>
             <Checkbox
               edge="start"
