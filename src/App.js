@@ -4,9 +4,10 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, StyledEngineProvider, createTheme } from '@mui/material/styles';
 import React from 'react';
 import { ApolloProvider } from 'react-apollo';
-import { BrowserRouter, Switch } from 'react-router-dom';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import AuthRoute from './components/AuthRoute';
 import Home from './components/Home';
+import Logout from './components/Logout';
 import { ItemProvider } from './hooks/ItemProvider';
 
 const darkTheme = createTheme({
@@ -83,6 +84,7 @@ function App() {
               <BrowserRouter>
                 <Switch>
                   <AuthRoute exact path="/" component={Home} />
+                  <Route path="/logout" component={Logout} />
                 </Switch>
               </BrowserRouter>
             </ItemProvider>

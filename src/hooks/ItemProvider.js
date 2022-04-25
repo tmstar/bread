@@ -1,10 +1,10 @@
-import { useAuth0 } from "@auth0/auth0-react";
-import { createContext, useEffect, useState } from "react";
-import { v4 as uuid_v4 } from "uuid";
-import Hasura from "../services/hasura";
-import ListService from "../services/itemList";
-import TagService from "../services/tags";
-import TodoService from "../services/todos";
+import { useAuth0 } from '@auth0/auth0-react';
+import { createContext, useEffect, useState } from 'react';
+import { v4 as uuid_v4 } from 'uuid';
+import Hasura from '../services/hasura';
+import ListService from '../services/itemList';
+import TagService from '../services/tags';
+import TodoService from '../services/todos';
 
 export const ItemContext = createContext();
 
@@ -39,7 +39,6 @@ export const ItemProvider = ({ children }) => {
   };
 
   const _addTag = (listId, tagName, isReplaced) => {
-    console.log("check!", tagsInList);
     const newTag = { id: uuid_v4(), name: tagName };
     return TagService.add(listId, newTag).then((addedTag) => {
       if (isReplaced) {
@@ -106,11 +105,16 @@ export const ItemProvider = ({ children }) => {
     const toggledTodos = todos.map((todo) => (todo.id !== newTodo.id ? todo : newTodo));
     setTodos(toggledTodos);
 
-    TodoService.update(id, newTodo, selectedList.id).then((result) => {
-      const newTodos = todos.map((todo) => (todo.id !== result.item.id ? todo : result.item));
-      setTodos(newTodos);
-      _modifyUpdatedAt(result.itemList);
-    });
+    TodoService.update(id, newTodo, selectedList.id)
+      .then((result) => {
+        const newTodos = todos.map((todo) => (todo.id !== result.item.id ? todo : result.item));
+        setTodos(newTodos);
+        _modifyUpdatedAt(result.itemList);
+      })
+      .catch((err) => {
+        newTodo.updating = false;
+        throw err;
+      });
   };
 
   const hideTodo = (id, is_active) => {

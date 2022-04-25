@@ -1,12 +1,12 @@
-import React, { useContext } from "react";
-import { AuthContext } from "../hooks/AuthProvider";
-import { Redirect } from "react-router-dom";
+import { useAuth0 } from '@auth0/auth0-react';
 
 function Logout() {
-  const { signOut } = useContext(AuthContext);
-  signOut();
+  const { logout } = useAuth0();
 
-  return <Redirect to="/login" />;
+  // redirect to location.origin
+  logout({ returnTo: window.location.origin });
+
+  return null;
 }
 
 export default Logout;
