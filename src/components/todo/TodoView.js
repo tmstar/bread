@@ -6,7 +6,7 @@ import MenuItem from '@mui/material/MenuItem';
 import makeStyles from '@mui/styles/makeStyles';
 import Toolbar from '@mui/material/Toolbar';
 import AllInboxIcon from '@mui/icons-material/AllInbox';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import ArrowBack from '@mui/icons-material/ArrowBack';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import ListAltIcon from '@mui/icons-material/ListAlt';
@@ -172,7 +172,7 @@ function TodoView({ setOpen, title, setTitle }) {
             className={classes.menuButton}
             size="large"
           >
-            <ChevronRightIcon />
+            <ArrowBack />
           </IconButton>
           <form onSubmit={handleSubmit}>
             <InputBase
