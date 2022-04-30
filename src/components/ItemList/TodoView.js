@@ -1,24 +1,24 @@
-import AppBar from '@mui/material/AppBar';
-import IconButton from '@mui/material/IconButton';
-import InputBase from '@mui/material/InputBase';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import makeStyles from '@mui/styles/makeStyles';
-import Toolbar from '@mui/material/Toolbar';
 import AllInboxIcon from '@mui/icons-material/AllInbox';
 import ArrowBack from '@mui/icons-material/ArrowBack';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import ListAltIcon from '@mui/icons-material/ListAlt';
-import MoreIcon from '@mui/icons-material/MoreVert';
-import React, { useMemo, useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import AlertDialog from '../todo/AlertDialog';
-import TodoList from '../todo/TodoList';
-import TagEditForm from '../todo/TagEditForm';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import MoreIcon from '@mui/icons-material/MoreVert';
+import AppBar from '@mui/material/AppBar';
 import Chip from '@mui/material/Chip';
+import IconButton from '@mui/material/IconButton';
+import InputBase from '@mui/material/InputBase';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Toolbar from '@mui/material/Toolbar';
+import makeStyles from '@mui/styles/makeStyles';
+import React, { useContext, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ItemContext } from '../../hooks/ItemProvider';
+import AlertDialog from '../todo/AlertDialog';
+import TagEditForm from '../todo/TagEditForm';
+import TodoList from '../todo/TodoList';
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -75,6 +75,7 @@ function TodoView({ setOpen, title, setTitle }) {
 
   const handleDeleteListOk = () => {
     deleteList(selectedList.id);
+    navigate(-1);
     setOpen(false);
   };
 

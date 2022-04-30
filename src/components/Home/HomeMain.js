@@ -10,7 +10,6 @@ import ListItemText from '@mui/material/ListItemText';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import makeStyles from '@mui/styles/makeStyles';
-import clsx from 'clsx';
 import moment from 'moment';
 import 'moment/locale/ja';
 import React, { useContext } from 'react';
@@ -103,7 +102,7 @@ const useStyles = makeStyles((theme) => ({
 function HomeMain() {
   const classes = useStyles();
   const { lists, addList, selectList } = useContext(ItemContext);
-  const { openList, toggleList, listTitle, setListTitle, toggleMenu, mainTitle } = useContext(HomeContext);
+  const { toggleList, setListTitle, toggleMenu, mainTitle } = useContext(HomeContext);
 
   const handleNewList = () => () => {
     const newName = moment().format('M/D');
