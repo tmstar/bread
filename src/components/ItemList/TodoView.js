@@ -12,7 +12,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import React, { useMemo, useState, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import AlertDialog from '../todo/AlertDialog';
 import TodoList from '../todo/TodoList';
 import TagEditForm from '../todo/TagEditForm';
@@ -52,6 +52,7 @@ const useStyles = makeStyles((theme) => ({
 
 function TodoView({ setOpen, title, setTitle }) {
   const classes = useStyles();
+  const history = useHistory();
   const { todos, selectedList, tags, updateList, deleteCompletedTodos, deleteList, removeTag } = useContext(ItemContext);
 
   const [filter, setFilter] = useState('active');
@@ -64,6 +65,7 @@ function TodoView({ setOpen, title, setTitle }) {
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
   const handleDrawerClose = () => {
+    history.goBack();
     setOpen(false);
   };
 
@@ -168,8 +170,6 @@ function TodoView({ setOpen, title, setTitle }) {
           <IconButton
             color="inherit"
             aria-label="open drawer"
-            component={Link}
-            to="/"
             onClick={handleDrawerClose}
             edge="start"
             className={classes.menuButton}
