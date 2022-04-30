@@ -12,9 +12,10 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import React, { useMemo, useState, useContext } from 'react';
-import AlertDialog from './AlertDialog';
-import TodoList from './TodoList';
-import TagEditForm from './TagEditForm';
+import { Link } from 'react-router-dom';
+import AlertDialog from '../todo/AlertDialog';
+import TodoList from '../todo/TodoList';
+import TagEditForm from '../todo/TagEditForm';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import Chip from '@mui/material/Chip';
 import { ItemContext } from '../../hooks/ItemProvider';
@@ -167,6 +168,8 @@ function TodoView({ setOpen, title, setTitle }) {
           <IconButton
             color="inherit"
             aria-label="open drawer"
+            component={Link}
+            to="/"
             onClick={handleDrawerClose}
             edge="start"
             className={classes.menuButton}

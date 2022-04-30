@@ -1,23 +1,22 @@
+import MenuIcon from '@mui/icons-material/Menu';
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
-import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import makeStyles from '@mui/styles/makeStyles';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import MenuIcon from '@mui/icons-material/Menu';
-import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import moment from 'moment';
 import 'moment/locale/ja';
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
+import { Link } from 'react-router-dom';
 import { HomeContext } from '../../context/HomeProvider';
 import { ItemContext } from '../../hooks/ItemProvider';
-import TodoView from '../todo/TodoView';
 
 const drawerWidth = '100%';
 
@@ -103,15 +102,13 @@ const useStyles = makeStyles((theme) => ({
 
 function HomeMain() {
   const classes = useStyles();
-  const [open, setOpen] = useState(false);
   const { lists, addList, selectList } = useContext(ItemContext);
-  const { toggleMenu, mainTitle } = useContext(HomeContext);
-  const [title, setTitle] = useState();
+  const { openList, toggleList, listTitle, setListTitle, toggleMenu, mainTitle } = useContext(HomeContext);
 
   const handleNewList = () => () => {
     const newName = moment().format('M/D');
-    setTitle(newName);
-    setOpen(true);
+    setListTitle(newName);
+    toggleList(true);
     addList(newName);
   };
 
@@ -123,10 +120,12 @@ function HomeMain() {
         <ListItem
           key={list.id}
           button
+          component={Link}
+          to={'item-list'}
           onClick={() => {
-            setTitle(list.name);
+            setListTitle(list.name);
             selectList(list);
-            setOpen(true);
+            toggleList(true);
           }}
         >
           <ListItemText
@@ -151,7 +150,7 @@ function HomeMain() {
 
   return (
     <>
-      <AppBar position="fixed" className={clsx(classes.appBar, { [classes.appBarShift]: open })}>
+      <AppBar position="fixed" className={clsx(classes.appBar, { [classes.appBarShift]: openList })}>
         <Toolbar>
           <IconButton color="inherit" edge="start" className={classes.menuButton} onClick={toggleMenu(true)} size="large">
             <MenuIcon />
@@ -160,21 +159,21 @@ function HomeMain() {
             {mainTitle}
           </Typography>
           <div className={classes.drawerHeader}>
-            <IconButton edge="end" onClick={handleNewList()} size="large">
+            <IconButton edge="end" onClick={handleNewList()} size="large" component={Link} to="/item-list">
               <PlaylistAddIcon />
             </IconButton>
           </div>
         </Toolbar>
       </AppBar>
-      <main className={clsx(classes.content, { [classes.contentShift]: open })}>
+      <main className={clsx(classes.content, { [classes.contentShift]: openList })}>
         <div className={classes.list}>
           <Toolbar />
           <List>{listContents}</List>
         </div>
       </main>
-      <Drawer className={classes.drawer} anchor="right" open={open} classes={{ paper: classes.drawerPaper }}>
-        <TodoView setOpen={setOpen} title={title} setTitle={setTitle} />
-      </Drawer>
+      {/* <Drawer className={classes.drawer} anchor="right" open={openList} classes={{ paper: classes.drawerPaper }}>
+        <TodoView setOpen={toggleList} title={listTitle} setTitle={setListTitle} />
+      </Drawer> */}
     </>
   );
 }
