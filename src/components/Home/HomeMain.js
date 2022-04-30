@@ -150,7 +150,7 @@ function HomeMain() {
 
   return (
     <>
-      <AppBar position="fixed" className={clsx(classes.appBar, { [classes.appBarShift]: openList })}>
+      <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
           <IconButton color="inherit" edge="start" className={classes.menuButton} onClick={toggleMenu(true)} size="large">
             <MenuIcon />
@@ -165,15 +165,12 @@ function HomeMain() {
           </div>
         </Toolbar>
       </AppBar>
-      <main className={clsx(classes.content, { [classes.contentShift]: openList })}>
+      <main className={classes.content}>
         <div className={classes.list}>
           <Toolbar />
           <List>{listContents}</List>
         </div>
       </main>
-      {/* <Drawer className={classes.drawer} anchor="right" open={openList} classes={{ paper: classes.drawerPaper }}>
-        <TodoView setOpen={toggleList} title={listTitle} setTitle={setListTitle} />
-      </Drawer> */}
     </>
   );
 }
