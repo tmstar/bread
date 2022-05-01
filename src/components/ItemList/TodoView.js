@@ -220,11 +220,11 @@ function TodoView() {
           </IconButton>
           {tagList}
         </div>
-        <TagEditForm open={bottomDrawerOpen} toggleList={setBottomDrawerOpen} />
+        <TagEditForm open={bottomDrawerOpen} setOpen={setBottomDrawerOpen} />
         <TodoList todos={filteredTodos} hideSwitch={filter !== 'all'} />
         <AlertDialog
           open={alertOpen}
-          toggleList={setAlertOpen}
+          setOpen={setAlertOpen}
           title="リストの削除"
           msg="リスト内にあるチェック項目はすべて削除されます。よろしいですか。"
           handleOk={handleDeleteListOk}
