@@ -4,12 +4,13 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import React from 'react';
 import { ApolloProvider } from 'react-apollo';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import Home from './components/Home';
 import ItemList from './components/ItemList';
 import Logout from './components/Logout';
 import { HomeProvider } from './context/HomeProvider';
 import { ItemProvider } from './hooks/ItemProvider';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const darkTheme = createTheme({
   palette: {
@@ -83,13 +84,11 @@ function App() {
           <header>
             <ItemProvider>
               <HomeProvider>
-                <BrowserRouter>
-                  <Routes>
-                    <Route index element={<Home />} />
-                    <Route path="item-list" element={<ItemList />} />
-                    <Route path="logout" element={<Logout />} />
-                  </Routes>
-                </BrowserRouter>
+                <Routes>
+                  <Route index element={<ProtectedRoute component={Home} />} />
+                  <Route path="item-list" element={<ProtectedRoute component={ItemList} />} />
+                  <Route path="logout" element={<Logout />} />
+                </Routes>
               </HomeProvider>
             </ItemProvider>
           </header>
