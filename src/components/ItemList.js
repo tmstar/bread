@@ -18,11 +18,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 function ItemList() {
   const classes = useStyles();
-  const { openList, toggleList, listTitle, setListTitle } = useContext(HomeContext);
+  const { openList } = useContext(HomeContext);
 
   return (
     <Drawer className={classes.drawer} anchor="right" open={openList} classes={{ paper: classes.drawerPaper }}>
-      <TodoView setOpen={toggleList} title={listTitle} setTitle={setListTitle} />
+      <TodoView />
     </Drawer>
   );
 }

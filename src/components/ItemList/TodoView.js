@@ -16,6 +16,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import React, { useContext, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ItemContext } from '../../hooks/ItemProvider';
+import { HomeContext } from '../../context/HomeProvider';
 import AlertDialog from '../todo/AlertDialog';
 import TagEditForm from '../todo/TagEditForm';
 import TodoList from '../todo/TodoList';
@@ -50,9 +51,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function TodoView({ setOpen, title, setTitle }) {
+function TodoView() {
   const classes = useStyles();
   const navigate = useNavigate();
+  const { toggleList, listTitle, setListTitle } = useContext(HomeContext);
   const { todos, selectedList, tags, updateList, deleteCompletedTodos, deleteList, removeTag } = useContext(ItemContext);
 
   const [filter, setFilter] = useState('active');
@@ -66,7 +68,7 @@ function TodoView({ setOpen, title, setTitle }) {
 
   const handleDrawerClose = () => {
     navigate(-1);
-    setOpen(false);
+    toggleList(false);
   };
 
   const handleMobileMenuOpen = (event) => {
@@ -76,7 +78,7 @@ function TodoView({ setOpen, title, setTitle }) {
   const handleDeleteListOk = () => {
     deleteList(selectedList.id);
     navigate(-1);
-    setOpen(false);
+    toggleList(false);
   };
 
   const handleFilter = (newValue) => {
@@ -93,7 +95,7 @@ function TodoView({ setOpen, title, setTitle }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    updateList(selectedList.id, title);
+    updateList(selectedList.id, listTitle);
   };
 
   const filteredTodos = useMemo(() => {
@@ -181,10 +183,10 @@ function TodoView({ setOpen, title, setTitle }) {
           <form onSubmit={handleSubmit}>
             <InputBase
               className={classes.title}
-              value={title}
+              value={listTitle}
               placeholder="リストのタイトル"
               inputProps={{ 'aria-label': 'edit title' }}
-              onChange={(event) => setTitle(event.target.value)}
+              onChange={(event) => setListTitle(event.target.value)}
             />
           </form>
           <div className={classes.sectionMobile}>
@@ -218,11 +220,11 @@ function TodoView({ setOpen, title, setTitle }) {
           </IconButton>
           {tagList}
         </div>
-        <TagEditForm open={bottomDrawerOpen} setOpen={setBottomDrawerOpen} />
+        <TagEditForm open={bottomDrawerOpen} toggleList={setBottomDrawerOpen} />
         <TodoList todos={filteredTodos} hideSwitch={filter !== 'all'} />
         <AlertDialog
           open={alertOpen}
-          setOpen={setAlertOpen}
+          toggleList={setAlertOpen}
           title="リストの削除"
           msg="リスト内にあるチェック項目はすべて削除されます。よろしいですか。"
           handleOk={handleDeleteListOk}
