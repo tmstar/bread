@@ -1,14 +1,16 @@
 import { ApolloClient, ApolloLink, from, HttpLink, InMemoryCache } from '@apollo/client';
 import { blue, grey } from '@mui/material/colors';
 import CssBaseline from '@mui/material/CssBaseline';
-import { ThemeProvider, StyledEngineProvider, createTheme } from '@mui/material/styles';
+import { createTheme, StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import React from 'react';
 import { ApolloProvider } from 'react-apollo';
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
-import AuthRoute from './components/AuthRoute';
+import { Route, Routes } from 'react-router-dom';
 import Home from './components/Home';
+import ItemList from './components/ItemList';
 import Logout from './components/Logout';
+import { HomeProvider } from './context/HomeProvider';
 import { ItemProvider } from './hooks/ItemProvider';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const darkTheme = createTheme({
   palette: {
@@ -81,12 +83,13 @@ function App() {
         <ApolloProvider client={client}>
           <header>
             <ItemProvider>
-              <BrowserRouter>
-                <Switch>
-                  <AuthRoute exact path="/" component={Home} />
-                  <Route path="/logout" component={Logout} />
-                </Switch>
-              </BrowserRouter>
+              <HomeProvider>
+                <Routes>
+                  <Route index element={<ProtectedRoute component={Home} />} />
+                  <Route path="item-list" element={<ProtectedRoute component={ItemList} />} />
+                  <Route path="logout" element={<Logout />} />
+                </Routes>
+              </HomeProvider>
             </ItemProvider>
           </header>
         </ApolloProvider>
