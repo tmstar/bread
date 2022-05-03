@@ -15,8 +15,8 @@ export const ItemProvider = ({ children }) => {
   const [tagsInList, setTagsInList] = useState([]); // tags in a list
   const [selectedTag, setSelectedTag] = useState();
   const [selectedList, setSelectedList] = useState();
-  const { user, isAuthenticated, getIdTokenClaims } = useAuth0();
-  const [idToken, setIdToken] = useState();
+  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const [token, setToken] = useState();
 
   const _modifyUpdatedAt = (updatedList) => {
     const list = lists.find((list) => list.id === updatedList.id);
@@ -57,30 +57,30 @@ export const ItemProvider = ({ children }) => {
     if (!isAuthenticated || !user) {
       return;
     }
-    getIdTokenClaims().then((token) => {
-      Hasura.initialize(user, token.__raw);
-      setIdToken(token.__raw);
+    getAccessTokenSilently().then((token) => {
+      Hasura.initialize(user, token);
+      setToken(token);
     });
-  }, [isAuthenticated, user, getIdTokenClaims]);
+  }, [isAuthenticated, user, getAccessTokenSilently]);
 
   useEffect(() => {
-    if (!idToken) {
+    if (!token) {
       return;
     }
     TagService.getAll().then((tagLists) => {
       setUniqueTags(tagLists);
     });
-  }, [idToken]);
+  }, [token]);
 
   useEffect(() => {
-    if (!idToken) {
+    if (!token) {
       return;
     }
     setLists([]);
     ListService.getAll(selectedTag?.id).then((itemLists) => {
       setLists(itemLists);
     });
-  }, [idToken, selectedTag]);
+  }, [token, selectedTag]);
 
   useEffect(() => {
     if (!selectedList) {
