@@ -3,17 +3,16 @@ let email;
 let token;
 
 const url = process.env.REACT_APP_HASURA_SERVER_URL;
-const customTokenUrl = process.env.REACT_APP_HASURA_TOKEN_KEY;
 
-const initialize = (user, idToken) => {
-  uid = user[customTokenUrl]["x-hasura-user-id"];
+const initialize = (user, accessToken) => {
+  uid = user.sub;
   email = user.email;
-  token = idToken;
+  token = accessToken;
 };
 
 const getHeaders = () => {
   return {
-    "content-type": "application/json",
+    'content-type': 'application/json',
     Authorization: `Bearer ${token}`,
   };
 };
