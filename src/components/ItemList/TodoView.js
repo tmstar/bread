@@ -15,8 +15,9 @@ import Toolbar from '@mui/material/Toolbar';
 import makeStyles from '@mui/styles/makeStyles';
 import React, { useContext, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { listTitleState, openListState } from '../../atoms';
 import { ItemContext } from '../../hooks/ItemProvider';
-import { HomeContext } from '../../context/HomeProvider';
 import AlertDialog from '../todo/AlertDialog';
 import TagEditForm from '../todo/TagEditForm';
 import TodoList from '../todo/TodoList';
@@ -54,7 +55,9 @@ const useStyles = makeStyles((theme) => ({
 function TodoView() {
   const classes = useStyles();
   const navigate = useNavigate();
-  const { toggleList, listTitle, setListTitle } = useContext(HomeContext);
+  const [listTitle, setListTitle] = useRecoilState(listTitleState);
+  const toggleList = useSetRecoilState(openListState);
+
   const { todos, selectedList, tags, updateList, deleteCompletedTodos, deleteList, removeTag } = useContext(ItemContext);
 
   const [filter, setFilter] = useState('active');

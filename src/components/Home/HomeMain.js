@@ -14,7 +14,8 @@ import moment from 'moment';
 import 'moment/locale/ja';
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { HomeContext } from '../../context/HomeProvider';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { listTitleState, mainTitleState, openListState, openMenuState } from '../../atoms';
 import { ItemContext } from '../../hooks/ItemProvider';
 
 const drawerWidth = '100%';
@@ -102,7 +103,10 @@ const useStyles = makeStyles((theme) => ({
 function HomeMain() {
   const classes = useStyles();
   const { lists, addList, selectList } = useContext(ItemContext);
-  const { toggleList, setListTitle, toggleMenu, mainTitle } = useContext(HomeContext);
+  const toggleMenu = useSetRecoilState(openMenuState);
+  const mainTitle = useRecoilValue(mainTitleState);
+  const toggleList = useSetRecoilState(openListState);
+  const setListTitle = useSetRecoilState(listTitleState);
 
   const handleNewList = () => () => {
     const newName = moment().format('M/D');
@@ -151,7 +155,7 @@ function HomeMain() {
     <>
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
-          <IconButton color="inherit" edge="start" className={classes.menuButton} onClick={toggleMenu(true)} size="large">
+          <IconButton color="inherit" edge="start" className={classes.menuButton} onClick={() => toggleMenu(true)} size="large">
             <MenuIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>

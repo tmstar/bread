@@ -1,17 +1,18 @@
-import Divider from "@mui/material/Divider";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import InboxIcon from '@mui/icons-material/MoveToInbox';
+import Divider from '@mui/material/Divider';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import SwipeableDrawer from '@mui/material/SwipeableDrawer';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
 import makeStyles from '@mui/styles/makeStyles';
-import SwipeableDrawer from "@mui/material/SwipeableDrawer";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import LocalOfferIcon from "@mui/icons-material/LocalOffer";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import React, { useContext } from "react";
-import { HomeContext } from "../../context/HomeProvider";
-import { ItemContext } from "../../hooks/ItemProvider";
+import React, { useContext } from 'react';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { defaultMainTitle, mainTitleState, openMenuState } from '../../atoms';
+import { ItemContext } from '../../hooks/ItemProvider';
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -38,17 +39,18 @@ const useStyles = makeStyles((theme) => ({
 function MenuDrawer() {
   const classes = useStyles();
   const { uniqueTags, selectTag } = useContext(ItemContext);
-  const { openMenu, toggleMenu, setMainTitle, defaultMainTitle } = useContext(HomeContext);
+  const [openMenu, toggleMenu] = useRecoilState(openMenuState);
+  const setMainTitle = useSetRecoilState(mainTitleState);
 
   const handleListClick = (tag) => () => {
-    setMainTitle(tag?.name);
+    setMainTitle(tag ? tag.name : defaultMainTitle);
     selectTag(tag);
   };
 
   const list = () => (
-    <div className={classes.list} onClick={toggleMenu(false)}>
+    <div className={classes.list} onClick={() => toggleMenu(false)}>
       <List>
-        <ListItem button onClick={handleListClick([])} className={classes.listItemTop}>
+        <ListItem button onClick={handleListClick(null)} className={classes.listItemTop}>
           <ListItemIcon>
             <InboxIcon />
           </ListItemIcon>
@@ -56,7 +58,7 @@ function MenuDrawer() {
             className={classes.menu}
             primary={defaultMainTitle}
             primaryTypographyProps={{
-              variant: "body1",
+              variant: 'body1',
             }}
           />
         </ListItem>
@@ -67,9 +69,9 @@ function MenuDrawer() {
           </ListItemIcon>
           <ListItemText
             className={classes.menu}
-            primary={"タグ"}
+            primary={'タグ'}
             primaryTypographyProps={{
-              variant: "body1",
+              variant: 'body1',
             }}
           />
         </ListItem>
@@ -83,10 +85,10 @@ function MenuDrawer() {
   );
 
   return (
-    <SwipeableDrawer anchor="left" open={openMenu} onClose={toggleMenu(false)} onOpen={toggleMenu(true)}>
+    <SwipeableDrawer anchor="left" open={openMenu} onClose={() => toggleMenu(false)} onOpen={() => toggleMenu(true)}>
       <Toolbar>
         <Typography variant="body1" color="textSecondary" className={classes.title}>
-          {"Bread"}
+          {'Bread'}
         </Typography>
       </Toolbar>
       <Divider />
