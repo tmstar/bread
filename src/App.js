@@ -5,12 +5,12 @@ import { createTheme, StyledEngineProvider, ThemeProvider } from '@mui/material/
 import React from 'react';
 import { ApolloProvider } from 'react-apollo';
 import { Route, Routes } from 'react-router-dom';
+import { RecoilRoot } from 'recoil';
 import Home from './components/Home';
 import ItemList from './components/ItemList';
 import Logout from './components/Logout';
-import { HomeProvider } from './context/HomeProvider';
-import { ItemProvider } from './hooks/ItemProvider';
 import ProtectedRoute from './components/ProtectedRoute';
+import { ItemProvider } from './hooks/ItemProvider';
 
 const darkTheme = createTheme({
   palette: {
@@ -83,13 +83,13 @@ function App() {
         <ApolloProvider client={client}>
           <header>
             <ItemProvider>
-              <HomeProvider>
+              <RecoilRoot>
                 <Routes>
                   <Route index element={<ProtectedRoute component={Home} />} />
                   <Route path="item-list" element={<ProtectedRoute component={ItemList} />} />
                   <Route path="logout" element={<Logout />} />
                 </Routes>
-              </HomeProvider>
+              </RecoilRoot>
             </ItemProvider>
           </header>
         </ApolloProvider>
