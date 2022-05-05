@@ -1,15 +1,14 @@
-import { ApolloClient, ApolloLink, from, HttpLink, InMemoryCache } from '@apollo/client';
 import { blue, grey } from '@mui/material/colors';
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import React from 'react';
-import { ApolloProvider } from 'react-apollo';
 import { Route, Routes } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
 import Home from './components/Home';
 import ItemList from './components/ItemList';
 import Logout from './components/Logout';
 import ProtectedRoute from './components/ProtectedRoute';
+import ApolloProviderWithAuth0 from './hooks/ApolloProviderWithAuth0';
 import { ItemProvider } from './hooks/ItemProvider';
 
 const darkTheme = createTheme({
@@ -57,42 +56,24 @@ const darkTheme = createTheme({
   },
 });
 
-const httpLink = new HttpLink({ uri: process.env.REACT_APP_HASURA_SERVER_URL });
-
-const authMiddleware = new ApolloLink((operation, forward) => {
-  operation.setContext(({ headers = {} }) => ({
-    headers: {
-      ...headers,
-      // "x-hasura-admin-secret": process.env.REACT_APP_HASURA_ADMIN_SECRET,
-    },
-  }));
-
-  return forward(operation);
-});
-
 function App() {
-  const client = new ApolloClient({
-    cache: new InMemoryCache(),
-    link: from([authMiddleware, httpLink]),
-  });
-
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={darkTheme}>
         <CssBaseline />
-        <ApolloProvider client={client}>
-          <header>
+        <header>
+          <RecoilRoot>
             <ItemProvider>
-              <RecoilRoot>
+              <ApolloProviderWithAuth0>
                 <Routes>
                   <Route index element={<ProtectedRoute component={Home} />} />
                   <Route path="item-list" element={<ProtectedRoute component={ItemList} />} />
                   <Route path="logout" element={<Logout />} />
                 </Routes>
-              </RecoilRoot>
+              </ApolloProviderWithAuth0>
             </ItemProvider>
-          </header>
-        </ApolloProvider>
+          </RecoilRoot>
+        </header>
       </ThemeProvider>
     </StyledEngineProvider>
   );
