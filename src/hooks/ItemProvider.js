@@ -72,7 +72,7 @@ export const ItemProvider = ({ children }) => {
     TagService.getAll().then((tagLists) => {
       setUniqueTags(tagLists);
     });
-  }, [token]);
+  }, [token, setUniqueTags]);
 
   useEffect(() => {
     if (!token) {
@@ -82,7 +82,7 @@ export const ItemProvider = ({ children }) => {
     ListService.getAll(selectedTag?.id).then((itemLists) => {
       setLists(itemLists);
     });
-  }, [token, selectedTag]);
+  }, [token, selectedTag, setLists]);
 
   useEffect(() => {
     if (!selectedList) {
@@ -99,7 +99,7 @@ export const ItemProvider = ({ children }) => {
     TodoService.getAll(selectedList.id).then((todos) => {
       setListItems(todos.reverse());
     });
-  }, [selectedList]);
+  }, [selectedList, setListItems, setTagsInList]);
 
   const toggleTodo = (id, completed) => {
     const todo = listItems.find((todo) => todo.id === id);
