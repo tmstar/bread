@@ -84,6 +84,8 @@ export const ItemProvider = ({ children }) => {
 
   useEffect(() => {
     if (!selectedList) {
+      setTagsInList([]);
+      setTodos([]);
       return;
     }
     const newTags = selectedList.item_list_tags.map((listTag) => {

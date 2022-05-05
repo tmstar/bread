@@ -58,7 +58,7 @@ function TodoView() {
   const [listTitle, setListTitle] = useRecoilState(listTitleState);
   const toggleList = useSetRecoilState(openListState);
 
-  const { todos, selectedList, tags, updateList, deleteCompletedTodos, deleteList, removeTag } = useContext(ItemContext);
+  const { todos, selectedList, selectList, tags, updateList, deleteCompletedTodos, deleteList, removeTag } = useContext(ItemContext);
 
   const [filter, setFilter] = useState('active');
   const isListEdit = filter === 'all';
@@ -72,6 +72,7 @@ function TodoView() {
   const handleDrawerClose = () => {
     navigate(-1);
     toggleList(false);
+    selectList(null);
   };
 
   const handleMobileMenuOpen = (event) => {
@@ -82,6 +83,7 @@ function TodoView() {
     deleteList(selectedList.id);
     navigate(-1);
     toggleList(false);
+    selectList(null);
   };
 
   const handleFilter = (newValue) => {
