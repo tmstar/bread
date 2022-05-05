@@ -9,10 +9,9 @@ import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import makeStyles from '@mui/styles/makeStyles';
-import React, { useContext } from 'react';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import { defaultMainTitle, mainTitleState, openMenuState } from '../../atoms';
-import { ItemContext } from '../../hooks/ItemProvider';
+import React from 'react';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { defaultMainTitle, mainTitleState, openMenuState, selectedTagState, uniqueTagsState } from '../../atoms';
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -38,8 +37,9 @@ const useStyles = makeStyles((theme) => ({
 
 function MenuDrawer() {
   const classes = useStyles();
-  const { uniqueTags, selectTag } = useContext(ItemContext);
   const [openMenu, toggleMenu] = useRecoilState(openMenuState);
+  const uniqueTags = useRecoilValue(uniqueTagsState);
+  const selectTag = useSetRecoilState(selectedTagState);
   const setMainTitle = useSetRecoilState(mainTitleState);
 
   const handleListClick = (tag) => () => {

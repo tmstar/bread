@@ -15,7 +15,7 @@ import 'moment/locale/ja';
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { listTitleState, mainTitleState, openListState, openMenuState } from '../../atoms';
+import { listsInTagState, listTitleState, mainTitleState, openListState, openMenuState, selectedListState } from '../../atoms';
 import { ItemContext } from '../../hooks/ItemProvider';
 
 const drawerWidth = '100%';
@@ -102,11 +102,13 @@ const useStyles = makeStyles((theme) => ({
 
 function HomeMain() {
   const classes = useStyles();
-  const { lists, addList, selectList } = useContext(ItemContext);
+  const selectList = useSetRecoilState(selectedListState);
   const toggleMenu = useSetRecoilState(openMenuState);
   const mainTitle = useRecoilValue(mainTitleState);
+  const lists = useRecoilValue(listsInTagState);
   const toggleList = useSetRecoilState(openListState);
   const setListTitle = useSetRecoilState(listTitleState);
+  const { addList } = useContext(ItemContext);
 
   const handleNewList = () => () => {
     const newName = moment().format('M/D');
