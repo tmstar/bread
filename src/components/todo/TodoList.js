@@ -67,11 +67,11 @@ function TodoList({ todos, hideSwitch }) {
   const [openForm, setOpenForm] = useState(false);
 
   const handleClickListItem = (todo) => {
-    if (todo.updating) {
+    if (todo._updating) {
       // ignore when updating
       return;
     }
-    todo.updating = true;
+    todo._updating = true;
     toggleTodo(todo.id, todo.completed);
   };
 

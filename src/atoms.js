@@ -39,6 +39,7 @@ export const selectedListState = atom({
 export const listItemsInListState = atom({
   key: 'listItemsInList', // List items in a specified list
   default: [],
+  dangerouslyAllowMutability: true,
 });
 
 export const listTitleState = atom({

@@ -119,7 +119,7 @@ function HomeMain() {
 
   const listContents = lists.map((list, index) => {
     const rowLength = lists.length;
-    const remainCount = list.items_aggregate?.aggregate.count;
+    const remainCount = list._item_count;
     return (
       <div key={list.id + '-div'}>
         <ListItem

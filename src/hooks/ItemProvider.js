@@ -24,7 +24,7 @@ export const ItemProvider = ({ children }) => {
     const list = lists.find((list) => list.id === updatedList.id);
     const latestList = { ...list, updated_at: updatedList.updated_at };
     // Due to a bug, aggregation is done in js instead of GraphQL.
-    latestList.items_aggregate.aggregate.count = updatedList.items.filter((e) => !e.completed).length;
+    latestList._item_count = updatedList.items.filter((e) => !e.completed).length;
     const newLists = lists
       .map((list) => (list.id !== latestList.id ? list : latestList))
       .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
@@ -80,6 +80,7 @@ export const ItemProvider = ({ children }) => {
     }
     setLists([]);
     ListService.getAll(selectedTag?.id).then((itemLists) => {
+      itemLists.map((list) => (list._item_count = list.items_aggregate.aggregate.count));
       setLists(itemLists);
     });
   }, [token, selectedTag, setLists]);
@@ -116,7 +117,7 @@ export const ItemProvider = ({ children }) => {
         _modifyUpdatedAt(result.itemList);
       })
       .catch((err) => {
-        newTodo.updating = false;
+        newTodo._updating = false;
         throw err;
       });
   };
@@ -241,7 +242,7 @@ export const ItemProvider = ({ children }) => {
     setListItems([]);
     const newItemList = { name: listName, id: uuid_v4() };
     return ListService.add(newItemList).then((addedList) => {
-      addedList.items_aggregate = { aggregate: { count: 0 } };
+      addedList._item_count = 0;
       setLists([addedList].concat(lists));
       setSelectedList(addedList);
 
