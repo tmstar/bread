@@ -21,7 +21,8 @@ export default function TagEditForm({ open, setOpen }) {
   const classes = useStyles();
   const uniqueTags = useRecoilValue(uniqueTagsState);
   const { addTag } = useContext(ItemContext);
-  const [tag, setTag] = useState('');
+  const [tag] = useState(''); // selected value
+  const [inputTag, setInputTag] = useState(''); // text input value
 
   const toggleDrawer = (isOpen) => () => {
     setOpen(isOpen);
@@ -29,9 +30,9 @@ export default function TagEditForm({ open, setOpen }) {
 
   const handleTagSubmit = (event) => {
     event.preventDefault();
-    addTag(tag).then(() => {
+    addTag(inputTag).then(() => {
       setOpen(false);
-      setTag('');
+      setInputTag('');
     });
   };
 
@@ -43,12 +44,13 @@ export default function TagEditForm({ open, setOpen }) {
             <Autocomplete
               className={classes.tag}
               autoFocus
-              value={tag || ''}
+              value={tag}
+              inputValue={inputTag}
               options={uniqueTags.map((tag) => tag.name)}
               freeSolo
               placeholder="タグの追加..."
-              onChange={(event, newValue) => {
-                setTag(newValue);
+              onInputChange={(event, newValue) => {
+                setInputTag(newValue);
               }}
               fullWidth
               renderInput={(params) => (
