@@ -1,6 +1,8 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { createContext, useEffect, useState } from 'react';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { v4 as uuid_v4 } from 'uuid';
+import { listItemsInListState, listsInTagState, selectedListState, selectedTagState, tagsInListState, uniqueTagsState } from '../atoms';
 import Hasura from '../services/hasura';
 import ListService from '../services/itemList';
 import TagService from '../services/tags';
@@ -9,12 +11,12 @@ import TodoService from '../services/todos';
 export const ItemContext = createContext();
 
 export const ItemProvider = ({ children }) => {
-  const [uniqueTags, setUniqueTags] = useState([]);
-  const [lists, setLists] = useState([]); // lists in a tag
-  const [todos, setTodos] = useState([]); // todos in a list
-  const [tagsInList, setTagsInList] = useState([]); // tags in a list
-  const [selectedTag, setSelectedTag] = useState();
-  const [selectedList, setSelectedList] = useState();
+  const [uniqueTags, setUniqueTags] = useRecoilState(uniqueTagsState);
+  const selectedTag = useRecoilValue(selectedTagState);
+  const [lists, setLists] = useRecoilState(listsInTagState); // lists in a tag
+  const [listItems, setListItems] = useRecoilState(listItemsInListState); // list items in a list
+  const [tagsInList, setTagsInList] = useRecoilState(tagsInListState); // tags in a list
+  const [selectedList, setSelectedList] = useRecoilState(selectedListState);
   const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [token, setToken] = useState();
 
@@ -22,7 +24,7 @@ export const ItemProvider = ({ children }) => {
     const list = lists.find((list) => list.id === updatedList.id);
     const latestList = { ...list, updated_at: updatedList.updated_at };
     // Due to a bug, aggregation is done in js instead of GraphQL.
-    latestList.items_aggregate.aggregate.count = updatedList.items.filter((e) => !e.completed).length;
+    latestList._item_count = updatedList.items.filter((e) => !e.completed).length;
     const newLists = lists
       .map((list) => (list.id !== latestList.id ? list : latestList))
       .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
@@ -70,7 +72,7 @@ export const ItemProvider = ({ children }) => {
     TagService.getAll().then((tagLists) => {
       setUniqueTags(tagLists);
     });
-  }, [token]);
+  }, [token, setUniqueTags]);
 
   useEffect(() => {
     if (!token) {
@@ -78,12 +80,15 @@ export const ItemProvider = ({ children }) => {
     }
     setLists([]);
     ListService.getAll(selectedTag?.id).then((itemLists) => {
+      itemLists.map((list) => (list._item_count = list.items_aggregate.aggregate.count));
       setLists(itemLists);
     });
-  }, [token, selectedTag]);
+  }, [token, selectedTag, setLists]);
 
   useEffect(() => {
     if (!selectedList) {
+      setTagsInList([]);
+      setListItems([]);
       return;
     }
     const newTags = selectedList.item_list_tags.map((listTag) => {
@@ -91,43 +96,40 @@ export const ItemProvider = ({ children }) => {
       return { id: tag.id, name: tag.name };
     });
     setTagsInList(newTags);
-    setTodos([]);
+    setListItems([]);
     TodoService.getAll(selectedList.id).then((todos) => {
-      setTodos(todos.reverse());
+      setListItems(todos.reverse());
     });
-  }, [selectedList]);
+  }, [selectedList, setListItems, setTagsInList]);
 
   const toggleTodo = (id, completed) => {
-    const todo = todos.find((todo) => todo.id === id);
+    const todo = listItems.find((todo) => todo.id === id);
     const newTodo = { ...todo, completed: !completed };
 
     // quick update displayed list
-    const toggledTodos = todos.map((todo) => (todo.id !== newTodo.id ? todo : newTodo));
-    setTodos(toggledTodos);
+    const toggledTodos = listItems.map((todo) => (todo.id !== newTodo.id ? todo : newTodo));
+    setListItems(toggledTodos);
 
     TodoService.update(id, newTodo, selectedList.id)
       .then((result) => {
-        const newTodos = todos.map((todo) => (todo.id !== result.item.id ? todo : result.item));
-        setTodos(newTodos);
         _modifyUpdatedAt(result.itemList);
       })
-      .catch((err) => {
-        newTodo.updating = false;
-        throw err;
+      .finally(() => {
+        newTodo._updating = false;
       });
   };
 
   const hideTodo = (id, is_active) => {
-    const todo = todos.find((todo) => todo.id === id);
+    const todo = listItems.find((todo) => todo.id === id);
     const newTodo = { ...todo, is_active: !is_active };
 
     // quick update displayed list
-    const hidedTodos = todos.map((todo) => (todo.id !== newTodo.id ? todo : newTodo));
-    setTodos(hidedTodos);
+    const hidedTodos = listItems.map((todo) => (todo.id !== newTodo.id ? todo : newTodo));
+    setListItems(hidedTodos);
 
     TodoService.update(id, newTodo, selectedList.id).then((result) => {
-      const newTodos = todos.map((todo) => (todo.id !== result.item.id ? todo : result.item));
-      setTodos(newTodos);
+      const newTodos = listItems.map((todo) => (todo.id !== result.item.id ? todo : result.item));
+      setListItems(newTodos);
       _modifyUpdatedAt(result.itemList);
     });
   };
@@ -137,12 +139,12 @@ export const ItemProvider = ({ children }) => {
       // ignore empty title
       return Promise.resolve();
     }
-    const todo = todos.find((todo) => todo.id === id);
+    const todo = listItems.find((todo) => todo.id === id);
     const newTodo = { ...todo, title: title, note: note, color: color };
 
     return TodoService.update(id, newTodo, selectedList.id).then((result) => {
-      const newTodos = todos.map((todo) => (todo.id !== result.item.id ? todo : result.item));
-      setTodos(newTodos);
+      const newTodos = listItems.map((todo) => (todo.id !== result.item.id ? todo : result.item));
+      setListItems(newTodos);
       _modifyUpdatedAt(result.itemList);
     });
   };
@@ -162,16 +164,16 @@ export const ItemProvider = ({ children }) => {
 
   const deleteTodo = (id) => {
     TodoService.delete(id, selectedList.id).then((result) => {
-      const newTodos = todos.filter((todo) => todo.id !== result.item.id);
-      setTodos(newTodos);
+      const newTodos = listItems.filter((todo) => todo.id !== result.item.id);
+      setListItems(newTodos);
       _modifyUpdatedAt(result.itemList);
     });
   };
 
   const deleteCompletedTodos = (listId) => {
     TodoService.deleteCompleted(listId).then((result) => {
-      const newTodos = todos.filter((todo) => !result.items.some((d) => d.id === todo.id));
-      setTodos(newTodos);
+      const newTodos = listItems.filter((todo) => !result.items.some((d) => d.id === todo.id));
+      setListItems(newTodos);
       _modifyUpdatedAt(result.itemList);
     });
   };
@@ -227,17 +229,17 @@ export const ItemProvider = ({ children }) => {
       item_list_id: selectedList.id,
     };
     return TodoService.add(newTodo).then((result) => {
-      setTodos([result.item].concat(todos));
+      setListItems([result.item].concat(listItems));
       _modifyUpdatedAt(result.itemList);
     });
   };
 
   const addList = (listName) => {
     setTagsInList([]);
-    setTodos([]);
+    setListItems([]);
     const newItemList = { name: listName, id: uuid_v4() };
     return ListService.add(newItemList).then((addedList) => {
-      addedList.items_aggregate = { aggregate: { count: 0 } };
+      addedList._item_count = 0;
       setLists([addedList].concat(lists));
       setSelectedList(addedList);
 
@@ -258,8 +260,6 @@ export const ItemProvider = ({ children }) => {
   return (
     <ItemContext.Provider
       value={{
-        selectTag: setSelectedTag,
-        selectList: setSelectedList,
         toggleTodo: toggleTodo,
         hideTodo: hideTodo,
         updateTodo: updateTodo,
@@ -271,11 +271,6 @@ export const ItemProvider = ({ children }) => {
         addTodo: addTodo,
         addList: addList,
         addTag: addTag,
-        todos,
-        uniqueTags,
-        lists,
-        selectedList,
-        tags: tagsInList,
       }}
     >
       {children}

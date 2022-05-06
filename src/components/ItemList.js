@@ -1,9 +1,10 @@
 import Drawer from '@mui/material/Drawer';
 import makeStyles from '@mui/styles/makeStyles';
-import React, { useContext, useEffect } from 'react';
-import { HomeContext } from '../context/HomeProvider';
-import TodoView from './ItemList/TodoView';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
+import { openListState } from '../atoms';
+import TodoView from './ItemList/TodoView';
 
 const drawerWidth = '100%';
 
@@ -20,8 +21,7 @@ const useStyles = makeStyles((theme) => ({
 function ItemList() {
   const classes = useStyles();
   const navigate = useNavigate();
-
-  const { openList } = useContext(HomeContext);
+  const openList = useRecoilValue(openListState);
 
   useEffect(() => {
     if (!openList) {

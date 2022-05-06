@@ -15,8 +15,9 @@ import Toolbar from '@mui/material/Toolbar';
 import makeStyles from '@mui/styles/makeStyles';
 import React, { useContext, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { listItemsInListState, listTitleState, openListState, selectedListState, tagsInListState } from '../../atoms';
 import { ItemContext } from '../../hooks/ItemProvider';
-import { HomeContext } from '../../context/HomeProvider';
 import AlertDialog from '../todo/AlertDialog';
 import TagEditForm from '../todo/TagEditForm';
 import TodoList from '../todo/TodoList';
@@ -54,8 +55,13 @@ const useStyles = makeStyles((theme) => ({
 function TodoView() {
   const classes = useStyles();
   const navigate = useNavigate();
-  const { toggleList, listTitle, setListTitle } = useContext(HomeContext);
-  const { todos, selectedList, tags, updateList, deleteCompletedTodos, deleteList, removeTag } = useContext(ItemContext);
+  const [listTitle, setListTitle] = useRecoilState(listTitleState);
+  const toggleList = useSetRecoilState(openListState);
+  const listItems = useRecoilValue(listItemsInListState);
+  const [selectedList, selectList] = useRecoilState(selectedListState);
+  const tags = useRecoilValue(tagsInListState);
+
+  const { updateList, deleteCompletedTodos, deleteList, removeTag } = useContext(ItemContext);
 
   const [filter, setFilter] = useState('active');
   const isListEdit = filter === 'all';
@@ -69,6 +75,7 @@ function TodoView() {
   const handleDrawerClose = () => {
     navigate(-1);
     toggleList(false);
+    selectList(null);
   };
 
   const handleMobileMenuOpen = (event) => {
@@ -79,6 +86,7 @@ function TodoView() {
     deleteList(selectedList.id);
     navigate(-1);
     toggleList(false);
+    selectList(null);
   };
 
   const handleFilter = (newValue) => {
@@ -101,16 +109,16 @@ function TodoView() {
   const filteredTodos = useMemo(() => {
     switch (filter) {
       case 'active':
-        return todos.filter((todo) => todo.is_active);
+        return listItems.filter((todo) => todo.is_active);
       case 'inProgress':
-        return todos.filter((todo) => todo.is_active && !todo.completed);
+        return listItems.filter((todo) => todo.is_active && !todo.completed);
       case 'completed':
-        return todos.filter((todo) => todo.is_active && todo.completed);
+        return listItems.filter((todo) => todo.is_active && todo.completed);
       case 'all':
       default:
-        return todos;
+        return listItems;
     }
-  }, [todos, filter]);
+  }, [listItems, filter]);
 
   const mobileMenuId = 'primary-search-account-menu-mobile';
   const renderMobileMenu = (

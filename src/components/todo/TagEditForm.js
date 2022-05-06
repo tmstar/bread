@@ -1,12 +1,14 @@
-import React, { useState } from "react";
-import SwipeableDrawer from "@mui/material/SwipeableDrawer";
-import InputBase from "@mui/material/InputBase";
-import Button from "@mui/material/Button";
+import Autocomplete from '@mui/material/Autocomplete';
+import Button from '@mui/material/Button';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import SwipeableDrawer from '@mui/material/SwipeableDrawer';
+import TextField from '@mui/material/TextField';
 import makeStyles from '@mui/styles/makeStyles';
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import { ItemContext } from "../../hooks/ItemProvider";
-import { useContext } from "react";
+import React, { useContext, useState } from 'react';
+import { useRecoilValue } from 'recoil';
+import { uniqueTagsState } from '../../atoms';
+import { ItemContext } from '../../hooks/ItemProvider';
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -17,18 +19,20 @@ const useStyles = makeStyles((theme) => ({
 
 export default function TagEditForm({ open, setOpen }) {
   const classes = useStyles();
+  const uniqueTags = useRecoilValue(uniqueTagsState);
   const { addTag } = useContext(ItemContext);
+  const [tag] = useState(''); // selected value
+  const [inputTag, setInputTag] = useState(''); // text input value
 
-  const [tag, setTag] = useState("");
   const toggleDrawer = (isOpen) => () => {
     setOpen(isOpen);
   };
 
   const handleTagSubmit = (event) => {
     event.preventDefault();
-    addTag(tag).then(() => {
+    addTag(inputTag).then(() => {
       setOpen(false);
-      setTag("");
+      setInputTag('');
     });
   };
 
@@ -37,14 +41,26 @@ export default function TagEditForm({ open, setOpen }) {
       <form onSubmit={handleTagSubmit}>
         <div className={classes.form}>
           <DialogContent>
-            <InputBase
+            <Autocomplete
               className={classes.tag}
               autoFocus
               value={tag}
+              inputValue={inputTag}
+              options={uniqueTags.map((tag) => tag.name)}
+              freeSolo
               placeholder="タグの追加..."
-              inputProps={{ "aria-label": "add tag" }}
-              onChange={(event) => setTag(event.target.value)}
+              onInputChange={(event, newValue) => {
+                setInputTag(newValue);
+              }}
               fullWidth
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="standard"
+                  placeholder="タグの追加..."
+                  InputProps={{ ...params.InputProps, disableUnderline: true }}
+                />
+              )}
             />
           </DialogContent>
           <DialogActions>

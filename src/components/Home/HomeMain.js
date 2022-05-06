@@ -14,7 +14,8 @@ import moment from 'moment';
 import 'moment/locale/ja';
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { HomeContext } from '../../context/HomeProvider';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { listsInTagState, listTitleState, mainTitleState, openListState, openMenuState, selectedListState } from '../../atoms';
 import { ItemContext } from '../../hooks/ItemProvider';
 
 const drawerWidth = '100%';
@@ -101,8 +102,13 @@ const useStyles = makeStyles((theme) => ({
 
 function HomeMain() {
   const classes = useStyles();
-  const { lists, addList, selectList } = useContext(ItemContext);
-  const { toggleList, setListTitle, toggleMenu, mainTitle } = useContext(HomeContext);
+  const selectList = useSetRecoilState(selectedListState);
+  const toggleMenu = useSetRecoilState(openMenuState);
+  const mainTitle = useRecoilValue(mainTitleState);
+  const lists = useRecoilValue(listsInTagState);
+  const toggleList = useSetRecoilState(openListState);
+  const setListTitle = useSetRecoilState(listTitleState);
+  const { addList } = useContext(ItemContext);
 
   const handleNewList = () => () => {
     const newName = moment().format('M/D');
@@ -113,7 +119,7 @@ function HomeMain() {
 
   const listContents = lists.map((list, index) => {
     const rowLength = lists.length;
-    const remainCount = list.items_aggregate?.aggregate.count;
+    const remainCount = list._item_count;
     return (
       <div key={list.id + '-div'}>
         <ListItem
@@ -151,7 +157,7 @@ function HomeMain() {
     <>
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
-          <IconButton color="inherit" edge="start" className={classes.menuButton} onClick={toggleMenu(true)} size="large">
+          <IconButton color="inherit" edge="start" className={classes.menuButton} onClick={() => toggleMenu(true)} size="large">
             <MenuIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
