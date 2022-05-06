@@ -1,5 +1,10 @@
+import Brightness1TwoToneIcon from '@mui/icons-material/Brightness1TwoTone';
+import CommentIcon from '@mui/icons-material/Comment';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Done from '@mui/icons-material/Done';
+import RemoveCircleOutlineTwoToneIcon from '@mui/icons-material/RemoveCircleOutlineTwoTone';
 import Checkbox from '@mui/material/Checkbox';
-import { amber, teal, yellow } from '@mui/material/colors';
+import { amber, blueGrey, teal, yellow } from '@mui/material/colors';
 import Divider from '@mui/material/Divider';
 import Fab from '@mui/material/Fab';
 import IconButton from '@mui/material/IconButton';
@@ -8,16 +13,12 @@ import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
-import makeStyles from '@mui/styles/makeStyles';
-import Typography from '@mui/material/Typography';
-import Brightness1TwoToneIcon from '@mui/icons-material/Brightness1TwoTone';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import CommentIcon from '@mui/icons-material/Comment';
-import DeleteIcon from '@mui/icons-material/Delete';
-import RemoveCircleOutlineTwoToneIcon from '@mui/icons-material/RemoveCircleOutlineTwoTone';
 import SpeedDialIcon from '@mui/material/SpeedDialIcon';
+import Typography from '@mui/material/Typography';
+import makeStyles from '@mui/styles/makeStyles';
+import withStyles from '@mui/styles/withStyles';
 import clsx from 'clsx';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { ItemContext } from '../../hooks/ItemProvider';
 import ItemEditForm from './ItemEditForm';
 
@@ -66,6 +67,15 @@ function TodoList({ todos, hideSwitch }) {
   const [selectedTodo, setSelectedTodo] = useState();
   const [openForm, setOpenForm] = useState(false);
 
+  const StrikeListItemText = useMemo(() => {
+    return withStyles({
+      root: {
+        textDecoration: 'line-through',
+        color: blueGrey['A200'],
+      },
+    })(ListItemText);
+  }, []);
+
   const handleClickListItem = (todo) => {
     if (todo._updating) {
       // ignore when updating
@@ -110,7 +120,7 @@ function TodoList({ todos, hideSwitch }) {
               edge="start"
               disableRipple
               checked={todo.completed}
-              checkedIcon={<CheckCircleOutlineIcon />}
+              checkedIcon={<Done />}
               indeterminateIcon={<RemoveCircleOutlineTwoToneIcon />}
               icon={
                 <Brightness1TwoToneIcon
@@ -133,7 +143,11 @@ function TodoList({ todos, hideSwitch }) {
               {index + 1}
             </Typography>
           </ListItemIcon>
-          <ListItemText primary={todo.title} secondary={todo.note} className={hideSwitch ? '' : classes.label} />
+          {todo.completed ? (
+            <StrikeListItemText primary={todo.title} secondary={todo.note} className={hideSwitch ? '' : classes.label} />
+          ) : (
+            <ListItemText primary={todo.title} secondary={todo.note} className={hideSwitch ? '' : classes.label} />
+          )}
           {hideSwitch ? '' : listSecondaryAction(todo)}
         </ListItem>
         {index + 1 !== rowLength ? <Divider /> : ''}
