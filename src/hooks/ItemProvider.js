@@ -112,13 +112,10 @@ export const ItemProvider = ({ children }) => {
 
     TodoService.update(id, newTodo, selectedList.id)
       .then((result) => {
-        const newTodos = listItems.map((todo) => (todo.id !== result.item.id ? todo : result.item));
-        setListItems(newTodos);
         _modifyUpdatedAt(result.itemList);
       })
-      .catch((err) => {
+      .finally(() => {
         newTodo._updating = false;
-        throw err;
       });
   };
 
