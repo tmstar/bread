@@ -7,7 +7,7 @@ import { RecoilRoot } from 'recoil';
 import Home from './components/Home';
 import ItemList from './components/ItemList';
 import Logout from './components/Logout';
-import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedRoute from './components/routing/ProtectedRoute';
 import ApolloProviderWithAuth0 from './hooks/ApolloProviderWithAuth0';
 import { ItemProvider } from './hooks/ItemProvider';
 
