@@ -13,6 +13,7 @@ CREATE TABLE item (
   color text DEFAULT 'default',
   completed boolean NOT NULL DEFAULT false,
   is_active boolean NOT NULL DEFAULT true,
+  created_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
   item_list_id uuid REFERENCES item_list(id)
 );
 CREATE TABLE item_list (
