@@ -1,11 +1,11 @@
-import axios from "axios";
-import { print } from "graphql";
-import gql from "graphql-tag";
-import Hasura from "./hasura";
+import axios from 'axios';
+import { print } from 'graphql';
+import gql from 'graphql-tag';
+import Hasura from './hasura';
 
 const ALL_TODOS = gql`
   query AllTodos($item_list_id: uuid!) {
-    item(where: { item_list_id: { _eq: $item_list_id } }) {
+    item(where: { item_list_id: { _eq: $item_list_id } }, order_by: { created_at: desc }) {
       id
       title
       note

@@ -98,7 +98,7 @@ export const ItemProvider = ({ children }) => {
     setTagsInList(newTags);
     setListItems([]);
     TodoService.getAll(selectedList.id).then((todos) => {
-      setListItems(todos.reverse());
+      setListItems(todos);
     });
   }, [selectedList, setListItems, setTagsInList]);
 
