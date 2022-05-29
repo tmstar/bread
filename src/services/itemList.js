@@ -1,7 +1,7 @@
-import axios from "axios";
-import { print } from "graphql";
-import gql from "graphql-tag";
-import Hasura from "./hasura";
+import axios from 'axios';
+import { print } from 'graphql';
+import gql from 'graphql-tag';
+import Hasura from './hasura';
 
 const ALL_LISTS = gql`
   query AllLists($user_id: String!, $user_email: String!) {
@@ -114,7 +114,7 @@ const DELETE_LIST = gql`
   }
 `;
 
-const getAll = async (tagId) => {
+const getAll = async (token, tagId) => {
   const response = await axios.post(
     `${Hasura.url}`,
     {
@@ -125,12 +125,12 @@ const getAll = async (tagId) => {
         ...(tagId && { tag_id: tagId }),
       },
     },
-    { headers: Hasura.getHeaders() }
+    { headers: Hasura.getHeadersWithToken(token) }
   );
   return response.data.data.item_list;
 };
 
-const add = async (newList) => {
+const add = async (token, newList) => {
   const response = await axios.post(
     `${Hasura.url}`,
     {
@@ -141,12 +141,12 @@ const add = async (newList) => {
         name: newList.name,
       },
     },
-    { headers: Hasura.getHeaders() }
+    { headers: Hasura.getHeadersWithToken(token) }
   );
   return response.data.data.insert_item_list_one;
 };
 
-const update = async (id, newList) => {
+const update = async (token, id, newList) => {
   const response = await axios.post(
     `${Hasura.url}`,
     {
@@ -156,19 +156,19 @@ const update = async (id, newList) => {
         name: newList.name,
       },
     },
-    { headers: Hasura.getHeaders() }
+    { headers: Hasura.getHeadersWithToken(token) }
   );
   return response.data.data.update_item_list_by_pk;
 };
 
-const _delete = async (id) => {
+const _delete = async (token, id) => {
   const response = await axios.post(
     `${Hasura.url}`,
     {
       query: print(DELETE_LIST),
       variables: { id: id },
     },
-    { headers: Hasura.getHeaders() }
+    { headers: Hasura.getHeadersWithToken(token) }
   );
   const data = response.data.data;
   return { itemListId: data.delete_item_list_by_pk.id, tags: data.delete_item_list_tag.returning };

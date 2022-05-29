@@ -104,7 +104,7 @@ const DELETE_COMPLETED_TODOS = gql`
   }
 `;
 
-const getAll = async (listId) => {
+const getAll = async (token, listId) => {
   const response = await axios.post(
     `${Hasura.url}`,
     {
@@ -113,12 +113,12 @@ const getAll = async (listId) => {
         item_list_id: listId,
       },
     },
-    { headers: Hasura.getHeaders() }
+    { headers: Hasura.getHeadersWithToken(token) }
   );
   return response.data.data.item;
 };
 
-const update = async (id, newTodo, listId) => {
+const update = async (token, id, newTodo, listId) => {
   const response = await axios.post(
     `${Hasura.url}`,
     {
@@ -133,36 +133,36 @@ const update = async (id, newTodo, listId) => {
         item_list_id: listId,
       },
     },
-    { headers: Hasura.getHeaders() }
+    { headers: Hasura.getHeadersWithToken(token) }
   );
   return { item: response.data.data.update_item_by_pk, itemList: response.data.data.update_item_list_by_pk };
 };
 
-const _delete = async (id, listId) => {
+const _delete = async (token, id, listId) => {
   const response = await axios.post(
     `${Hasura.url}`,
     {
       query: print(DELETE_TODO),
       variables: { id: id, item_list_id: listId },
     },
-    { headers: Hasura.getHeaders() }
+    { headers: Hasura.getHeadersWithToken(token) }
   );
   return { item: response.data.data.delete_item_by_pk, itemList: response.data.data.update_item_list_by_pk };
 };
 
-const deleteCompleted = async (listId) => {
+const deleteCompleted = async (token, listId) => {
   const response = await axios.post(
     `${Hasura.url}`,
     {
       query: print(DELETE_COMPLETED_TODOS),
       variables: { item_list_id: listId },
     },
-    { headers: Hasura.getHeaders() }
+    { headers: Hasura.getHeadersWithToken(token) }
   );
   return { items: response.data.data.delete_item.returning, itemList: response.data.data.update_item_list_by_pk };
 };
 
-const add = async (newTodo) => {
+const add = async (token, newTodo) => {
   const response = await axios.post(
     `${Hasura.url}`,
     {
@@ -175,7 +175,7 @@ const add = async (newTodo) => {
         item_list_id: newTodo.item_list_id,
       },
     },
-    { headers: Hasura.getHeaders() }
+    { headers: Hasura.getHeadersWithToken(token) }
   );
   return { item: response.data.data.insert_item_one, itemList: response.data.data.update_item_list_by_pk };
 };
