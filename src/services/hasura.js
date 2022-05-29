@@ -10,7 +10,7 @@ const initialize = (user, accessToken) => {
   token = accessToken;
 };
 
-const getHeaders = () => {
+const getHeadersWithToken = (token) => {
   return {
     'content-type': 'application/json',
     Authorization: `Bearer ${token}`,
@@ -26,6 +26,6 @@ const gql = {
     return email;
   },
   initialize,
-  getHeaders,
+  getHeadersWithToken,
 };
 export default gql;

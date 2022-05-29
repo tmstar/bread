@@ -1,7 +1,7 @@
-import axios from "axios";
-import { print } from "graphql";
-import gql from "graphql-tag";
-import Hasura from "./hasura";
+import axios from 'axios';
+import { print } from 'graphql';
+import gql from 'graphql-tag';
+import Hasura from './hasura';
 
 const CREATE_USER = gql`
   mutation CreateUser($id: String!, $name: String!) {
@@ -12,7 +12,7 @@ const CREATE_USER = gql`
   }
 `;
 
-const add = async (newUser) => {
+const add = async (token, newUser) => {
   const response = await axios.post(
     `${Hasura.url}`,
     {
@@ -22,7 +22,7 @@ const add = async (newUser) => {
         name: newUser.name,
       },
     },
-    { headers: Hasura.getHeaders() }
+    { headers: Hasura.getHeadersWithToken(token) }
   );
   return response.data.data.insert_users_one;
 };

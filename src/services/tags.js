@@ -1,7 +1,7 @@
-import axios from "axios";
-import { print } from "graphql";
-import gql from "graphql-tag";
-import Hasura from "./hasura";
+import axios from 'axios';
+import { print } from 'graphql';
+import gql from 'graphql-tag';
+import Hasura from './hasura';
 
 const ALL_TAGS = gql`
   query AllTags($user_id: String!) {
@@ -69,7 +69,7 @@ const DELETE_TAGS = gql`
   }
 `;
 
-const getAll = async () => {
+const getAll = async (token) => {
   const response = await axios.post(
     `${Hasura.url}`,
     {
@@ -78,12 +78,12 @@ const getAll = async () => {
         user_id: Hasura.currentUid,
       },
     },
-    { headers: Hasura.getHeaders() }
+    { headers: Hasura.getHeadersWithToken(token) }
   );
   return response.data.data.tag;
 };
 
-const add = async (listId, newTag) => {
+const add = async (token, listId, newTag) => {
   const response = await axios.post(
     `${Hasura.url}`,
     {
@@ -95,43 +95,43 @@ const add = async (listId, newTag) => {
         item_list_id: listId,
       },
     },
-    { headers: Hasura.getHeaders() }
+    { headers: Hasura.getHeadersWithToken(token) }
   );
   return response.data.data.insert_tag_one;
 };
 
-const remove = async (listId, tagId) => {
+const remove = async (token, listId, tagId) => {
   const response = await axios.post(
     `${Hasura.url}`,
     {
       query: print(REMOVE_TAG),
       variables: { item_list_id: listId, tag_id: tagId },
     },
-    { headers: Hasura.getHeaders() }
+    { headers: Hasura.getHeadersWithToken(token) }
   );
   return response.data.data.delete_item_list_tag_by_pk;
 };
 
-const _delete = async (tagId) => {
+const _delete = async (token, tagId) => {
   const response = await axios.post(
     `${Hasura.url}`,
     {
       query: print(DELETE_TAG),
       variables: { tag_id: tagId },
     },
-    { headers: Hasura.getHeaders() }
+    { headers: Hasura.getHeadersWithToken(token) }
   );
   return response.data.data.delete_tag_by_pk;
 };
 
-const deleteAll = async (tagIds) => {
+const deleteAll = async (token, tagIds) => {
   const response = await axios.post(
     `${Hasura.url}`,
     {
       query: print(DELETE_TAGS),
       variables: { tag_ids: tagIds },
     },
-    { headers: Hasura.getHeaders() }
+    { headers: Hasura.getHeadersWithToken(token) }
   );
   return response.data.data.delete_tag.returning;
 };

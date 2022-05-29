@@ -42,17 +42,21 @@ export const ItemProvider = ({ children }) => {
 
   const _addTag = (listId, tagName, isReplaced) => {
     const newTag = { id: uuid_v4(), name: tagName };
-    return TagService.add(listId, newTag).then((addedTag) => {
-      if (isReplaced) {
-        setTagsInList([addedTag]);
-      } else if (!tagsInList.some((tag) => tag.name === addedTag.name)) {
-        setTagsInList(tagsInList.concat([addedTag]));
-      }
-      if (!uniqueTags.some((tag) => tag.name === addedTag.name)) {
-        const newTags = uniqueTags.concat([addedTag]).sort((a, b) => a.name.localeCompare(b.name));
-        setUniqueTags(newTags);
-      }
-    });
+    return getAccessTokenSilently()
+      .then((token) => {
+        return TagService.add(token, listId, newTag);
+      })
+      .then((addedTag) => {
+        if (isReplaced) {
+          setTagsInList([addedTag]);
+        } else if (!tagsInList.some((tag) => tag.name === addedTag.name)) {
+          setTagsInList(tagsInList.concat([addedTag]));
+        }
+        if (!uniqueTags.some((tag) => tag.name === addedTag.name)) {
+          const newTags = uniqueTags.concat([addedTag]).sort((a, b) => a.name.localeCompare(b.name));
+          setUniqueTags(newTags);
+        }
+      });
   };
 
   useEffect(() => {
@@ -69,9 +73,13 @@ export const ItemProvider = ({ children }) => {
     if (!token) {
       return;
     }
-    TagService.getAll().then((tagLists) => {
-      setUniqueTags(tagLists);
-    });
+    getAccessTokenSilently()
+      .then((token) => {
+        return TagService.getAll(token);
+      })
+      .then((tagLists) => {
+        setUniqueTags(tagLists);
+      });
   }, [token, setUniqueTags]);
 
   useEffect(() => {
@@ -79,10 +87,14 @@ export const ItemProvider = ({ children }) => {
       return;
     }
     setLists([]);
-    ListService.getAll(selectedTag?.id).then((itemLists) => {
-      itemLists.map((list) => (list._item_count = list.items_aggregate.aggregate.count));
-      setLists(itemLists);
-    });
+    getAccessTokenSilently()
+      .then((token) => {
+        return ListService.getAll(token, selectedTag?.id);
+      })
+      .then((itemLists) => {
+        itemLists.map((list) => (list._item_count = list.items_aggregate.aggregate.count));
+        setLists(itemLists);
+      });
   }, [token, selectedTag, setLists]);
 
   useEffect(() => {
@@ -97,9 +109,13 @@ export const ItemProvider = ({ children }) => {
     });
     setTagsInList(newTags);
     setListItems([]);
-    TodoService.getAll(selectedList.id).then((todos) => {
-      setListItems(todos);
-    });
+    getAccessTokenSilently()
+      .then((token) => {
+        return TodoService.getAll(token, selectedList.id);
+      })
+      .then((todos) => {
+        setListItems(todos);
+      });
   }, [selectedList, setListItems, setTagsInList]);
 
   const toggleTodo = (id, completed) => {
@@ -110,7 +126,10 @@ export const ItemProvider = ({ children }) => {
     const toggledTodos = listItems.map((todo) => (todo.id !== newTodo.id ? todo : newTodo));
     setListItems(toggledTodos);
 
-    TodoService.update(id, newTodo, selectedList.id)
+    getAccessTokenSilently()
+      .then((token) => {
+        return TodoService.update(token, id, newTodo, selectedList.id);
+      })
       .then((result) => {
         _modifyUpdatedAt(result.itemList);
       })
@@ -127,11 +146,15 @@ export const ItemProvider = ({ children }) => {
     const hidedTodos = listItems.map((todo) => (todo.id !== newTodo.id ? todo : newTodo));
     setListItems(hidedTodos);
 
-    TodoService.update(id, newTodo, selectedList.id).then((result) => {
-      const newTodos = listItems.map((todo) => (todo.id !== result.item.id ? todo : result.item));
-      setListItems(newTodos);
-      _modifyUpdatedAt(result.itemList);
-    });
+    getAccessTokenSilently()
+      .then((token) => {
+        return TodoService.update(token, id, newTodo, selectedList.id);
+      })
+      .then((result) => {
+        const newTodos = listItems.map((todo) => (todo.id !== result.item.id ? todo : result.item));
+        setListItems(newTodos);
+        _modifyUpdatedAt(result.itemList);
+      });
   };
 
   const updateTodo = (id, title, note, color) => {
@@ -142,11 +165,15 @@ export const ItemProvider = ({ children }) => {
     const todo = listItems.find((todo) => todo.id === id);
     const newTodo = { ...todo, title: title, note: note, color: color };
 
-    return TodoService.update(id, newTodo, selectedList.id).then((result) => {
-      const newTodos = listItems.map((todo) => (todo.id !== result.item.id ? todo : result.item));
-      setListItems(newTodos);
-      _modifyUpdatedAt(result.itemList);
-    });
+    return getAccessTokenSilently()
+      .then((token) => {
+        return TodoService.update(token, id, newTodo, selectedList.id);
+      })
+      .then((result) => {
+        const newTodos = listItems.map((todo) => (todo.id !== result.item.id ? todo : result.item));
+        setListItems(newTodos);
+        _modifyUpdatedAt(result.itemList);
+      });
   };
 
   const updateList = (id, name) => {
@@ -157,52 +184,75 @@ export const ItemProvider = ({ children }) => {
     const list = lists.find((list) => list.id === id);
     const newList = { ...list, name: name };
 
-    return ListService.update(id, newList).then((updatedList) => {
-      _replaceList(updatedList);
-    });
+    return getAccessTokenSilently()
+      .then((token) => {
+        return ListService.update(token, id, newList);
+      })
+      .then((updatedList) => {
+        _replaceList(updatedList);
+      });
   };
 
   const deleteTodo = (id) => {
-    TodoService.delete(id, selectedList.id).then((result) => {
-      const newTodos = listItems.filter((todo) => todo.id !== result.item.id);
-      setListItems(newTodos);
-      _modifyUpdatedAt(result.itemList);
-    });
+    getAccessTokenSilently()
+      .then((token) => {
+        return TodoService.delete(token, id, selectedList.id);
+      })
+      .then((result) => {
+        const newTodos = listItems.filter((todo) => todo.id !== result.item.id);
+        setListItems(newTodos);
+        _modifyUpdatedAt(result.itemList);
+      });
   };
 
   const deleteCompletedTodos = (listId) => {
-    TodoService.deleteCompleted(listId).then((result) => {
-      const newTodos = listItems.filter((todo) => !result.items.some((d) => d.id === todo.id));
-      setListItems(newTodos);
-      _modifyUpdatedAt(result.itemList);
-    });
+    getAccessTokenSilently()
+      .then((token) => {
+        return TodoService.deleteCompleted(token, listId);
+      })
+      .then((result) => {
+        const newTodos = listItems.filter((todo) => !result.items.some((d) => d.id === todo.id));
+        setListItems(newTodos);
+        _modifyUpdatedAt(result.itemList);
+      });
   };
 
   const deleteList = (id) => {
-    ListService.delete(id).then((result) => {
-      const newLists = lists.filter((list) => list.id !== result.itemListId);
-      setLists(newLists);
+    getAccessTokenSilently()
+      .then((token) => {
+        return ListService.delete(token, id);
+      })
+      .then((result) => {
+        const newLists = lists.filter((list) => list.id !== result.itemListId);
+        setLists(newLists);
 
-      const unUsedTagIds = result.tags.filter((t) => !t.tag.item_list_tags_aggregate.aggregate.count).map((t) => t.tag_id);
-      if (!unUsedTagIds.length) {
-        return;
-      }
-      TagService.deleteAll(unUsedTagIds).then((deletedTags) => {
-        const newTags = uniqueTags.filter((tag) => !deletedTags.some((t) => t.id === tag.id));
-        setUniqueTags(newTags);
+        const unUsedTagIds = result.tags.filter((t) => !t.tag.item_list_tags_aggregate.aggregate.count).map((t) => t.tag_id);
+        if (!unUsedTagIds.length) {
+          return;
+        }
+        getAccessTokenSilently()
+          .then((token) => {
+            return TagService.deleteAll(token, unUsedTagIds);
+          })
+          .then((deletedTags) => {
+            const newTags = uniqueTags.filter((tag) => !deletedTags.some((t) => t.id === tag.id));
+            setUniqueTags(newTags);
+          });
       });
-    });
   };
 
   const removeTag = (tagId) => {
-    TagService.remove(selectedList.id, tagId)
+    getAccessTokenSilently()
+      .then((token) => {
+        return TagService.remove(token, selectedList.id, tagId);
+      })
       .then((removedTag) => {
         const newTags = tagsInList.filter((tag) => tag.id !== removedTag.tag_id);
         setTagsInList(newTags);
 
         const hasLists = removedTag.tag.item_list_tags_aggregate.aggregate.count;
         if (!hasLists) {
-          return TagService.delete(tagId);
+          return TagService.delete(token, tagId);
         }
       })
       .then((deleteTag) => {
@@ -210,7 +260,7 @@ export const ItemProvider = ({ children }) => {
           const newTags = uniqueTags.filter((tag) => tag.id !== deleteTag.id).sort((a, b) => a.name.localeCompare(b.name));
           setUniqueTags(newTags);
         }
-        return ListService.getAll(selectedTag?.id).then((itemLists) => {
+        return ListService.getAll(token, selectedTag?.id).then((itemLists) => {
           setLists(itemLists);
         });
       });
@@ -228,25 +278,33 @@ export const ItemProvider = ({ children }) => {
       id: uuid_v4(),
       item_list_id: selectedList.id,
     };
-    return TodoService.add(newTodo).then((result) => {
-      setListItems([result.item].concat(listItems));
-      _modifyUpdatedAt(result.itemList);
-    });
+    return getAccessTokenSilently()
+      .then((token) => {
+        return TodoService.add(token, newTodo);
+      })
+      .then((result) => {
+        setListItems([result.item].concat(listItems));
+        _modifyUpdatedAt(result.itemList);
+      });
   };
 
   const addList = (listName) => {
     setTagsInList([]);
     setListItems([]);
     const newItemList = { name: listName, id: uuid_v4() };
-    return ListService.add(newItemList).then((addedList) => {
-      addedList._item_count = 0;
-      setLists([addedList].concat(lists));
-      setSelectedList(addedList);
+    return getAccessTokenSilently()
+      .then((token) => {
+        return ListService.add(token, newItemList);
+      })
+      .then((addedList) => {
+        addedList._item_count = 0;
+        setLists([addedList].concat(lists));
+        setSelectedList(addedList);
 
-      if (selectedTag?.name) {
-        _addTag(addedList.id, selectedTag.name, true);
-      }
-    });
+        if (selectedTag?.name) {
+          _addTag(addedList.id, selectedTag.name, true);
+        }
+      });
   };
 
   const addTag = (tagName) => {
