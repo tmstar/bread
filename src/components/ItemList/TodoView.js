@@ -13,10 +13,10 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
 import makeStyles from '@mui/styles/makeStyles';
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { listItemsInListState, listTitleState, openListState, selectedListState, tagsInListState } from '../../atoms';
+import { listTitleState, openListState, selectedListState, tagsInListState } from '../../atoms';
 import { ItemContext } from '../../hooks/ItemProvider';
 import AlertDialog from '../todo/AlertDialog';
 import TagEditForm from '../todo/TagEditForm';
@@ -57,7 +57,6 @@ function TodoView() {
   const navigate = useNavigate();
   const [listTitle, setListTitle] = useRecoilState(listTitleState);
   const toggleList = useSetRecoilState(openListState);
-  const listItems = useRecoilValue(listItemsInListState);
   const [selectedList, selectList] = useRecoilState(selectedListState);
   const tags = useRecoilValue(tagsInListState);
 
@@ -105,20 +104,6 @@ function TodoView() {
     event.preventDefault();
     updateList(selectedList.id, listTitle);
   };
-
-  const filteredTodos = useMemo(() => {
-    switch (filter) {
-      case 'active':
-        return listItems.filter((todo) => todo.is_active);
-      case 'inProgress':
-        return listItems.filter((todo) => todo.is_active && !todo.completed);
-      case 'completed':
-        return listItems.filter((todo) => todo.is_active && todo.completed);
-      case 'all':
-      default:
-        return listItems;
-    }
-  }, [listItems, filter]);
 
   const mobileMenuId = 'primary-search-account-menu-mobile';
   const renderMobileMenu = (
@@ -229,7 +214,7 @@ function TodoView() {
           {tagList}
         </div>
         <TagEditForm open={bottomDrawerOpen} setOpen={setBottomDrawerOpen} />
-        <TodoList todos={filteredTodos} hideSwitch={filter !== 'all'} />
+        <TodoList hideSwitch={filter !== 'all'} />
         <AlertDialog
           open={alertOpen}
           setOpen={setAlertOpen}
