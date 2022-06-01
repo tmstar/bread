@@ -80,7 +80,7 @@ export const ItemProvider = ({ children }) => {
       .then((tagLists) => {
         setUniqueTags(tagLists);
       });
-  }, [token, setUniqueTags]);
+  }, [token, getAccessTokenSilently, setUniqueTags]);
 
   useEffect(() => {
     if (!token) {
@@ -95,7 +95,7 @@ export const ItemProvider = ({ children }) => {
         itemLists.map((list) => (list._item_count = list.items_aggregate.aggregate.count));
         setLists(itemLists);
       });
-  }, [token, selectedTag, setLists]);
+  }, [token, getAccessTokenSilently, selectedTag, setLists]);
 
   useEffect(() => {
     if (!selectedList) {
@@ -116,7 +116,7 @@ export const ItemProvider = ({ children }) => {
       .then((todos) => {
         setListItems(todos);
       });
-  }, [selectedList, setListItems, setTagsInList]);
+  }, [selectedList, setListItems, setTagsInList, getAccessTokenSilently]);
 
   const toggleTodo = (id, completed) => {
     const todo = listItems.find((todo) => todo.id === id);
@@ -138,21 +138,16 @@ export const ItemProvider = ({ children }) => {
       });
   };
 
-  const hideTodo = (id, is_active) => {
+  const reorderTodo = (id, position) => {
     const todo = listItems.find((todo) => todo.id === id);
-    const newTodo = { ...todo, is_active: !is_active };
 
-    // quick update displayed list
-    const hidedTodos = listItems.map((todo) => (todo.id !== newTodo.id ? todo : newTodo));
-    setListItems(hidedTodos);
+    const newTodo = { ...todo, position: position };
 
     getAccessTokenSilently()
       .then((token) => {
         return TodoService.update(token, id, newTodo, selectedList.id);
       })
       .then((result) => {
-        const newTodos = listItems.map((todo) => (todo.id !== result.item.id ? todo : result.item));
-        setListItems(newTodos);
         _modifyUpdatedAt(result.itemList);
       });
   };
@@ -271,10 +266,12 @@ export const ItemProvider = ({ children }) => {
       // ignore empty title
       return Promise.resolve();
     }
+    const newPosition = listItems.length ? Math.max(...listItems.map((item) => item.position)) + 1 : 1;
     const newTodo = {
       title: title,
       completed: false,
       is_active: true,
+      position: newPosition,
       id: uuid_v4(),
       item_list_id: selectedList.id,
     };
@@ -319,7 +316,7 @@ export const ItemProvider = ({ children }) => {
     <ItemContext.Provider
       value={{
         toggleTodo: toggleTodo,
-        hideTodo: hideTodo,
+        reorderTodo: reorderTodo,
         updateTodo: updateTodo,
         updateList: updateList,
         deleteTodo: deleteTodo,

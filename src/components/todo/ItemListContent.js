@@ -60,11 +60,25 @@ const getItemStyle = (isDragging, draggableStyle) => ({
   }),
 });
 
+const getPosition = (items, newIndex) => {
+  let posUpper;
+  if (newIndex) {
+    posUpper = items[newIndex - 1].position || 0;
+  } else {
+    // if top of list, max value + 1
+    posUpper = items[0].position + 1 || 1;
+  }
+  // if bottom of list, use 0
+  const posLower = items[newIndex].position || 0;
+
+  return (posUpper + posLower) / 2;
+};
+
 function ItemListContent({ hideSwitch, setSelectedTodo, setOpenForm }) {
   const classes = useStyles();
   const [todos, setItems] = useRecoilState(listItemsInListState);
 
-  const { toggleTodo, deleteTodo } = useContext(ItemContext);
+  const { toggleTodo, reorderTodo, deleteTodo } = useContext(ItemContext);
 
   const StrikeListItemText = useMemo(() => {
     return withStyles({
@@ -86,13 +100,17 @@ function ItemListContent({ hideSwitch, setSelectedTodo, setOpenForm }) {
 
   const handleDragEnd = (result) => {
     const { source, destination } = result;
-    if (!destination) {
+    if (!destination || destination.index === source.index) {
       return;
     }
+
     const newItems = [...todos];
     const [removed] = newItems.splice(source.index, 1);
+    removed.position = getPosition(newItems, destination.index);
+
     newItems.splice(destination.index, 0, removed);
     setItems(newItems);
+    reorderTodo(removed.id, removed.position);
   };
 
   const listSecondaryAction = (todo) => {
