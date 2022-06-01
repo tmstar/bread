@@ -69,7 +69,7 @@ const getPosition = (items, newIndex) => {
     posUpper = items[0].position + 1 || 1;
   }
   // if bottom of list, use 0
-  const posLower = items[newIndex].position || 0;
+  const posLower = items[newIndex]?.position || 0;
 
   return (posUpper + posLower) / 2;
 };
@@ -139,7 +139,6 @@ function ItemListContent({ hideSwitch, setSelectedTodo, setOpenForm }) {
       <Draggable key={todo.id} draggableId={todo.id} index={index}>
         {(provided, snapshot) => (
           <div
-            key={todo.id + '-div'}
             ref={provided.innerRef}
             {...provided.draggableProps}
             {...provided.dragHandleProps}
