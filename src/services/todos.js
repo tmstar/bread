@@ -142,6 +142,7 @@ const update = async (token, id, newTodo, listId) => {
     },
     { headers: Hasura.getHeadersWithToken(token) }
   );
+  response.data.errors && console.warn(response.data.errors[0]);
   return { item: response.data.data.update_item_by_pk, itemList: response.data.data.update_item_list_by_pk };
 };
 
