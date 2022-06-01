@@ -120,7 +120,7 @@ export const ItemProvider = ({ children }) => {
 
   const toggleTodo = (id, completed) => {
     const todo = listItems.find((todo) => todo.id === id);
-    const newTodo = { ...todo, completed: !completed };
+    const newTodo = { ...todo, completed: !completed, position: todo.position || 0 };
 
     // quick update displayed list
     const toggledTodos = listItems.map((todo) => (todo.id !== newTodo.id ? todo : newTodo));
@@ -158,7 +158,7 @@ export const ItemProvider = ({ children }) => {
       return Promise.resolve();
     }
     const todo = listItems.find((todo) => todo.id === id);
-    const newTodo = { ...todo, title: title, note: note, color: color };
+    const newTodo = { ...todo, title: title, note: note, color: color, position: todo.position || 0 };
 
     return getAccessTokenSilently()
       .then((token) => {
