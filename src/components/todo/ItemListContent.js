@@ -16,8 +16,8 @@ import Typography from '@mui/material/Typography';
 import makeStyles from '@mui/styles/makeStyles';
 import withStyles from '@mui/styles/withStyles';
 import clsx from 'clsx';
-import React, { useContext, useMemo } from 'react';
-import { ItemContext } from '../../hooks/ItemProvider';
+import React, { useMemo } from 'react';
+import { useItemList } from '../../hooks/useItemList';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { listItemsInListState } from '../../atoms';
 import { useRecoilState } from 'recoil';
@@ -78,7 +78,7 @@ function ItemListContent({ hideSwitch, setSelectedTodo, setOpenForm }) {
   const classes = useStyles();
   const [todos, setItems] = useRecoilState(listItemsInListState);
 
-  const { toggleTodo, reorderTodo, deleteTodo } = useContext(ItemContext);
+  const { toggleTodo, reorderTodo, deleteTodo } = useItemList();
 
   const StrikeListItemText = useMemo(() => {
     return withStyles({

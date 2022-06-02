@@ -127,6 +127,7 @@ const getAll = async (token, tagId) => {
     },
     { headers: Hasura.getHeadersWithToken(token) }
   );
+  response.data.errors && console.warn(response.data.errors[0]);
   return response.data.data.item_list;
 };
 
@@ -143,6 +144,7 @@ const add = async (token, newList) => {
     },
     { headers: Hasura.getHeadersWithToken(token) }
   );
+  response.data.errors && console.warn(response.data.errors[0]);
   return response.data.data.insert_item_list_one;
 };
 
@@ -158,6 +160,7 @@ const update = async (token, id, newList) => {
     },
     { headers: Hasura.getHeadersWithToken(token) }
   );
+  response.data.errors && console.warn(response.data.errors[0]);
   return response.data.data.update_item_list_by_pk;
 };
 
@@ -171,6 +174,7 @@ const _delete = async (token, id) => {
     { headers: Hasura.getHeadersWithToken(token) }
   );
   const data = response.data.data;
+  response.data.errors && console.warn(response.data.errors[0]);
   return { itemListId: data.delete_item_list_by_pk.id, tags: data.delete_item_list_tag.returning };
 };
 

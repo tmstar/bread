@@ -5,10 +5,10 @@ import DialogContent from '@mui/material/DialogContent';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import TextField from '@mui/material/TextField';
 import makeStyles from '@mui/styles/makeStyles';
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { uniqueTagsState } from '../../atoms';
-import { ItemContext } from '../../hooks/ItemProvider';
+import { useItemList } from '../../hooks/useItemList';
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
 export default function TagEditForm({ open, setOpen }) {
   const classes = useStyles();
   const uniqueTags = useRecoilValue(uniqueTagsState);
-  const { addTag } = useContext(ItemContext);
+  const { addTag } = useItemList();
   const [tag] = useState(''); // selected value
   const [inputTag, setInputTag] = useState(''); // text input value
 

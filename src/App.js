@@ -9,7 +9,6 @@ import ItemList from './components/ItemList';
 import Logout from './components/Logout';
 import ProtectedRoute from './components/routing/ProtectedRoute';
 import ApolloProviderWithAuth0 from './hooks/ApolloProviderWithAuth0';
-import { ItemProvider } from './hooks/ItemProvider';
 
 const darkTheme = createTheme({
   palette: {
@@ -63,15 +62,13 @@ function App() {
         <CssBaseline />
         <header>
           <RecoilRoot>
-            <ItemProvider>
-              <ApolloProviderWithAuth0>
-                <Routes>
-                  <Route index element={<ProtectedRoute component={Home} />} />
-                  <Route path="item-list" element={<ProtectedRoute component={ItemList} />} />
-                  <Route path="logout" element={<Logout />} />
-                </Routes>
-              </ApolloProviderWithAuth0>
-            </ItemProvider>
+            <ApolloProviderWithAuth0>
+              <Routes>
+                <Route index element={<ProtectedRoute component={Home} />} />
+                <Route path="item-list" element={<ProtectedRoute component={ItemList} />} />
+                <Route path="logout" element={<Logout />} />
+              </Routes>
+            </ApolloProviderWithAuth0>
           </RecoilRoot>
         </header>
       </ThemeProvider>
