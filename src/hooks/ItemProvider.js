@@ -108,14 +108,6 @@ export const ItemProvider = ({ children }) => {
       return { id: tag.id, name: tag.name };
     });
     setTagsInList(newTags);
-    setListItems([]);
-    getAccessTokenSilently()
-      .then((token) => {
-        return TodoService.getAll(token, selectedList.id);
-      })
-      .then((todos) => {
-        setListItems(todos);
-      });
   }, [selectedList, setListItems, setTagsInList, getAccessTokenSilently]);
 
   const toggleTodo = (id, completed) => {

@@ -17,10 +17,10 @@ import makeStyles from '@mui/styles/makeStyles';
 import withStyles from '@mui/styles/withStyles';
 import clsx from 'clsx';
 import React, { useMemo } from 'react';
-import { useItemList } from '../../hooks/useItemList';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { listItemsInListState } from '../../atoms';
 import { useRecoilState } from 'recoil';
+import { useAllItems, useToggleItem, useReorderItem, useDeleteItem } from './ListItemHooks';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -76,9 +76,12 @@ const getPosition = (items, newIndex) => {
 
 function ItemListContent({ hideSwitch, setSelectedTodo, setOpenForm }) {
   const classes = useStyles();
-  const [todos, setItems] = useRecoilState(listItemsInListState);
+  const [items, setListItems] = useRecoilState(listItemsInListState);
 
-  const { toggleTodo, reorderTodo, deleteTodo } = useItemList();
+  const { loading } = useAllItems();
+  const { toggleItem } = useToggleItem();
+  const { reorderItem } = useReorderItem();
+  const { deleteItem } = useDeleteItem();
 
   const StrikeListItemText = useMemo(() => {
     return withStyles({
@@ -90,12 +93,7 @@ function ItemListContent({ hideSwitch, setSelectedTodo, setOpenForm }) {
   }, []);
 
   const handleClickListItem = (todo) => {
-    if (todo._updating) {
-      // ignore when updating
-      return;
-    }
-    todo._updating = true;
-    toggleTodo(todo.id, todo.completed);
+    toggleItem(todo.id, todo.completed);
   };
 
   const handleDragEnd = (result) => {
@@ -104,13 +102,14 @@ function ItemListContent({ hideSwitch, setSelectedTodo, setOpenForm }) {
       return;
     }
 
-    const newItems = [...todos];
+    const newItems = [...items];
     const [removed] = newItems.splice(source.index, 1);
-    removed.position = getPosition(newItems, destination.index);
+    const newRemoved = { ...removed };
+    newRemoved.position = getPosition(newItems, destination.index);
 
-    newItems.splice(destination.index, 0, removed);
-    setItems(newItems);
-    reorderTodo(removed.id, removed.position);
+    newItems.splice(destination.index, 0, newRemoved);
+    setListItems(newItems);
+    reorderItem(newRemoved.id, newRemoved.position);
   };
 
   const listSecondaryAction = (todo) => {
@@ -126,15 +125,15 @@ function ItemListContent({ hideSwitch, setSelectedTodo, setOpenForm }) {
         >
           <CommentIcon />
         </IconButton>
-        <IconButton edge="end" onClick={() => deleteTodo(todo.id)} size="large">
+        <IconButton edge="end" onClick={() => deleteItem(todo.id)} size="large">
           <DeleteIcon />
         </IconButton>
       </ListItemSecondaryAction>
     );
   };
 
-  const todoList = todos.map((todo, index) => {
-    const rowLength = todos.length;
+  const todoList = items.map((todo, index) => {
+    const rowLength = items.length;
     return (
       <Draggable key={todo.id} draggableId={todo.id} index={index}>
         {(provided, snapshot) => (
@@ -186,6 +185,8 @@ function ItemListContent({ hideSwitch, setSelectedTodo, setOpenForm }) {
       </Draggable>
     );
   });
+
+  if (loading) return <></>;
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
