@@ -12,11 +12,11 @@ import Typography from '@mui/material/Typography';
 import makeStyles from '@mui/styles/makeStyles';
 import moment from 'moment';
 import 'moment/locale/ja';
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { listsInTagState, listTitleState, mainTitleState, openListState, openMenuState, selectedListState } from '../../atoms';
-import { useItemList } from '../../hooks/useItemList';
+import { ItemContext } from '../../hooks/ItemProvider';
 
 const drawerWidth = '100%';
 
@@ -108,7 +108,7 @@ function HomeMain() {
   const lists = useRecoilValue(listsInTagState);
   const toggleList = useSetRecoilState(openListState);
   const setListTitle = useSetRecoilState(listTitleState);
-  const { addList } = useItemList();
+  const { addList } = useContext(ItemContext);
 
   const handleNewList = () => () => {
     const newName = moment().format('M/D');

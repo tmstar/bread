@@ -8,8 +8,8 @@ import Radio from '@mui/material/Radio';
 import makeStyles from '@mui/styles/makeStyles';
 import withStyles from '@mui/styles/withStyles';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
-import React, { useEffect, useState } from 'react';
-import { useItemList } from '../../hooks/useItemList';
+import React, { useEffect, useState, useContext } from 'react';
+import { ItemContext } from '../../hooks/ItemProvider';
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -66,7 +66,7 @@ const IndeterminateRadio = withStyles({
 
 export default function ItemEditForm({ open, setOpen, todo }) {
   const classes = useStyles();
-  const { updateTodo, addTodo } = useItemList();
+  const { updateTodo, addTodo } = useContext(ItemContext);
 
   const [title, setTitle] = useState('');
   const [note, setNote] = useState('');

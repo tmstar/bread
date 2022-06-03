@@ -13,14 +13,14 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
 import makeStyles from '@mui/styles/makeStyles';
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { listTitleState, openListState, selectedListState, tagsInListState } from '../../atoms';
-import { useItemList } from '../../hooks/useItemList';
 import AlertDialog from '../todo/AlertDialog';
 import TagEditForm from '../todo/TagEditForm';
 import TodoList from '../todo/TodoList';
+import { ItemContext } from '../../hooks/ItemProvider';
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -60,7 +60,7 @@ function TodoView() {
   const [selectedList, selectList] = useRecoilState(selectedListState);
   const tags = useRecoilValue(tagsInListState);
 
-  const { updateList, deleteCompletedTodos, deleteList, removeTag } = useItemList();
+  const { updateList, deleteCompletedTodos, deleteList, removeTag } = useContext(ItemContext);
 
   const [filter, setFilter] = useState('active');
   const isListEdit = filter === 'all';
