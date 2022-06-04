@@ -21,6 +21,7 @@ import AlertDialog from '../todo/AlertDialog';
 import TagEditForm from '../todo/TagEditForm';
 import TodoList from '../todo/TodoList';
 import { ItemContext } from '../../hooks/ItemProvider';
+import { useDeleteCompletedItems } from '../todo/ListItemHooks';
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -60,8 +61,8 @@ function TodoView() {
   const [selectedList, selectList] = useRecoilState(selectedListState);
   const tags = useRecoilValue(tagsInListState);
 
-  const { updateList, deleteCompletedTodos, deleteList, removeTag } = useContext(ItemContext);
-
+  const { updateList, deleteList, removeTag } = useContext(ItemContext);
+  const { deleteCompletedItems } = useDeleteCompletedItems();
   const [filter, setFilter] = useState('active');
   const isListEdit = filter === 'all';
 
@@ -96,7 +97,7 @@ function TodoView() {
   };
 
   const handleDeleteCompleted = () => {
-    deleteCompletedTodos(selectedList.id);
+    deleteCompletedItems();
     setMobileMoreAnchorEl(null);
   };
 
