@@ -18,9 +18,9 @@ import withStyles from '@mui/styles/withStyles';
 import clsx from 'clsx';
 import React, { useMemo } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { listItemsInListState } from '../../atoms';
+import { listItemsInListState } from '../../../atoms';
 import { useRecoilState } from 'recoil';
-import { useAllItems, useToggleItem, useReorderItem, useDeleteItem } from './ListItemHooks';
+import { useAllItems, useToggleItem, useReorderItem, useDeleteItem } from '../../../hooks/ListItemHooks';
 
 const useStyles = makeStyles((theme) => ({
   root: {

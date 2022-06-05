@@ -17,11 +17,11 @@ import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { listTitleState, openListState, selectedListState, tagsInListState } from '../../atoms';
-import AlertDialog from '../todo/AlertDialog';
-import TagEditForm from '../todo/TagEditForm';
-import TodoList from '../todo/TodoList';
+import AlertDialog from './AlertDialog';
+import TagEditForm from './TagEditForm';
+import TodoList from './ItemList';
 import { ItemContext } from '../../hooks/ItemProvider';
-import { useDeleteCompletedItems } from '../todo/ListItemHooks';
+import { useDeleteCompletedItems } from '../../hooks/ListItemHooks';
 
 const useStyles = makeStyles((theme) => ({
   appBar: {

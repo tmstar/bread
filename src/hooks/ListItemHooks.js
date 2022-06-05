@@ -2,7 +2,7 @@ import gql from 'graphql-tag';
 import { useMutation, useQuery } from 'react-apollo';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { v4 as uuid_v4 } from 'uuid';
-import { listItemsInListState, listsInTagState, selectedListState } from '../../atoms';
+import { listItemsInListState, listsInTagState, selectedListState } from '../atoms';
 
 const ALL_ITEMS = gql`
   query AllTodos($item_list_id: uuid!) {
