@@ -1,4 +1,5 @@
 import gql from 'graphql-tag';
+import { useEffect } from 'react';
 import { useMutation, useQuery } from 'react-apollo';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { v4 as uuid_v4 } from 'uuid';
@@ -126,11 +127,13 @@ export const useAllItems = () => {
   const setListItems = useSetRecoilState(listItemsInListState);
 
   const { loading, error, data } = useQuery(ALL_ITEMS, {
-    variables: { item_list_id: selectedList.id },
-    onCompleted: (data) => {
-      setListItems(data.item);
-    },
+    variables: { item_list_id: selectedList?.id },
+    pollInterval: 60000, // 1 min
   });
+
+  useEffect(() => {
+    data && setListItems(data.item);
+  }, [data]);
 
   error && console.warn(error);
   return { loading, data };
