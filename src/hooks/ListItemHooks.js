@@ -133,7 +133,7 @@ export const useAllItems = () => {
 
   useEffect(() => {
     data && setListItems(data.item);
-  }, [data]);
+  }, [data, setListItems]);
 
   error && console.warn(error);
   return { loading, data };

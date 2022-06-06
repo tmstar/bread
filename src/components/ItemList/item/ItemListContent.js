@@ -3,7 +3,9 @@ import CommentIcon from '@mui/icons-material/Comment';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Done from '@mui/icons-material/Done';
 import RemoveCircleOutlineTwoToneIcon from '@mui/icons-material/RemoveCircleOutlineTwoTone';
+import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
+import CircularProgress from '@mui/material/CircularProgress';
 import { amber, blueGrey, teal, yellow } from '@mui/material/colors';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
@@ -17,10 +19,10 @@ import makeStyles from '@mui/styles/makeStyles';
 import withStyles from '@mui/styles/withStyles';
 import clsx from 'clsx';
 import React, { useMemo } from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { listItemsInListState } from '../../../atoms';
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { useRecoilState } from 'recoil';
-import { useAllItems, useToggleItem, useReorderItem, useDeleteItem } from '../../../hooks/ListItemHooks';
+import { listItemsInListState } from '../../../atoms';
+import { useAllItems, useDeleteItem, useReorderItem, useToggleItem } from '../../../hooks/ListItemHooks';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -186,7 +188,12 @@ function ItemListContent({ hideSwitch, setSelectedTodo, setOpenForm }) {
     );
   });
 
-  if (loading) return <></>;
+  if (loading)
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+        <CircularProgress />
+      </Box>
+    );
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
