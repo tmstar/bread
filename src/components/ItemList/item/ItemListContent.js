@@ -201,7 +201,7 @@ function ItemListContent({ hideSwitch, setSelectedTodo, setOpenForm }) {
     return (
       <Grid container spacing={0} direction="column" alignItems="center" justifyContent="center" style={{ minHeight: '80vh' }}>
         <Grid item>
-          <Box sx={{ px: 17, pb: 4 }}>
+          <Box sx={{ px: 11, pb: 3 }}>
             <img src={EmptyListSvg} style={{ width: '100%', maxWidth: '364px' }} alt="empty list" />
           </Box>
         </Grid>
