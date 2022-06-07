@@ -82,7 +82,7 @@ function ItemListContent({ hideSwitch, setSelectedTodo, setOpenForm }) {
   const classes = useStyles();
   const [items, setListItems] = useRecoilState(listItemsInListState);
 
-  const { loading } = useAllItems();
+  const { loading, data } = useAllItems();
   const { toggleItem } = useToggleItem();
   const { reorderItem } = useReorderItem();
   const { deleteItem } = useDeleteItem();
@@ -197,7 +197,7 @@ function ItemListContent({ hideSwitch, setSelectedTodo, setOpenForm }) {
       </Box>
     );
 
-  if (!items.length)
+  if (!data.item.length) {
     return (
       <Grid container spacing={0} direction="column" alignItems="center" justifyContent="center" style={{ minHeight: '80vh' }}>
         <Grid item>
@@ -213,6 +213,7 @@ function ItemListContent({ hideSwitch, setSelectedTodo, setOpenForm }) {
         </Grid>
       </Grid>
     );
+  }
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
