@@ -8,6 +8,7 @@ import Checkbox from '@mui/material/Checkbox';
 import CircularProgress from '@mui/material/CircularProgress';
 import { amber, blueGrey, teal, yellow } from '@mui/material/colors';
 import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -23,6 +24,7 @@ import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { useRecoilState } from 'recoil';
 import { listItemsInListState } from '../../../atoms';
 import { useAllItems, useDeleteItem, useReorderItem, useToggleItem } from '../../../hooks/ListItemHooks';
+import EmptyListSvg from './eating_together.svg';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -193,6 +195,23 @@ function ItemListContent({ hideSwitch, setSelectedTodo, setOpenForm }) {
       <Box sx={{ display: 'flex', justifyContent: 'center' }}>
         <CircularProgress />
       </Box>
+    );
+
+  if (!items.length)
+    return (
+      <Grid container spacing={0} direction="column" alignItems="center" justifyContent="center" style={{ minHeight: '80vh' }}>
+        <Grid item>
+          <Box sx={{ px: 17, pb: 4 }}>
+            <img src={EmptyListSvg} style={{ width: '100%', maxWidth: '364px' }} alt="empty list" />
+          </Box>
+        </Grid>
+        <Grid item>
+          <Typography variant="body">{'アイテムがありません'}</Typography>
+        </Grid>
+        <Grid item>
+          <Typography variant="caption">{'右下のボタンからアイテムを追加できます。'}</Typography>
+        </Grid>
+      </Grid>
     );
 
   return (

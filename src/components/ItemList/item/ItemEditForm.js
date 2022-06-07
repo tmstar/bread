@@ -117,7 +117,7 @@ export default function ItemEditForm({ open, setOpen, todo }) {
               autoFocus
               label="タイトル"
               value={title}
-              placeholder="タイトルの追加..."
+              placeholder="アイテムの追加..."
               inputProps={{ 'aria-label': 'add tag' }}
               onChange={(event) => setTitle(event.target.value)}
               fullWidth
