@@ -1,17 +1,5 @@
 const cacheName = 'bread-v0.5.4';
-const urlsToCache = [
-  '/',
-  '/static/js/bundle.js',
-  '/static/js/bundle.js.map',
-  '/static/js/0.chunk.js',
-  '/static/js/0.chunk.js.map',
-  '/static/js/main.chunk.js',
-  '/static/js/main.chunk.js.map',
-  '/favicon.ico',
-  '/home',
-  '/manifest.json',
-  '/logo192.png',
-];
+const urlsToCache = ['/', '/favicon.ico', '/manifest.json', '/logo192.png'];
 
 self.addEventListener('install', (event) => {
   console.log('auto installing...');
