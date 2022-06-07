@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#ff7272" />
+    <meta name="theme-color" content="#303030" />
     <meta
       name="description"
       content="Share your shopping list with your family on Bread. ✓Easy to share. ✓Family can check the list immediately. ✓You can tick off the list on the go. Make your list Now!"
@@ -28,8 +28,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
 
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300&display=swap" rel="stylesheet" />
 
     <title>Bread</title>
   </head>
@@ -49,22 +49,24 @@
     <script>
       window.addEventListener('load', () => {
         if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.register("/sw.js")
+          navigator.serviceWorker
+            .register('/sw.js')
             .then((reg) => {
-              console.log("SW registed.", reg);
+              console.log('SW registed.', reg);
               reg.addEventListener('updatefound', () => {
-                console.log("updated SW found.");
+                console.log('updated SW found.');
 
                 const newWorker = reg.installing;
                 newWorker.addEventListener('statechange', () => {
-                  console.log("new SW state has changed.");
+                  console.log('new SW state has changed.');
                 });
               });
-            }).catch((error) => {
-              console.warn("SW error.", error);
+            })
+            .catch((error) => {
+              console.warn('SW error.', error);
             });
           navigator.serviceWorker.addEventListener('controllerchange', () => {
-            console.log("controller changed.");
+            console.log('controller changed.');
           });
         }
       });
