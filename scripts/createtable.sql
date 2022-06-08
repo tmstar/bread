@@ -20,6 +20,7 @@ CREATE TABLE item (
 CREATE TABLE item_list (
   id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
   name text NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
   user_id text REFERENCES users(id)
 );

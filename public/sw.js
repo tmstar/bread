@@ -1,14 +1,8 @@
-const cacheName = 'bread-v0.5.4';
+const cacheName = 'bread-v0.5.5';
 const urlsToCache = [
   '/',
-  '/static/js/bundle.js',
-  '/static/js/bundle.js.map',
-  '/static/js/0.chunk.js',
-  '/static/js/0.chunk.js.map',
-  '/static/js/main.chunk.js',
-  '/static/js/main.chunk.js.map',
+  '/static/media/eating_together.964f55d4c88af0548e5eed64357bed2d.svg',
   '/favicon.ico',
-  '/home',
   '/manifest.json',
   '/logo192.png',
 ];

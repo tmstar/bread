@@ -10,6 +10,7 @@ const ALL_LISTS = gql`
       where: { _or: [{ user_id: { _eq: $user_id } }, { item_list_tags: { tag: { name: { _eq: $user_email } } } }] }
     ) {
       id
+      created_at
       updated_at
       name
       item_list_tags(where: { tag: { user_id: { _eq: $user_id } } }) {
@@ -39,6 +40,7 @@ const TAG_LISTS = gql`
       }
     ) {
       id
+      created_at
       updated_at
       name
       item_list_tags(where: { tag: { user_id: { _eq: $user_id } } }) {
@@ -61,6 +63,7 @@ const CREATE_LIST = gql`
     insert_item_list_one(object: { id: $id, user_id: $user_id, name: $name }) {
       id
       user_id
+      created_at
       updated_at
       name
       item_list_tags {
@@ -77,6 +80,7 @@ const UPDATE_LIST = gql`
   mutation UpdateList($id: uuid!, $name: String!) {
     update_item_list_by_pk(pk_columns: { id: $id }, _set: { name: $name }) {
       id
+      created_at
       updated_at
       name
       item_list_tags {
@@ -127,6 +131,7 @@ const getAll = async (token, tagId) => {
     },
     { headers: Hasura.getHeadersWithToken(token) }
   );
+  response.data.errors && console.warn(response.data.errors[0]);
   return response.data.data.item_list;
 };
 
@@ -143,6 +148,7 @@ const add = async (token, newList) => {
     },
     { headers: Hasura.getHeadersWithToken(token) }
   );
+  response.data.errors && console.warn(response.data.errors[0]);
   return response.data.data.insert_item_list_one;
 };
 
@@ -158,6 +164,7 @@ const update = async (token, id, newList) => {
     },
     { headers: Hasura.getHeadersWithToken(token) }
   );
+  response.data.errors && console.warn(response.data.errors[0]);
   return response.data.data.update_item_list_by_pk;
 };
 
@@ -171,6 +178,7 @@ const _delete = async (token, id) => {
     { headers: Hasura.getHeadersWithToken(token) }
   );
   const data = response.data.data;
+  response.data.errors && console.warn(response.data.errors[0]);
   return { itemListId: data.delete_item_list_by_pk.id, tags: data.delete_item_list_tag.returning };
 };
 

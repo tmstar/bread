@@ -5,7 +5,7 @@ import DialogContent from '@mui/material/DialogContent';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import TextField from '@mui/material/TextField';
 import makeStyles from '@mui/styles/makeStyles';
-import React, { useContext, useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useRecoilValue } from 'recoil';
 import { uniqueTagsState } from '../../atoms';
 import { ItemContext } from '../../hooks/ItemProvider';

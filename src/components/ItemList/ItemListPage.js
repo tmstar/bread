@@ -13,14 +13,15 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
 import makeStyles from '@mui/styles/makeStyles';
-import React, { useContext, useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { listTitleState, openListState, selectedListState, tagsInListState } from '../../atoms';
+import AlertDialog from './AlertDialog';
+import TagEditForm from './TagEditForm';
+import TodoList from './ItemList';
 import { ItemContext } from '../../hooks/ItemProvider';
-import AlertDialog from '../todo/AlertDialog';
-import TagEditForm from '../todo/TagEditForm';
-import TodoList from '../todo/TodoList';
+import { useDeleteCompletedItems } from '../../hooks/ListItemHooks';
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -60,8 +61,8 @@ function TodoView() {
   const [selectedList, selectList] = useRecoilState(selectedListState);
   const tags = useRecoilValue(tagsInListState);
 
-  const { updateList, deleteCompletedTodos, deleteList, removeTag } = useContext(ItemContext);
-
+  const { updateList, deleteList, removeTag } = useContext(ItemContext);
+  const { deleteCompletedItems } = useDeleteCompletedItems();
   const [filter, setFilter] = useState('active');
   const isListEdit = filter === 'all';
 
@@ -96,7 +97,7 @@ function TodoView() {
   };
 
   const handleDeleteCompleted = () => {
-    deleteCompletedTodos(selectedList.id);
+    deleteCompletedItems();
     setMobileMoreAnchorEl(null);
   };
 

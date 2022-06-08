@@ -1,15 +1,15 @@
-import Button from "@mui/material/Button";
-import { amber, teal, yellow } from "@mui/material/colors";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import InputBase from "@mui/material/InputBase";
-import Radio from "@mui/material/Radio";
+import Button from '@mui/material/Button';
+import { amber, teal, yellow } from '@mui/material/colors';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import InputBase from '@mui/material/InputBase';
+import Radio from '@mui/material/Radio';
 import makeStyles from '@mui/styles/makeStyles';
 import withStyles from '@mui/styles/withStyles';
-import SwipeableDrawer from "@mui/material/SwipeableDrawer";
-import React, { useContext, useEffect, useState } from "react";
-import { ItemContext } from "../../hooks/ItemProvider";
+import SwipeableDrawer from '@mui/material/SwipeableDrawer';
+import React, { useEffect, useState } from 'react';
+import { useUpdateItem, useAddItem } from '../../../hooks/ListItemHooks';
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -19,16 +19,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const colorLabels = {
-  color1: "イエロー",
-  color2: "ティール",
-  color3: "アンバー",
+  color1: 'イエロー',
+  color2: 'ティール',
+  color3: 'アンバー',
 };
 
 const Color1Radio = withStyles({
   root: {
-    color: yellow["A100"],
-    "&$checked": {
-      color: yellow["A200"],
+    color: yellow['A100'],
+    '&$checked': {
+      color: yellow['A200'],
     },
   },
   checked: {},
@@ -36,9 +36,9 @@ const Color1Radio = withStyles({
 
 const Color2Radio = withStyles({
   root: {
-    color: teal["A200"],
-    "&$checked": {
-      color: teal["A400"],
+    color: teal['A200'],
+    '&$checked': {
+      color: teal['A400'],
     },
   },
   checked: {},
@@ -46,9 +46,9 @@ const Color2Radio = withStyles({
 
 const Color3Radio = withStyles({
   root: {
-    color: amber["A400"],
-    "&$checked": {
-      color: amber["A700"],
+    color: amber['A400'],
+    '&$checked': {
+      color: amber['A700'],
     },
   },
   checked: {},
@@ -56,9 +56,9 @@ const Color3Radio = withStyles({
 
 const IndeterminateRadio = withStyles({
   root: {
-    color: "default",
-    "&$checked": {
-      color: "default",
+    color: 'default',
+    '&$checked': {
+      color: 'default',
     },
   },
   checked: {},
@@ -66,11 +66,12 @@ const IndeterminateRadio = withStyles({
 
 export default function ItemEditForm({ open, setOpen, todo }) {
   const classes = useStyles();
-  const { updateTodo, addTodo } = useContext(ItemContext);
+  const { updateItem } = useUpdateItem();
+  const { addItem } = useAddItem();
 
-  const [title, setTitle] = useState("");
-  const [note, setNote] = useState("");
-  const [color, setColor] = React.useState("default");
+  const [title, setTitle] = useState('');
+  const [note, setNote] = useState('');
+  const [color, setColor] = React.useState('default');
 
   useEffect(() => {
     if (todo) {
@@ -78,9 +79,9 @@ export default function ItemEditForm({ open, setOpen, todo }) {
       setNote(todo.note);
       setColor(todo.color);
     } else {
-      setTitle("");
-      setNote("");
-      setColor("default");
+      setTitle('');
+      setNote('');
+      setColor('default');
     }
   }, [todo]);
 
@@ -91,12 +92,12 @@ export default function ItemEditForm({ open, setOpen, todo }) {
   const handleSubmit = (event) => {
     event.preventDefault();
     if (todo) {
-      updateTodo(todo.id, title, note, color).then(() => {
+      updateItem(todo.id, title, note, color).then(() => {
         setOpen(false);
       });
     } else {
-      addTodo(title).then(() => {
-        setTitle("");
+      addItem(title).then(() => {
+        setTitle('');
       });
     }
   };
@@ -116,8 +117,8 @@ export default function ItemEditForm({ open, setOpen, todo }) {
               autoFocus
               label="タイトル"
               value={title}
-              placeholder="タイトルの追加..."
-              inputProps={{ "aria-label": "add tag" }}
+              placeholder="アイテムの追加..."
+              inputProps={{ 'aria-label': 'add tag' }}
               onChange={(event) => setTitle(event.target.value)}
               fullWidth
             />
@@ -130,42 +131,42 @@ export default function ItemEditForm({ open, setOpen, todo }) {
                   multiline
                   rows={4}
                   label="メモ"
-                  value={note || ""} // textarea cannot be null
+                  value={note || ''} // textarea cannot be null
                   placeholder="コメントの追加..."
-                  inputProps={{ "aria-label": "add tag" }}
+                  inputProps={{ 'aria-label': 'add tag' }}
                   onChange={(event) => setNote(event.target.value)}
                   fullWidth
                 />
                 <FormControlLabel
-                  checked={color === "default"}
+                  checked={color === 'default'}
                   value="default"
                   control={<Radio />}
                   onChange={handleChange}
                   label="デフォルト"
                 />
                 <FormControlLabel
-                  checked={color === "color1"}
+                  checked={color === 'color1'}
                   value="color1"
                   control={<Color1Radio />}
                   onChange={handleChange}
-                  label={colorLabels["color1"]}
+                  label={colorLabels['color1']}
                 />
                 <FormControlLabel
-                  checked={color === "color2"}
+                  checked={color === 'color2'}
                   value="color2"
                   control={<Color2Radio />}
                   onChange={handleChange}
-                  label={colorLabels["color2"]}
+                  label={colorLabels['color2']}
                 />
                 <FormControlLabel
-                  checked={color === "color3"}
+                  checked={color === 'color3'}
                   value="color3"
                   control={<Color3Radio />}
                   onChange={handleChange}
-                  label={colorLabels["color3"]}
+                  label={colorLabels['color3']}
                 />
                 <FormControlLabel
-                  checked={color === "indeterminate"}
+                  checked={color === 'indeterminate'}
                   value="indeterminate"
                   control={<IndeterminateRadio />}
                   onChange={handleChange}
@@ -173,7 +174,7 @@ export default function ItemEditForm({ open, setOpen, todo }) {
                 />
               </>
             ) : (
-              ""
+              ''
             )}
           </DialogContent>
           <DialogActions>

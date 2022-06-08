@@ -23,7 +23,19 @@ function ApolloProviderWithAuth0({ children }) {
   if (!client.current) {
     client.current = new ApolloClient({
       link: authLink.concat(httpLink),
-      cache: new InMemoryCache(),
+      cache: new InMemoryCache({
+        typePolicies: {
+          item_list: {
+            fields: {
+              items: {
+                merge(existing, incoming) {
+                  return incoming;
+                },
+              },
+            },
+          },
+        },
+      }),
     });
   }
 

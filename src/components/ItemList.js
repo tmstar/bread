@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { openListState } from '../atoms';
-import TodoView from './ItemList/TodoView';
+import TodoView from './ItemList/ItemListPage';
 
 const drawerWidth = '100%';
 

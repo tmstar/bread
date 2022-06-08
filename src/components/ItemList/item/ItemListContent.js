@@ -3,9 +3,12 @@ import CommentIcon from '@mui/icons-material/Comment';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Done from '@mui/icons-material/Done';
 import RemoveCircleOutlineTwoToneIcon from '@mui/icons-material/RemoveCircleOutlineTwoTone';
+import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
+import CircularProgress from '@mui/material/CircularProgress';
 import { amber, blueGrey, teal, yellow } from '@mui/material/colors';
 import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -16,11 +19,12 @@ import Typography from '@mui/material/Typography';
 import makeStyles from '@mui/styles/makeStyles';
 import withStyles from '@mui/styles/withStyles';
 import clsx from 'clsx';
-import React, { useContext, useMemo } from 'react';
-import { ItemContext } from '../../hooks/ItemProvider';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { listItemsInListState } from '../../atoms';
+import React, { useMemo } from 'react';
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { useRecoilState } from 'recoil';
+import { listItemsInListState } from '../../../atoms';
+import { useAllItems, useDeleteItem, useReorderItem, useToggleItem } from '../../../hooks/ListItemHooks';
+import EmptyListSvg from './eating_together.svg';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -76,9 +80,12 @@ const getPosition = (items, newIndex) => {
 
 function ItemListContent({ hideSwitch, setSelectedTodo, setOpenForm }) {
   const classes = useStyles();
-  const [todos, setItems] = useRecoilState(listItemsInListState);
+  const [items, setListItems] = useRecoilState(listItemsInListState);
 
-  const { toggleTodo, reorderTodo, deleteTodo } = useContext(ItemContext);
+  const { loading, data } = useAllItems();
+  const { toggleItem } = useToggleItem();
+  const { reorderItem } = useReorderItem();
+  const { deleteItem } = useDeleteItem();
 
   const StrikeListItemText = useMemo(() => {
     return withStyles({
@@ -90,12 +97,7 @@ function ItemListContent({ hideSwitch, setSelectedTodo, setOpenForm }) {
   }, []);
 
   const handleClickListItem = (todo) => {
-    if (todo._updating) {
-      // ignore when updating
-      return;
-    }
-    todo._updating = true;
-    toggleTodo(todo.id, todo.completed);
+    toggleItem(todo.id, todo.completed);
   };
 
   const handleDragEnd = (result) => {
@@ -104,13 +106,14 @@ function ItemListContent({ hideSwitch, setSelectedTodo, setOpenForm }) {
       return;
     }
 
-    const newItems = [...todos];
+    const newItems = [...items];
     const [removed] = newItems.splice(source.index, 1);
-    removed.position = getPosition(newItems, destination.index);
+    const newRemoved = { ...removed };
+    newRemoved.position = getPosition(newItems, destination.index);
 
-    newItems.splice(destination.index, 0, removed);
-    setItems(newItems);
-    reorderTodo(removed.id, removed.position);
+    newItems.splice(destination.index, 0, newRemoved);
+    setListItems(newItems);
+    reorderItem(newRemoved.id, newRemoved.position);
   };
 
   const listSecondaryAction = (todo) => {
@@ -126,15 +129,15 @@ function ItemListContent({ hideSwitch, setSelectedTodo, setOpenForm }) {
         >
           <CommentIcon />
         </IconButton>
-        <IconButton edge="end" onClick={() => deleteTodo(todo.id)} size="large">
+        <IconButton edge="end" onClick={() => deleteItem(todo.id)} size="large">
           <DeleteIcon />
         </IconButton>
       </ListItemSecondaryAction>
     );
   };
 
-  const todoList = todos.map((todo, index) => {
-    const rowLength = todos.length;
+  const todoList = items.map((todo, index) => {
+    const rowLength = items.length;
     return (
       <Draggable key={todo.id} draggableId={todo.id} index={index}>
         {(provided, snapshot) => (
@@ -186,6 +189,31 @@ function ItemListContent({ hideSwitch, setSelectedTodo, setOpenForm }) {
       </Draggable>
     );
   });
+
+  if (loading)
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+        <CircularProgress />
+      </Box>
+    );
+
+  if (data && !data.item.length) {
+    return (
+      <Grid container spacing={0} direction="column" alignItems="center" justifyContent="center" style={{ minHeight: '70vh' }}>
+        <Grid item>
+          <Box sx={{ px: 11, pb: 3 }}>
+            <img src={EmptyListSvg} style={{ width: '100%', maxWidth: '364px' }} alt="empty list" />
+          </Box>
+        </Grid>
+        <Grid item>
+          <Typography variant="body">{'アイテムがありません'}</Typography>
+        </Grid>
+        <Grid item>
+          <Typography variant="caption">{'右下のボタンからアイテムを追加できます。'}</Typography>
+        </Grid>
+      </Grid>
+    );
+  }
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>

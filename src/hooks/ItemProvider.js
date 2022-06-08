@@ -1,12 +1,11 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { createContext, useEffect, useState } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { v4 as uuid_v4 } from 'uuid';
 import { listItemsInListState, listsInTagState, selectedListState, selectedTagState, tagsInListState, uniqueTagsState } from '../atoms';
 import Hasura from '../services/hasura';
 import ListService from '../services/itemList';
 import TagService from '../services/tags';
-import TodoService from '../services/todos';
 
 export const ItemContext = createContext();
 
@@ -14,22 +13,11 @@ export const ItemProvider = ({ children }) => {
   const [uniqueTags, setUniqueTags] = useRecoilState(uniqueTagsState);
   const selectedTag = useRecoilValue(selectedTagState);
   const [lists, setLists] = useRecoilState(listsInTagState); // lists in a tag
-  const [listItems, setListItems] = useRecoilState(listItemsInListState); // list items in a list
+  const setListItems = useSetRecoilState(listItemsInListState); // list items in a list
   const [tagsInList, setTagsInList] = useRecoilState(tagsInListState); // tags in a list
   const [selectedList, setSelectedList] = useRecoilState(selectedListState);
   const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [token, setToken] = useState();
-
-  const _modifyUpdatedAt = (updatedList) => {
-    const list = lists.find((list) => list.id === updatedList.id);
-    const latestList = { ...list, updated_at: updatedList.updated_at };
-    // Due to a bug, aggregation is done in js instead of GraphQL.
-    latestList._item_count = updatedList.items.filter((e) => !e.completed).length;
-    const newLists = lists
-      .map((list) => (list.id !== latestList.id ? list : latestList))
-      .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
-    setLists(newLists);
-  };
 
   const _replaceList = (updatedList) => {
     const list = lists.find((list) => list.id === updatedList.id);
@@ -108,68 +96,7 @@ export const ItemProvider = ({ children }) => {
       return { id: tag.id, name: tag.name };
     });
     setTagsInList(newTags);
-    setListItems([]);
-    getAccessTokenSilently()
-      .then((token) => {
-        return TodoService.getAll(token, selectedList.id);
-      })
-      .then((todos) => {
-        setListItems(todos);
-      });
   }, [selectedList, setListItems, setTagsInList, getAccessTokenSilently]);
-
-  const toggleTodo = (id, completed) => {
-    const todo = listItems.find((todo) => todo.id === id);
-    const newTodo = { ...todo, completed: !completed, position: todo.position || 0 };
-
-    // quick update displayed list
-    const toggledTodos = listItems.map((todo) => (todo.id !== newTodo.id ? todo : newTodo));
-    setListItems(toggledTodos);
-
-    getAccessTokenSilently()
-      .then((token) => {
-        return TodoService.update(token, id, newTodo, selectedList.id);
-      })
-      .then((result) => {
-        _modifyUpdatedAt(result.itemList);
-      })
-      .finally(() => {
-        newTodo._updating = false;
-      });
-  };
-
-  const reorderTodo = (id, position) => {
-    const todo = listItems.find((todo) => todo.id === id);
-
-    const newTodo = { ...todo, position: position };
-
-    getAccessTokenSilently()
-      .then((token) => {
-        return TodoService.update(token, id, newTodo, selectedList.id);
-      })
-      .then((result) => {
-        _modifyUpdatedAt(result.itemList);
-      });
-  };
-
-  const updateTodo = (id, title, note, color) => {
-    if (!title) {
-      // ignore empty title
-      return Promise.resolve();
-    }
-    const todo = listItems.find((todo) => todo.id === id);
-    const newTodo = { ...todo, title: title, note: note, color: color, position: todo.position || 0 };
-
-    return getAccessTokenSilently()
-      .then((token) => {
-        return TodoService.update(token, id, newTodo, selectedList.id);
-      })
-      .then((result) => {
-        const newTodos = listItems.map((todo) => (todo.id !== result.item.id ? todo : result.item));
-        setListItems(newTodos);
-        _modifyUpdatedAt(result.itemList);
-      });
-  };
 
   const updateList = (id, name) => {
     if (!name) {
@@ -185,30 +112,6 @@ export const ItemProvider = ({ children }) => {
       })
       .then((updatedList) => {
         _replaceList(updatedList);
-      });
-  };
-
-  const deleteTodo = (id) => {
-    getAccessTokenSilently()
-      .then((token) => {
-        return TodoService.delete(token, id, selectedList.id);
-      })
-      .then((result) => {
-        const newTodos = listItems.filter((todo) => todo.id !== result.item.id);
-        setListItems(newTodos);
-        _modifyUpdatedAt(result.itemList);
-      });
-  };
-
-  const deleteCompletedTodos = (listId) => {
-    getAccessTokenSilently()
-      .then((token) => {
-        return TodoService.deleteCompleted(token, listId);
-      })
-      .then((result) => {
-        const newTodos = listItems.filter((todo) => !result.items.some((d) => d.id === todo.id));
-        setListItems(newTodos);
-        _modifyUpdatedAt(result.itemList);
       });
   };
 
@@ -261,33 +164,8 @@ export const ItemProvider = ({ children }) => {
       });
   };
 
-  const addTodo = (title) => {
-    if (!title) {
-      // ignore empty title
-      return Promise.resolve();
-    }
-    const newPosition = listItems.length ? Math.max(...listItems.map((item) => item.position)) + 1 : 1;
-    const newTodo = {
-      title: title,
-      completed: false,
-      is_active: true,
-      position: newPosition,
-      id: uuid_v4(),
-      item_list_id: selectedList.id,
-    };
-    return getAccessTokenSilently()
-      .then((token) => {
-        return TodoService.add(token, newTodo);
-      })
-      .then((result) => {
-        setListItems([result.item].concat(listItems));
-        _modifyUpdatedAt(result.itemList);
-      });
-  };
-
   const addList = (listName) => {
     setTagsInList([]);
-    setListItems([]);
     const newItemList = { name: listName, id: uuid_v4() };
     return getAccessTokenSilently()
       .then((token) => {
@@ -315,15 +193,9 @@ export const ItemProvider = ({ children }) => {
   return (
     <ItemContext.Provider
       value={{
-        toggleTodo: toggleTodo,
-        reorderTodo: reorderTodo,
-        updateTodo: updateTodo,
         updateList: updateList,
-        deleteTodo: deleteTodo,
-        deleteCompletedTodos: deleteCompletedTodos,
         deleteList: deleteList,
         removeTag: removeTag,
-        addTodo: addTodo,
         addList: addList,
         addTag: addTag,
       }}
