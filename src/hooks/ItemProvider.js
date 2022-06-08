@@ -166,7 +166,6 @@ export const ItemProvider = ({ children }) => {
 
   const addList = (listName) => {
     setTagsInList([]);
-    setListItems([]);
     const newItemList = { name: listName, id: uuid_v4() };
     return getAccessTokenSilently()
       .then((token) => {

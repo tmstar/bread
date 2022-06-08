@@ -197,7 +197,7 @@ function ItemListContent({ hideSwitch, setSelectedTodo, setOpenForm }) {
       </Box>
     );
 
-  if (!data.item.length) {
+  if (data && !data.item.length) {
     return (
       <Grid container spacing={0} direction="column" alignItems="center" justifyContent="center" style={{ minHeight: '70vh' }}>
         <Grid item>
