@@ -10,6 +10,7 @@ const ALL_LISTS = gql`
       where: { _or: [{ user_id: { _eq: $user_id } }, { item_list_tags: { tag: { name: { _eq: $user_email } } } }] }
     ) {
       id
+      created_at
       updated_at
       name
       item_list_tags(where: { tag: { user_id: { _eq: $user_id } } }) {
@@ -39,6 +40,7 @@ const TAG_LISTS = gql`
       }
     ) {
       id
+      created_at
       updated_at
       name
       item_list_tags(where: { tag: { user_id: { _eq: $user_id } } }) {
@@ -61,6 +63,7 @@ const CREATE_LIST = gql`
     insert_item_list_one(object: { id: $id, user_id: $user_id, name: $name }) {
       id
       user_id
+      created_at
       updated_at
       name
       item_list_tags {
@@ -77,6 +80,7 @@ const UPDATE_LIST = gql`
   mutation UpdateList($id: uuid!, $name: String!) {
     update_item_list_by_pk(pk_columns: { id: $id }, _set: { name: $name }) {
       id
+      created_at
       updated_at
       name
       item_list_tags {
