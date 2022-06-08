@@ -1,5 +1,11 @@
 const cacheName = 'bread-v0.5.4';
-const urlsToCache = ['/', '/favicon.ico', '/manifest.json', '/logo192.png'];
+const urlsToCache = [
+  '/',
+  '/static/media/eating_together.964f55d4c88af0548e5eed64357bed2d.svg',
+  '/favicon.ico',
+  '/manifest.json',
+  '/logo192.png',
+];
 
 self.addEventListener('install', (event) => {
   console.log('auto installing...');
