@@ -177,7 +177,7 @@ export const useToggleItem = () => {
 };
 
 export const useReorderItem = () => {
-  const listItems = useRecoilValue(listItemsInListState);
+  const [listItems, setListItems] = useRecoilState(listItemsInListState);
   const [lists, setLists] = useRecoilState(listsInTagState);
   const selectedList = useRecoilValue(selectedListState);
   const [update, { loading, error, data }] = useMutation(UPDATE_ITEM);
@@ -187,7 +187,7 @@ export const useReorderItem = () => {
     setLists(modLists);
   };
 
-  const reorderItem = (id, position) => {
+  const reorderItem = (id, position, sortedItems) => {
     const item = listItems.find((item) => item.id === id);
     const newItem = { ...item, position: position };
 
@@ -201,6 +201,22 @@ export const useReorderItem = () => {
         is_active: newItem.is_active,
         position: newItem.position,
         item_list_id: selectedList.id,
+      },
+      update(cache) {
+        cache.modify({
+          fields: {
+            item() {
+              setListItems(sortedItems);
+
+              const newRef = cache.writeQuery({
+                query: ALL_ITEMS,
+                variables: { item_list_id: selectedList.id },
+                data: { item: sortedItems },
+              });
+              return newRef;
+            },
+          },
+        });
       },
     }).then((res) => onCompleted(res.data));
   };
@@ -355,7 +371,7 @@ export const useAddItem = () => {
       update(cache, { data }) {
         cache.modify({
           fields: {
-            item(existing = []) {
+            item() {
               const newItems = [data.insert_item_one].concat(listItems);
               setListItems(newItems);
 
@@ -364,7 +380,7 @@ export const useAddItem = () => {
                 variables: { item_list_id: selectedList.id },
                 data: { item: newItems },
               });
-              return [...existing, newRef];
+              return newRef;
             },
           },
         });
