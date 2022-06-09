@@ -143,6 +143,7 @@ function TodoView() {
           setAlertOpen(true);
           setMobileMoreAnchorEl(null);
         }}
+        sx={{ color: 'error.light' }}
       >
         <IconButton aria-label="delete this list" color="inherit" size="large">
           <DeleteForeverIcon />

@@ -24,6 +24,9 @@ const darkTheme = createTheme({
       main: grey['300'],
       dark: '#aeaeae',
     },
+    error: {
+      main: '#e7534c',
+    },
     background: {
       paper: '#303030',
       default: '#303030',
