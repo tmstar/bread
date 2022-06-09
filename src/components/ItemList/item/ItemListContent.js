@@ -112,8 +112,7 @@ function ItemListContent({ hideSwitch, setSelectedTodo, setOpenForm }) {
     newRemoved.position = getPosition(newItems, destination.index);
 
     newItems.splice(destination.index, 0, newRemoved);
-    setListItems(newItems);
-    reorderItem(newRemoved.id, newRemoved.position);
+    reorderItem(newRemoved.id, newRemoved.position, newItems);
   };
 
   const listSecondaryAction = (todo) => {
