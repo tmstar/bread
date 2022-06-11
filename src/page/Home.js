@@ -1,7 +1,7 @@
 import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
-import MenuDrawer from './Home/MenuDrawer';
-import HomeMain from './Home/HomeMain';
+import MenuDrawer from '../components/Home/menu/MenuDrawer';
+import HomeMain from '../components/Home/HomeMain';
 
 const useStyles = makeStyles((theme) => ({
   root: {
