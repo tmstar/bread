@@ -73,7 +73,7 @@ function Settings() {
             <ListSubheader color="primary" sx={{ px: 6.3 }}>
               {'アカウント'}
             </ListSubheader>
-            <ListItem button onClick={() => logout({ returnTo: window.location.origin })}>
+            <ListItem button onClick={() => logout({ returnTo: window.location.origin + '/login' })}>
               <ListItemText
                 primary={'ログアウト'}
                 primaryTypographyProps={{

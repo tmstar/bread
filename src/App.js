@@ -9,6 +9,7 @@ import ProtectedRoute from './components/routing/ProtectedRoute';
 import ApolloProviderWithAuth0 from './hooks/ApolloProviderWithAuth0';
 import { ItemProvider } from './hooks/ItemProvider';
 import Home from './page/Home';
+import Login from './page/Login';
 import Logout from './page/Logout';
 import Settings from './page/Settings';
 
@@ -74,6 +75,7 @@ function App() {
                   <Route index element={<ProtectedRoute component={Home} />} />
                   <Route path="item-list" element={<ProtectedRoute component={ItemList} />} />
                   <Route path="settings" element={<ProtectedRoute component={Settings} />} />
+                  <Route path="login" element={<Login />} />
                   <Route path="logout" element={<Logout />} />
                 </Routes>
               </ApolloProviderWithAuth0>
