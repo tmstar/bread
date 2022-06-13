@@ -1,3 +1,4 @@
+import { useAuth0 } from '@auth0/auth0-react';
 import AddIcon from '@mui/icons-material/Add';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Avatar from '@mui/material/Avatar';
@@ -10,7 +11,8 @@ import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
+import { Navigate } from 'react-router-dom';
+import Loader from '../components/routing/Loader';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -42,7 +44,10 @@ const Copyright = () => {
 
 export default function Login() {
   const classes = useStyles();
-  const { loginWithRedirect } = useAuth0();
+  const { isLoading, isAuthenticated, loginWithRedirect } = useAuth0();
+
+  if (isLoading) return <Loader />;
+  if (isAuthenticated) return <Navigate to="/" replace />;
 
   return (
     <Grid
@@ -60,7 +65,7 @@ export default function Login() {
               <Avatar className={classes.avatar}>
                 <ShoppingCartIcon />
               </Avatar>
-              <Typography variant="h5" sx={{ py: 2 }}>
+              <Typography variant="h5" align="center" sx={{ py: 2 }}>
                 {'Bread. Your lists always at hand.'}
               </Typography>
               <Typography variant="body">{'✓リスト専門のアプリでメモを共有しよう'}</Typography>
