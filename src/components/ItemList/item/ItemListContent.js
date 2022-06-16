@@ -21,7 +21,7 @@ import withStyles from '@mui/styles/withStyles';
 import clsx from 'clsx';
 import React, { useMemo } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
-import { useRecoilState } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import { listItemsInListState } from '../../../atoms';
 import { useAllItems, useDeleteItem, useReorderItem, useToggleItem } from '../../../hooks/ListItemHooks';
 import EmptyListSvg from './eating_together.svg';
@@ -80,7 +80,7 @@ const getPosition = (items, newIndex) => {
 
 function ItemListContent({ hideSwitch, setSelectedTodo, setOpenForm }) {
   const classes = useStyles();
-  const [items, setListItems] = useRecoilState(listItemsInListState);
+  const items = useRecoilValue(listItemsInListState);
 
   const { loading, data } = useAllItems();
   const { toggleItem } = useToggleItem();
