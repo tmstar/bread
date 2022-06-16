@@ -60,7 +60,7 @@ function MenuDrawer() {
             className={classes.menu}
             primary={defaultMainTitle}
             primaryTypographyProps={{
-              variant: 'body1',
+              variant: 'body2',
             }}
           />
         </ListItem>
@@ -72,7 +72,7 @@ function MenuDrawer() {
             className={classes.menu}
             primary={'設定'}
             primaryTypographyProps={{
-              variant: 'body1',
+              variant: 'body2',
             }}
           />
         </ListItem>
@@ -85,7 +85,7 @@ function MenuDrawer() {
             className={classes.menu}
             primary={'タグ'}
             primaryTypographyProps={{
-              variant: 'body1',
+              variant: 'body2',
             }}
           />
         </ListItem>
