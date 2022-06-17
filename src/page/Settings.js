@@ -1,6 +1,7 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import ArrowBack from '@mui/icons-material/ArrowBack';
 import AppBar from '@mui/material/AppBar';
+import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -9,6 +10,7 @@ import ListSubheader from '@mui/material/ListSubheader';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import makeStyles from '@mui/styles/makeStyles';
+import preval from 'preval.macro';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -47,6 +49,8 @@ function Settings() {
     navigate(-1);
   };
 
+  const buildTimestamp = preval`module.exports = Math.floor(Date.now() / 1000);`;
+
   return (
     <div className={classes.root}>
       <AppBar position="fixed" className={classes.appBar}>
@@ -81,6 +85,17 @@ function Settings() {
                   variant: 'body1',
                 }}
                 secondary={`${user.email}`}
+                sx={{ px: 4.5 }}
+              />
+            </ListItem>
+            <Divider />
+            <ListItem>
+              <ListItemText
+                primary={`バージョン${process.env.REACT_APP_VERSION} (${buildTimestamp})`}
+                primaryTypographyProps={{
+                  color: 'secondary',
+                  variant: 'caption',
+                }}
                 sx={{ px: 4.5 }}
               />
             </ListItem>
