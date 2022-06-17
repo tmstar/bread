@@ -17,4 +17,18 @@ root.render(
   // </React.StrictMode>
 );
 
-serviceWorker.register();
+const config = {
+  onUpdate: (registration) => {
+    const waitingWorker = registration.waiting;
+    if (waitingWorker) {
+      waitingWorker.addEventListener('statechange', (event) => {
+        if (event.target.state === 'activated') {
+          window.location.reload();
+        }
+      });
+      waitingWorker.postMessage({ type: 'SKIP_WAITING' });
+    }
+  },
+};
+
+serviceWorker.register(config);
