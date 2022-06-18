@@ -128,7 +128,7 @@ export const useAllItems = () => {
 
   const { loading, error, data } = useQuery(ALL_ITEMS, {
     variables: { item_list_id: selectedList?.id },
-    pollInterval: 60000, // 1 min
+    pollInterval: 10000, // 10 sec
   });
 
   useEffect(() => {
