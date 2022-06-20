@@ -4,7 +4,7 @@ function Logout() {
   const { logout } = useAuth0();
 
   // redirect to location.origin
-  logout({ returnTo: window.location.origin });
+  logout({ returnTo: window.location.origin + '/login' });
 
   return null;
 }

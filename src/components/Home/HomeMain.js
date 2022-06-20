@@ -46,20 +46,9 @@ const useStyles = makeStyles((theme) => ({
   menuButton: {
     marginRight: theme.spacing(2),
   },
-  sectionMobile: {
-    // display: "flex",
-    marginLeft: 'auto',
-  },
-  hide: {
-    display: 'none',
-  },
   drawer: {
     width: drawerWidth,
     // flexShrink: 0,
-  },
-  drawerPaper: {
-    width: drawerWidth,
-    backgroundImage: 'none',
   },
   drawerHeader: {
     display: 'flex',
@@ -77,13 +66,6 @@ const useStyles = makeStyles((theme) => ({
       duration: theme.transitions.duration.leavingScreen,
     }),
     // marginRight: "-100%",
-  },
-  contentShift: {
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginRight: 0,
   },
   title: {
     flexGrow: 1,

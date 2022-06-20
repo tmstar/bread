@@ -52,7 +52,7 @@ export const ItemProvider = ({ children }) => {
       return;
     }
     getAccessTokenSilently().then((token) => {
-      Hasura.initialize(user, token);
+      Hasura.initialize(user);
       setToken(token);
     });
   }, [isAuthenticated, user, getAccessTokenSilently]);

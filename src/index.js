@@ -3,6 +3,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
+import serviceWorker from './serviceWorkerRegistration';
 
 const container = document.getElementById('root');
 const root = createRoot(container);
@@ -15,3 +16,19 @@ root.render(
   </BrowserRouter>
   // </React.StrictMode>
 );
+
+const config = {
+  onUpdate: (registration) => {
+    const waitingWorker = registration.waiting;
+    if (waitingWorker) {
+      waitingWorker.addEventListener('statechange', (event) => {
+        if (event.target.state === 'activated') {
+          window.location.reload();
+        }
+      });
+      waitingWorker.postMessage({ type: 'SKIP_WAITING' });
+    }
+  },
+};
+
+serviceWorker.register(config);

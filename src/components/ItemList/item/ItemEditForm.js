@@ -1,3 +1,5 @@
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import Button from '@mui/material/Button';
 import { amber, teal, yellow } from '@mui/material/colors';
 import DialogActions from '@mui/material/DialogActions';
@@ -5,11 +7,12 @@ import DialogContent from '@mui/material/DialogContent';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import InputBase from '@mui/material/InputBase';
 import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import makeStyles from '@mui/styles/makeStyles';
 import withStyles from '@mui/styles/withStyles';
-import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import React, { useEffect, useState } from 'react';
-import { useUpdateItem, useAddItem } from '../../../hooks/ListItemHooks';
+import { useAddItem, useUpdateItem } from '../../../hooks/ListItemHooks';
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -17,12 +20,6 @@ const useStyles = makeStyles((theme) => ({
   },
   tag: {},
 }));
-
-const colorLabels = {
-  color1: 'イエロー',
-  color2: 'ティール',
-  color3: 'アンバー',
-};
 
 const Color1Radio = withStyles({
   root: {
@@ -62,7 +59,7 @@ const IndeterminateRadio = withStyles({
     },
   },
   checked: {},
-})((props) => <Radio color="default" {...props} />);
+})((props) => <Radio color="default" icon={<RemoveCircleOutlineIcon />} checkedIcon={<RemoveCircleIcon />} {...props} />);
 
 export default function ItemEditForm({ open, setOpen, todo }) {
   const classes = useStyles();
@@ -137,41 +134,38 @@ export default function ItemEditForm({ open, setOpen, todo }) {
                   onChange={(event) => setNote(event.target.value)}
                   fullWidth
                 />
-                <FormControlLabel
-                  checked={color === 'default'}
-                  value="default"
-                  control={<Radio />}
-                  onChange={handleChange}
-                  label="デフォルト"
-                />
-                <FormControlLabel
-                  checked={color === 'color1'}
-                  value="color1"
-                  control={<Color1Radio />}
-                  onChange={handleChange}
-                  label={colorLabels['color1']}
-                />
-                <FormControlLabel
-                  checked={color === 'color2'}
-                  value="color2"
-                  control={<Color2Radio />}
-                  onChange={handleChange}
-                  label={colorLabels['color2']}
-                />
-                <FormControlLabel
-                  checked={color === 'color3'}
-                  value="color3"
-                  control={<Color3Radio />}
-                  onChange={handleChange}
-                  label={colorLabels['color3']}
-                />
-                <FormControlLabel
-                  checked={color === 'indeterminate'}
-                  value="indeterminate"
-                  control={<IndeterminateRadio />}
-                  onChange={handleChange}
-                  label="保留"
-                />
+                <RadioGroup row aria-labelledby="color-radio-buttons" name="row-radio-buttons" sx={{ px: 1 }}>
+                  <FormControlLabel
+                    checked={color === 'default'}
+                    value="default"
+                    control={<Radio size="small" />}
+                    onChange={handleChange}
+                  />
+                  <FormControlLabel
+                    checked={color === 'color1'}
+                    value="color1"
+                    control={<Color1Radio size="small" />}
+                    onChange={handleChange}
+                  />
+                  <FormControlLabel
+                    checked={color === 'color2'}
+                    value="color2"
+                    control={<Color2Radio size="small" />}
+                    onChange={handleChange}
+                  />
+                  <FormControlLabel
+                    checked={color === 'color3'}
+                    value="color3"
+                    control={<Color3Radio size="small" />}
+                    onChange={handleChange}
+                  />
+                  <FormControlLabel
+                    checked={color === 'indeterminate'}
+                    value="indeterminate"
+                    control={<IndeterminateRadio size="small" />}
+                    onChange={handleChange}
+                  />
+                </RadioGroup>
               </>
             ) : (
               ''

@@ -1,5 +1,6 @@
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
+import Settings from '@mui/icons-material/Settings';
 import Divider from '@mui/material/Divider';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -10,8 +11,9 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { defaultMainTitle, mainTitleState, openMenuState, selectedTagState, uniqueTagsState } from '../../atoms';
+import { defaultMainTitle, mainTitleState, openMenuState, selectedTagState, uniqueTagsState } from '../../../atoms';
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -58,7 +60,19 @@ function MenuDrawer() {
             className={classes.menu}
             primary={defaultMainTitle}
             primaryTypographyProps={{
-              variant: 'body1',
+              variant: 'body2',
+            }}
+          />
+        </ListItem>
+        <ListItem button component={Link} to={'settings'} className={classes.listItemTop}>
+          <ListItemIcon>
+            <Settings />
+          </ListItemIcon>
+          <ListItemText
+            className={classes.menu}
+            primary={'設定'}
+            primaryTypographyProps={{
+              variant: 'body2',
             }}
           />
         </ListItem>
@@ -71,7 +85,7 @@ function MenuDrawer() {
             className={classes.menu}
             primary={'タグ'}
             primaryTypographyProps={{
-              variant: 'body1',
+              variant: 'body2',
             }}
           />
         </ListItem>
