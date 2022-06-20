@@ -69,17 +69,17 @@ export default function Login() {
                 {'Bread. Your lists always at hand.'}
               </Typography>
               <Typography variant="body">{'✓リスト専門のアプリでメモを共有しよう'}</Typography>
-              <Typography variant="body">{'✓ブラウザ１つでどこでもインストール可能'}</Typography>
+              <Typography variant="body">{'✓買い物中でも使いやすいシンプルなデザイン'}</Typography>
               <Typography variant="body" color="success.light">
-                {'✓買い物中でも使いやすいデザイン'}
+                {'✓無料で広告なしで使えるアプリ'}
               </Typography>
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
-                color="success"
                 className={classes.submit}
                 startIcon={<AddIcon />}
+                sx={{ color: '#ffffff', bgcolor: '#ffffff33', '&:hover': { bgcolor: '#ffffff4d' } }}
                 onClick={() => {
                   loginWithRedirect({
                     screen_hint: 'signup',
