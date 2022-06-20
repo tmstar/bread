@@ -1,4 +1,4 @@
-import { blue, grey } from '@mui/material/colors';
+import { grey } from '@mui/material/colors';
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import React from 'react';
@@ -18,7 +18,7 @@ const darkTheme = createTheme({
     mode: 'dark',
     primary: {
       light: '#eeffff',
-      main: blue['100'],
+      main: '#e1f4ff',
       dark: '#8aacc8',
     },
     secondary: {
