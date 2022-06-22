@@ -89,6 +89,20 @@ function Settings() {
               />
             </ListItem>
             <Divider />
+            <ListSubheader color="primary" sx={{ px: 6.3, pt: 1 }}>
+              {'詳細情報'}
+            </ListSubheader>
+            <ListItem button component="a" href={process.env.REACT_APP_SUPPORT_URL + '/privacy-policy'}>
+              <ListItemText
+                primary={'プライバシーポリシー'}
+                primaryTypographyProps={{
+                  fontWeight: 'medium',
+                  variant: 'body1',
+                }}
+                sx={{ px: 4.5 }}
+              />
+            </ListItem>
+            <Divider />
             <ListItem>
               <ListItemText
                 primary={`バージョン${process.env.REACT_APP_VERSION} (${buildTimestamp})`}
