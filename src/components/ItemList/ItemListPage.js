@@ -65,7 +65,7 @@ function TodoView() {
   const tags = useRecoilValue(tagsInListState);
 
   const { updateList, deleteList, removeTag } = useContext(ItemContext);
-  const { deleteCompletedItems } = useDeleteCompletedItems();
+  const { deleteCompletedItems, deleteItemsFromState, restoreItemsToState } = useDeleteCompletedItems();
   const [isListEdit, setIsListEdit] = useState(false);
 
   const [bottomDrawerOpen, setBottomDrawerOpen] = useState(false);
@@ -99,6 +99,7 @@ function TodoView() {
   };
 
   const handleDeleteCompleted = () => {
+    deleteItemsFromState();
     setSnackOpen({ isOpen: true });
     setMobileMoreAnchorEl(null);
   };
@@ -117,6 +118,7 @@ function TodoView() {
   };
 
   const handleSnackUndo = () => {
+    restoreItemsToState();
     setSnackOpen({ isOpen: false, state: 'undo' });
   };
 
