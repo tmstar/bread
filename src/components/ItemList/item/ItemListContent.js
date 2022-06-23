@@ -1,7 +1,7 @@
 import Brightness1TwoToneIcon from '@mui/icons-material/Brightness1TwoTone';
-import CommentIcon from '@mui/icons-material/Comment';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Done from '@mui/icons-material/Done';
+import EditIcon from '@mui/icons-material/Edit';
 import RemoveCircleOutlineTwoToneIcon from '@mui/icons-material/RemoveCircleOutlineTwoTone';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
@@ -97,7 +97,12 @@ function ItemListContent({ hideSwitch, setSelectedTodo, setOpenForm }) {
   }, []);
 
   const handleClickListItem = (todo) => {
-    toggleItem(todo.id, todo.completed);
+    if (hideSwitch) {
+      toggleItem(todo.id, todo.completed);
+    } else {
+      setSelectedTodo(todo);
+      setOpenForm(true);
+    }
   };
 
   const handleDragEnd = (result) => {
@@ -118,16 +123,6 @@ function ItemListContent({ hideSwitch, setSelectedTodo, setOpenForm }) {
   const listSecondaryAction = (todo) => {
     return (
       <ListItemSecondaryAction>
-        <IconButton
-          edge="end"
-          onClick={() => {
-            setSelectedTodo(todo);
-            setOpenForm(true);
-          }}
-          size="large"
-        >
-          <CommentIcon />
-        </IconButton>
         <IconButton edge="end" onClick={() => deleteItem(todo.id)} size="large">
           <DeleteIcon />
         </IconButton>
@@ -148,29 +143,41 @@ function ItemListContent({ hideSwitch, setSelectedTodo, setOpenForm }) {
           >
             <ListItem key={todo.id} button onClick={() => handleClickListItem(todo)} disabled={todo.color === 'indeterminate'}>
               <ListItemIcon>
-                <Checkbox
-                  edge="start"
-                  disableRipple
-                  checked={todo.completed}
-                  checkedIcon={<Done />}
-                  indeterminateIcon={<RemoveCircleOutlineTwoToneIcon />}
-                  icon={
-                    <Brightness1TwoToneIcon
+                {hideSwitch ? (
+                  <Checkbox
+                    edge="start"
+                    disableRipple
+                    checked={todo.completed}
+                    checkedIcon={<Done />}
+                    indeterminateIcon={<RemoveCircleOutlineTwoToneIcon />}
+                    icon={
+                      <Brightness1TwoToneIcon
+                        className={clsx(
+                          { [classes.uncheckColor1]: todo.color === 'color1' },
+                          { [classes.uncheckColor2]: todo.color === 'color2' },
+                          { [classes.uncheckColor3]: todo.color === 'color3' }
+                        )}
+                      />
+                    }
+                    className={clsx(
+                      { [classes.checkColor1]: todo.color === 'color1' },
+                      { [classes.checkColor2]: todo.color === 'color2' },
+                      { [classes.checkColor3]: todo.color === 'color3' }
+                    )}
+                    color={todo.color === 'default' ? 'primary' : 'default'}
+                    indeterminate={todo.color === 'indeterminate'}
+                  />
+                ) : (
+                  <IconButton edge="start" disableRipple size="large" sx={{ pl: 1.15, mr: 0.3, pr: 0.8 }}>
+                    <EditIcon
                       className={clsx(
                         { [classes.uncheckColor1]: todo.color === 'color1' },
                         { [classes.uncheckColor2]: todo.color === 'color2' },
                         { [classes.uncheckColor3]: todo.color === 'color3' }
                       )}
                     />
-                  }
-                  className={clsx(
-                    { [classes.checkColor1]: todo.color === 'color1' },
-                    { [classes.checkColor2]: todo.color === 'color2' },
-                    { [classes.checkColor3]: todo.color === 'color3' }
-                  )}
-                  color={todo.color === 'default' ? 'primary' : 'default'}
-                  indeterminate={todo.color === 'indeterminate'}
-                />
+                  </IconButton>
+                )}
                 <Typography variant="h6" className={classes.index}>
                   {index + 1}
                 </Typography>
