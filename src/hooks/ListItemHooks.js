@@ -188,6 +188,7 @@ export const useReorderItem = () => {
   };
 
   const reorderItem = (id, position, sortedItems) => {
+    setListItems(sortedItems);
     const item = listItems.find((item) => item.id === id);
     const newItem = { ...item, position: position };
 
@@ -206,8 +207,6 @@ export const useReorderItem = () => {
         cache.modify({
           fields: {
             item() {
-              setListItems(sortedItems);
-
               const newRef = cache.writeQuery({
                 query: ALL_ITEMS,
                 variables: { item_list_id: selectedList.id },
