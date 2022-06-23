@@ -4,6 +4,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import AppBar from '@mui/material/AppBar';
 import Chip from '@mui/material/Chip';
@@ -13,15 +15,16 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
 import makeStyles from '@mui/styles/makeStyles';
-import React, { useState, useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { listTitleState, openListState, selectedListState, tagsInListState } from '../../atoms';
-import AlertDialog from './AlertDialog';
-import TagEditForm from './TagEditForm';
-import TodoList from './ItemList';
 import { ItemContext } from '../../hooks/ItemProvider';
 import { useDeleteCompletedItems } from '../../hooks/ListItemHooks';
+import { AlertDialog } from '../utils/AlertDialog';
+import { Snackbar, SnackbarButton } from '../utils/Snackbar';
+import TodoList from './ItemList';
+import TagEditForm from './TagEditForm';
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -63,11 +66,11 @@ function TodoView() {
 
   const { updateList, deleteList, removeTag } = useContext(ItemContext);
   const { deleteCompletedItems } = useDeleteCompletedItems();
-  const [filter, setFilter] = useState('active');
-  const isListEdit = filter === 'all';
+  const [isListEdit, setIsListEdit] = useState(false);
 
   const [bottomDrawerOpen, setBottomDrawerOpen] = useState(false);
 
+  const [snackOpen, setSnackOpen] = useState({ isOpen: false, state: null });
   const [alertOpen, setAlertOpen] = useState(false);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -89,21 +92,32 @@ function TodoView() {
     selectList(null);
   };
 
-  const handleFilter = (newValue) => {
-    if (newValue !== null) {
-      setFilter(newValue);
-    }
+  const toggleMode = () => {
+    const newVal = isListEdit ? false : true;
+    setIsListEdit(newVal);
     setMobileMoreAnchorEl(null);
   };
 
   const handleDeleteCompleted = () => {
-    deleteCompletedItems();
+    setSnackOpen({ isOpen: true });
     setMobileMoreAnchorEl(null);
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
     updateList(selectedList.id, listTitle);
+  };
+
+  const handleSnackClose = (event, reason) => {
+    if (reason === 'clickaway' || snackOpen.state === 'undo') {
+      return;
+    }
+    deleteCompletedItems();
+    setSnackOpen({ isOpen: false });
+  };
+
+  const handleSnackUndo = () => {
+    setSnackOpen({ isOpen: false, state: 'undo' });
   };
 
   const mobileMenuId = 'primary-search-account-menu-mobile';
@@ -118,14 +132,14 @@ function TodoView() {
       onClose={() => setMobileMoreAnchorEl(null)}
     >
       {isListEdit ? (
-        <MenuItem onClick={() => handleFilter('active')}>
+        <MenuItem onClick={() => toggleMode()}>
           <IconButton aria-label="show active" color="inherit" size="large">
             <AllInboxIcon />
           </IconButton>
           <p>リストの編集を終了</p>
         </MenuItem>
       ) : (
-        <MenuItem onClick={() => handleFilter('all')}>
+        <MenuItem onClick={() => toggleMode()}>
           <IconButton aria-label="show all" color="inherit" size="large">
             <ListAltIcon />
           </IconButton>
@@ -185,6 +199,9 @@ function TodoView() {
             />
           </form>
           <div className={classes.sectionMobile}>
+            <IconButton aria-label="toggle mode" edge="end" size="large" sx={{ m: 0 }} onClick={() => toggleMode()}>
+              {isListEdit ? <LockOpenOutlinedIcon /> : <LockOutlinedIcon sx={{ color: '#fde5a6' }} />}
+            </IconButton>
             <IconButton
               aria-label="show more"
               aria-controls={mobileMenuId}
@@ -216,13 +233,23 @@ function TodoView() {
           {tagList}
         </div>
         <TagEditForm open={bottomDrawerOpen} setOpen={setBottomDrawerOpen} />
-        <TodoList hideSwitch={filter !== 'all'} />
+        <TodoList hideSwitch={!isListEdit} />
+        <Snackbar
+          open={snackOpen.isOpen}
+          onClose={handleSnackClose}
+          message="完了済みアイテムを削除しました"
+          action={<SnackbarButton label="元に戻す" onClick={() => handleSnackUndo()} />}
+        />
         <AlertDialog
           open={alertOpen}
-          setOpen={setAlertOpen}
-          title="リストの削除"
-          msg="リスト内にあるチェック項目はすべて削除されます。よろしいですか。"
-          handleOk={handleDeleteListOk}
+          onClose={() => setAlertOpen(false)}
+          onCloseOk={() => {
+            setAlertOpen(false);
+            handleDeleteListOk();
+          }}
+          title="リストを削除しますか？"
+          msg="このリスト上のすべてのアイテムが完全に削除されます"
+          labelok="削除"
         />
       </div>
     </>

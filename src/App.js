@@ -60,6 +60,9 @@ const darkTheme = createTheme({
   typography: {
     fontFamily: `"Prompt","Yu Gothic Medium","游ゴシック Medium",YuGothic,"游ゴシック体","Roboto","Helvetica","Arial",sans-serif`,
   },
+  shape: {
+    borderRadius: 8,
+  },
 });
 
 function App() {
