@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useMutation, useQuery } from 'react-apollo';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { v4 as uuid_v4 } from 'uuid';
@@ -188,6 +188,7 @@ export const useReorderItem = () => {
   };
 
   const reorderItem = (id, position, sortedItems) => {
+    setListItems(sortedItems);
     const item = listItems.find((item) => item.id === id);
     const newItem = { ...item, position: position };
 
@@ -206,8 +207,6 @@ export const useReorderItem = () => {
         cache.modify({
           fields: {
             item() {
-              setListItems(sortedItems);
-
               const newRef = cache.writeQuery({
                 query: ALL_ITEMS,
                 variables: { item_list_id: selectedList.id },
@@ -304,10 +303,21 @@ export const useDeleteCompletedItems = () => {
   const [lists, setLists] = useRecoilState(listsInTagState);
   const selectedList = useRecoilValue(selectedListState);
   const [_delete, { loading, error, data }] = useMutation(DELETE_COMPLETED_ITEMS);
+  const [backupItems, setBackupItems] = useState([]);
 
   const onCompleted = (data) => {
     const modLists = modifyUpdatedAt(lists, data.update_item_list_by_pk);
     setLists(modLists);
+  };
+
+  const deleteItemsFromState = () => {
+    setBackupItems([...listItems]);
+    const newItems = listItems.filter((item) => !item.completed);
+    setListItems(newItems);
+  };
+
+  const restoreItemsToState = () => {
+    setListItems(backupItems);
   };
 
   const deleteCompletedItems = () => {
@@ -330,7 +340,7 @@ export const useDeleteCompletedItems = () => {
   };
 
   error && console.warn(error);
-  return { loading, data, deleteCompletedItems };
+  return { loading, data, deleteCompletedItems, deleteItemsFromState, restoreItemsToState };
 };
 
 export const useAddItem = () => {
