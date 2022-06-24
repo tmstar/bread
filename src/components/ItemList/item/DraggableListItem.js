@@ -72,11 +72,18 @@ export const DraggableListItem = (props) => {
           '& hr': { ml: 2, mr: 1 },
         }}
       >
-        <IconButton edge="end" size="large" disableRipple>
+        <IconButton edge="end" size="large">
           <ArrowRightIcon />
         </IconButton>
         <Divider orientation="vertical" variant="middle" flexItem sx={{ borderColor: grey['600'] }} />
-        <IconButton edge="end" onClick={() => deleteItem(props.id)} size="large">
+        <IconButton
+          edge="end"
+          size="large"
+          onClick={(event) => {
+            event.stopPropagation();
+            deleteItem(props.id);
+          }}
+        >
           <DeleteIcon />
         </IconButton>
       </ListItemSecondaryAction>
@@ -115,7 +122,12 @@ export const DraggableListItem = (props) => {
   };
 
   const EditableListItem = ({ item, provided }) => (
-    <ListItem button onClick={() => handleClickListItem(item)} disabled={item.color === 'indeterminate'}>
+    <ListItem
+      button
+      onClick={() => handleClickListItem(item)}
+      disabled={item.color === 'indeterminate'}
+      secondaryAction={<SecondaryAction id={item.id} />}
+    >
       <ListItemIcon>
         <IconButton {...provided.dragHandleProps} edge="start" size="large" sx={{ pl: 1.15, mr: 0.3, pr: 0.8, color: grey['600'] }}>
           <DragHandleIcon className={colorClass} />
@@ -125,7 +137,6 @@ export const DraggableListItem = (props) => {
         </Typography>
       </ListItemIcon>
       <SwitchListItemText completed={item.completed} primary={item.title} secondary={item.note} className={classes.label} />
-      {SecondaryAction({ id: item.id })}
     </ListItem>
   );
 
