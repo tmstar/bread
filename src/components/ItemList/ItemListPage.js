@@ -37,9 +37,6 @@ const useStyles = makeStyles((theme) => ({
   menuButton: {
     marginRight: theme.spacing(2),
   },
-  sectionMobile: {
-    marginLeft: 'auto',
-  },
   drawerHeader: {
     display: 'flex',
     alignItems: 'center',
@@ -200,22 +197,20 @@ function TodoView() {
               onChange={(event) => setListTitle(event.target.value)}
             />
           </form>
-          <div className={classes.sectionMobile}>
-            <IconButton aria-label="toggle mode" edge="end" size="large" sx={{ m: 0 }} onClick={() => toggleMode()}>
-              {isListEdit ? <LockOpenOutlinedIcon /> : <LockOutlinedIcon sx={{ color: '#fde5a6' }} />}
-            </IconButton>
-            <IconButton
-              aria-label="show more"
-              aria-controls={mobileMenuId}
-              aria-haspopup="true"
-              onClick={handleMobileMenuOpen}
-              color="inherit"
-              edge="end"
-              size="large"
-            >
-              <MoreIcon />
-            </IconButton>
-          </div>
+          <IconButton aria-label="toggle mode" edge="end" size="large" sx={{ ml: 'auto' }} onClick={() => toggleMode()}>
+            {isListEdit ? <LockOpenOutlinedIcon /> : <LockOutlinedIcon sx={{ color: '#fde5a6' }} />}
+          </IconButton>
+          <IconButton
+            aria-label="show more"
+            aria-controls={mobileMenuId}
+            aria-haspopup="true"
+            onClick={handleMobileMenuOpen}
+            color="inherit"
+            edge="end"
+            size="large"
+          >
+            <MoreIcon />
+          </IconButton>
         </Toolbar>
       </AppBar>
       {renderMobileMenu}
