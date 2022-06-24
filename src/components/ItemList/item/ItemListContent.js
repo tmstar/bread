@@ -1,68 +1,22 @@
-import Brightness1TwoToneIcon from '@mui/icons-material/Brightness1TwoTone';
-import DeleteIcon from '@mui/icons-material/Delete';
-import Done from '@mui/icons-material/Done';
-import EditIcon from '@mui/icons-material/Edit';
-import RemoveCircleOutlineTwoToneIcon from '@mui/icons-material/RemoveCircleOutlineTwoTone';
 import Box from '@mui/material/Box';
-import Checkbox from '@mui/material/Checkbox';
 import CircularProgress from '@mui/material/CircularProgress';
-import { amber, blueGrey, teal, yellow } from '@mui/material/colors';
-import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
-import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
-import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import makeStyles from '@mui/styles/makeStyles';
-import withStyles from '@mui/styles/withStyles';
-import clsx from 'clsx';
-import React, { useMemo } from 'react';
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import React from 'react';
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import { useRecoilValue } from 'recoil';
 import { listItemsInListState } from '../../../atoms';
-import { useAllItems, useDeleteItem, useReorderItem, useToggleItem } from '../../../hooks/ListItemHooks';
+import { useAllItems, useReorderItem, useToggleItem } from '../../../hooks/ListItemHooks';
+import { DraggableListItem } from './DraggableListItem';
 import EmptyListSvg from './eating_together.svg';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(0, 1),
   },
-  index: {
-    margin: theme.spacing(1, 0, 1),
-    width: 30,
-  },
-  label: {
-    marginRight: theme.spacing(4),
-  },
-  checkColor1: {
-    color: yellow['A200'],
-  },
-  uncheckColor1: {
-    color: yellow['A200'],
-  },
-  checkColor2: {
-    color: teal['A400'],
-  },
-  uncheckColor2: {
-    color: teal['A400'],
-  },
-  checkColor3: {
-    color: amber['A700'],
-  },
-  uncheckColor3: {
-    color: amber['A700'],
-  },
 }));
-
-const getItemStyle = (isDragging, draggableStyle) => ({
-  ...draggableStyle,
-  ...(isDragging && {
-    background: '#404040',
-  }),
-});
 
 const getPosition = (items, newIndex) => {
   let posUpper;
@@ -85,16 +39,6 @@ function ItemListContent({ hideSwitch, setSelectedTodo, setOpenForm }) {
   const { loading, data } = useAllItems();
   const { toggleItem } = useToggleItem();
   const { reorderItem } = useReorderItem();
-  const { deleteItem } = useDeleteItem();
-
-  const StrikeListItemText = useMemo(() => {
-    return withStyles({
-      root: {
-        textDecoration: 'line-through',
-        color: blueGrey['A200'],
-      },
-    })(ListItemText);
-  }, []);
 
   const handleClickListItem = (todo) => {
     if (hideSwitch) {
@@ -120,81 +64,16 @@ function ItemListContent({ hideSwitch, setSelectedTodo, setOpenForm }) {
     reorderItem(newRemoved.id, newRemoved.position, newItems);
   };
 
-  const listSecondaryAction = (todo) => {
-    return (
-      <ListItemSecondaryAction>
-        <IconButton edge="end" onClick={() => deleteItem(todo.id)} size="large">
-          <DeleteIcon />
-        </IconButton>
-      </ListItemSecondaryAction>
-    );
-  };
-
-  const todoList = items.map((todo, index) => {
-    const rowLength = items.length;
-    return (
-      <Draggable key={todo.id} draggableId={todo.id} index={index}>
-        {(provided, snapshot) => (
-          <div
-            ref={provided.innerRef}
-            {...provided.draggableProps}
-            {...provided.dragHandleProps}
-            style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
-          >
-            <ListItem key={todo.id} button onClick={() => handleClickListItem(todo)} disabled={todo.color === 'indeterminate'}>
-              <ListItemIcon>
-                {hideSwitch ? (
-                  <Checkbox
-                    edge="start"
-                    disableRipple
-                    checked={todo.completed}
-                    checkedIcon={<Done />}
-                    indeterminateIcon={<RemoveCircleOutlineTwoToneIcon />}
-                    icon={
-                      <Brightness1TwoToneIcon
-                        className={clsx(
-                          { [classes.uncheckColor1]: todo.color === 'color1' },
-                          { [classes.uncheckColor2]: todo.color === 'color2' },
-                          { [classes.uncheckColor3]: todo.color === 'color3' }
-                        )}
-                      />
-                    }
-                    className={clsx(
-                      { [classes.checkColor1]: todo.color === 'color1' },
-                      { [classes.checkColor2]: todo.color === 'color2' },
-                      { [classes.checkColor3]: todo.color === 'color3' }
-                    )}
-                    color={todo.color === 'default' ? 'primary' : 'default'}
-                    indeterminate={todo.color === 'indeterminate'}
-                  />
-                ) : (
-                  <IconButton edge="start" disableRipple size="large" sx={{ pl: 1.15, mr: 0.3, pr: 0.8 }}>
-                    <EditIcon
-                      className={clsx(
-                        { [classes.uncheckColor1]: todo.color === 'color1' },
-                        { [classes.uncheckColor2]: todo.color === 'color2' },
-                        { [classes.uncheckColor3]: todo.color === 'color3' }
-                      )}
-                    />
-                  </IconButton>
-                )}
-                <Typography variant="h6" className={classes.index}>
-                  {index + 1}
-                </Typography>
-              </ListItemIcon>
-              {todo.completed ? (
-                <StrikeListItemText primary={todo.title} secondary={todo.note} className={hideSwitch ? '' : classes.label} />
-              ) : (
-                <ListItemText primary={todo.title} secondary={todo.note} className={hideSwitch ? '' : classes.label} />
-              )}
-              {hideSwitch ? '' : listSecondaryAction(todo)}
-            </ListItem>
-            {index + 1 !== rowLength && !snapshot.isDragging ? <Divider /> : ''}
-          </div>
-        )}
-      </Draggable>
-    );
-  });
+  const todoList = items.map((todo, index) => (
+    <DraggableListItem
+      key={todo.id}
+      todo={todo}
+      index={index}
+      rowLength={items.length}
+      hideSwitch={hideSwitch}
+      handleClickListItem={handleClickListItem}
+    />
+  ));
 
   if (loading)
     return (
