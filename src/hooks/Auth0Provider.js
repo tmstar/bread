@@ -10,7 +10,7 @@ function Auth0Provider({ children }) {
   const audience = process.env.REACT_APP_AUTH0_AUDIENCE;
 
   const onRedirectCallback = (appState) => {
-    navigate(appState?.returnTo || window.location.pathname);
+    navigate(appState?.returnTo || window.location.pathname, { replace: true });
   };
 
   if (!(domain && clientId && audience)) {
