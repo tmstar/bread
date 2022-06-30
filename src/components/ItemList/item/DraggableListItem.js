@@ -69,7 +69,8 @@ export const DraggableListItem = (props) => {
       <ListItemSecondaryAction
         sx={{
           display: 'flex',
-          '& hr': { ml: 2, mr: 1 },
+          right: 0,
+          '& hr': { ml: 1 },
         }}
       >
         <IconButton edge="end" size="large">
@@ -127,9 +128,18 @@ export const DraggableListItem = (props) => {
       onClick={() => handleClickListItem(item)}
       disabled={item.color === 'indeterminate'}
       secondaryAction={<SecondaryAction id={item.id} />}
+      {...provided.dragHandleProps}
     >
       <ListItemIcon>
-        <IconButton {...provided.dragHandleProps} edge="start" size="large" sx={{ pl: 1.15, mr: 0.3, pr: 0.8, color: grey['600'] }}>
+        <IconButton
+          edge="start"
+          size="large"
+          disableRipple
+          sx={{ pl: 1.15, mr: 0.3, pr: 0.8, color: grey['600'] }}
+          onClick={(event) => {
+            event.stopPropagation();
+          }}
+        >
           <DragHandleIcon className={colorClass} />
         </IconButton>
         <Typography variant="h6" className={classes.index}>
