@@ -71,21 +71,6 @@ export const ItemProvider = ({ children }) => {
   }, [token, getAccessTokenSilently, setUniqueTags]);
 
   useEffect(() => {
-    if (!token) {
-      return;
-    }
-    setLists([]);
-    getAccessTokenSilently()
-      .then((token) => {
-        return ListService.getAll(token, selectedTag?.id);
-      })
-      .then((itemLists) => {
-        itemLists.map((list) => (list._item_count = list.items_aggregate.aggregate.count));
-        setLists(itemLists);
-      });
-  }, [token, getAccessTokenSilently, selectedTag, setLists]);
-
-  useEffect(() => {
     if (!selectedList) {
       setTagsInList([]);
       setListItems([]);
