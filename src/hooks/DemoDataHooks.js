@@ -1,5 +1,6 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import gql from 'graphql-tag';
+import { useEffect, useState } from 'react';
 import { useMutation } from 'react-apollo';
 import { v4 as uuid_v4 } from 'uuid';
 import getUuid from 'uuid-by-string';
@@ -15,8 +16,8 @@ const CREATE_DEMO_LISTS = gql`
 
 const demoData = (userId) => {
   const txt = demoText;
-  return txt.lists.reverse().map((list, index) => {
-    const listId = getUuid(`${userId}-demo-${index}`);
+  return txt.lists.reverse().map((list) => {
+    const listId = getUuid(`${userId}-demo-${list.name}`);
     return {
       id: listId,
       user_id: userId,
@@ -56,23 +57,29 @@ const demoData = (userId) => {
 };
 
 export const useCreateDemoItems = () => {
-  const { user } = useAuth0();
+  const [loadingDemo, setLoadingDemo] = useState(false);
+  const { isAuthenticated, user } = useAuth0();
   const [createList, { error }] = useMutation(CREATE_DEMO_LISTS);
 
-  const createDemoItems = () => {
+  useEffect(() => {
+    if (!isAuthenticated) {
+      return;
+    }
     const userMetadata = user[process.env.REACT_APP_AUTH0_TOKEN_KEY + '/user_metadata'];
     if (!(userMetadata?.logins === 1 && userMetadata?.firstLogin)) {
       return;
     }
 
+    setLoadingDemo(true);
     const lists = demoData(user.sub);
 
     // controlling the mutation order
-    return createList({ variables: { list: lists[0] } })
+    createList({ variables: { list: lists[0] } })
       .then(() => createList({ variables: { list: lists[1] } }))
-      .then(() => createList({ variables: { list: lists[2] } }));
-  };
+      .then(() => createList({ variables: { list: lists[2] } }))
+      .then(() => setLoadingDemo(false));
+  }, [isAuthenticated, user, createList]);
 
   error && console.warn(error);
-  return { createDemoItems };
+  return { loadingDemo };
 };
