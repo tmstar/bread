@@ -188,7 +188,7 @@ function TodoView() {
           >
             <ArrowBack />
           </IconButton>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', width: '100%' }}>
             <InputBase
               className={classes.title}
               value={listTitle}
