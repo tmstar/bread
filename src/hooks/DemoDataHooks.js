@@ -15,8 +15,8 @@ const CREATE_DEMO_LISTS = gql`
 `;
 
 const demoData = (userId) => {
-  const txt = demoText;
-  return txt.lists.reverse().map((list) => {
+  const reversedList = demoText.lists.reverse();
+  return reversedList.map((list) => {
     const listId = getUuid(`${userId}-demo-${list.name}`);
     return {
       id: listId,
