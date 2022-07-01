@@ -53,7 +53,23 @@ const CREATE_ITEM = gql`
 `;
 
 const UPDATE_ITEM = gql`
-  mutation UpdateTodo(
+  mutation UpdateItem($id: uuid!, $title: String!, $note: String, $color: String, $item_list_id: uuid!) {
+    update_item_by_pk(pk_columns: { id: $id }, _set: { title: $title, note: $note, color: $color }) {
+      id
+      title
+      note
+      color
+    }
+    update_item_list_by_pk(pk_columns: { id: $item_list_id }, _set: { updated_at: "2021-01-01" }) {
+      id
+      updated_at
+      name
+    }
+  }
+`;
+
+const REPOSITION_ITEM = gql`
+  mutation UpdateItem(
     $id: uuid!
     $title: String!
     $note: String
@@ -168,7 +184,7 @@ export const useToggleItem = () => {
     const item = client.readFragment({
       id: `item:${id}`,
       fragment: gql`
-        fragment OldItem on item {
+        fragment OldToggleItem on item {
           id
           completed
         }
@@ -203,7 +219,7 @@ export const useToggleItem = () => {
               const newItem = cache.writeFragment({
                 data: update_item_by_pk,
                 fragment: gql`
-                  fragment NewItem on item {
+                  fragment NewToggleItem on item {
                     id
                     completed
                   }
@@ -277,26 +293,28 @@ export const useReorderItem = () => {
 };
 
 export const useUpdateItem = () => {
-  const [listItems, setListItems] = useRecoilState(listItemsInListState);
-  const [lists, setLists] = useRecoilState(listsInTagState);
   const selectedList = useRecoilValue(selectedListState);
+  const { user } = useAuth0();
+  const client = useApolloClient();
   const [update, { loading, error, data }] = useMutation(UPDATE_ITEM);
-
-  const onCompleted = (data) => {
-    const newItems = listItems.map((item) => (item.id !== data.update_item_by_pk.id ? item : data.update_item_by_pk));
-    setListItems(newItems);
-
-    const modLists = modifyUpdatedAt(lists, data.update_item_list_by_pk);
-    setLists(modLists);
-  };
 
   const updateItem = (id, title, note, color) => {
     if (!title) {
       // ignore empty title
       return Promise.resolve();
     }
-    const item = listItems.find((item) => item.id === id);
-    const newItem = { ...item, title: title, note: note, color: color, position: item.position || 0 };
+    const item = client.readFragment({
+      id: `item:${id}`,
+      fragment: gql`
+        fragment OldUpdateItem on item {
+          id
+          title
+          note
+          color
+        }
+      `,
+    });
+    const newItem = { ...item, title: title, note: note, color: color };
 
     return update({
       variables: {
@@ -304,12 +322,37 @@ export const useUpdateItem = () => {
         title: newItem.title,
         note: newItem.note,
         color: newItem.color,
-        completed: newItem.completed,
-        is_active: newItem.is_active,
-        position: newItem.position,
         item_list_id: selectedList.id,
       },
-    }).then((res) => onCompleted(res.data));
+      update(cache, { data: { update_item_by_pk, update_item_list_by_pk } }) {
+        cache.modify({
+          id: cache.identify(newItem),
+          fields: {
+            item(existingItems = []) {
+              const newItem = cache.writeFragment({
+                data: update_item_by_pk,
+                fragment: gql`
+                  fragment NewUpdateItem on item {
+                    id
+                    title
+                    note
+                    color
+                  }
+                `,
+              });
+              return [...existingItems, newItem];
+            },
+          },
+        });
+        cache.modify({
+          fields: {
+            item_list(existing = []) {
+              return updateCachedList(cache, user, existing, update_item_list_by_pk);
+            },
+          },
+        });
+      },
+    });
   };
 
   error && console.warn(error);
