@@ -1,9 +1,11 @@
+import { useAuth0 } from '@auth0/auth0-react';
 import gql from 'graphql-tag';
 import { useEffect, useState } from 'react';
-import { useMutation, useQuery } from 'react-apollo';
+import { useApolloClient, useMutation, useQuery } from 'react-apollo';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { v4 as uuid_v4 } from 'uuid';
 import { listItemsInListState, listsInTagState, selectedListState } from '../atoms';
+import { updateCachedList } from './ListHooks';
 
 const ALL_ITEMS = gql`
   query AllTodos($item_list_id: uuid!) {
@@ -36,9 +38,15 @@ const CREATE_ITEM = gql`
     update_item_list_by_pk(pk_columns: { id: $item_list_id }, _set: { updated_at: "2021-01-01" }) {
       id
       updated_at
+      name
       items {
         id
         completed
+      }
+      items_aggregate {
+        aggregate {
+          count
+        }
       }
     }
   }
@@ -70,10 +78,21 @@ const UPDATE_ITEM = gql`
     update_item_list_by_pk(pk_columns: { id: $item_list_id }, _set: { updated_at: "2021-01-01" }) {
       id
       updated_at
-      items {
-        id
-        completed
-      }
+      name
+    }
+  }
+`;
+
+const TOGGLE_ITEM = gql`
+  mutation ToggleItem($id: uuid!, $completed: Boolean!, $item_list_id: uuid!) {
+    update_item_by_pk(pk_columns: { id: $id }, _set: { completed: $completed }) {
+      id
+      completed
+    }
+    update_item_list_by_pk(pk_columns: { id: $item_list_id }, _set: { updated_at: "2021-01-01" }) {
+      id
+      updated_at
+      name
     }
   }
 `;
@@ -140,36 +159,69 @@ export const useAllItems = () => {
 };
 
 export const useToggleItem = () => {
-  const [listItems, setListItems] = useRecoilState(listItemsInListState);
-  const [lists, setLists] = useRecoilState(listsInTagState);
   const selectedList = useRecoilValue(selectedListState);
-  const [update, { loading, error, data }] = useMutation(UPDATE_ITEM);
-
-  const onCompleted = (data) => {
-    const modLists = modifyUpdatedAt(lists, data.update_item_list_by_pk);
-    setLists(modLists);
-  };
+  const { user } = useAuth0();
+  const client = useApolloClient();
+  const [update, { loading, error, data }] = useMutation(TOGGLE_ITEM);
 
   const toggleItem = (id, completed) => {
-    const item = listItems.find((item) => item.id === id);
-    const newItem = { ...item, completed: !completed, position: item.position || 0 };
-
-    // quick update displayed list
-    const toggledItems = listItems.map((item) => (item.id !== newItem.id ? item : newItem));
-    setListItems(toggledItems);
+    const item = client.readFragment({
+      id: `item:${id}`,
+      fragment: gql`
+        fragment OldItem on item {
+          id
+          completed
+        }
+      `,
+    });
+    const newItem = { ...item, completed: !completed };
 
     return update({
       variables: {
         id: newItem.id,
-        title: newItem.title,
-        note: newItem.note,
-        color: newItem.color,
         completed: newItem.completed,
-        is_active: newItem.is_active,
-        position: newItem.position,
         item_list_id: selectedList.id,
       },
-    }).then((res) => onCompleted(res.data));
+      optimisticResponse: {
+        update_item_by_pk: {
+          id: newItem.id,
+          __typename: 'item',
+          completed: newItem.completed,
+        },
+        update_item_list_by_pk: {
+          id: selectedList.id,
+          __typename: 'item_list',
+          updated_at: selectedList.updated_at,
+          name: selectedList.name,
+        },
+      },
+      update(cache, { data: { update_item_by_pk, update_item_list_by_pk } }) {
+        cache.modify({
+          id: cache.identify(newItem),
+          fields: {
+            item(existingItems = []) {
+              const newItem = cache.writeFragment({
+                data: update_item_by_pk,
+                fragment: gql`
+                  fragment NewItem on item {
+                    id
+                    completed
+                  }
+                `,
+              });
+              return [...existingItems, newItem];
+            },
+          },
+        });
+        cache.modify({
+          fields: {
+            item_list(existing = []) {
+              return updateCachedList(cache, user, existing, update_item_list_by_pk);
+            },
+          },
+        });
+      },
+    });
   };
 
   error && console.warn(error);
@@ -345,14 +397,9 @@ export const useDeleteCompletedItems = () => {
 
 export const useAddItem = () => {
   const [listItems, setListItems] = useRecoilState(listItemsInListState);
-  const [lists, setLists] = useRecoilState(listsInTagState);
   const selectedList = useRecoilValue(selectedListState);
+  const { user } = useAuth0();
   const [create, { loading, error, data }] = useMutation(CREATE_ITEM);
-
-  const onCompleted = (data) => {
-    const modLists = modifyUpdatedAt(lists, data.update_item_list_by_pk);
-    setLists(modLists);
-  };
 
   const addItem = (title) => {
     if (!title) {
@@ -378,11 +425,11 @@ export const useAddItem = () => {
         position: newItem.position,
         item_list_id: newItem.item_list_id,
       },
-      update(cache, { data }) {
+      update(cache, { data: { insert_item_one, update_item_list_by_pk } }) {
         cache.modify({
           fields: {
             item() {
-              const newItems = [data.insert_item_one].concat(listItems);
+              const newItems = [insert_item_one].concat(listItems);
               setListItems(newItems);
 
               const newRef = cache.writeQuery({
@@ -392,10 +439,13 @@ export const useAddItem = () => {
               });
               return newRef;
             },
+            item_list(existing = []) {
+              return updateCachedList(cache, user, existing, update_item_list_by_pk);
+            },
           },
         });
       },
-    }).then((res) => onCompleted(res.data));
+    });
   };
 
   error && console.warn(error);
