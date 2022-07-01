@@ -25,6 +25,7 @@ import { AlertDialog } from '../utils/AlertDialog';
 import { Snackbar, SnackbarButton } from '../utils/Snackbar';
 import TodoList from './ItemList';
 import TagEditForm from './TagEditForm';
+import { useDeleteList, useUpdateList } from '../../hooks/ListHooks';
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -61,7 +62,10 @@ function TodoView() {
   const [selectedList, selectList] = useRecoilState(selectedListState);
   const tags = useRecoilValue(tagsInListState);
 
-  const { updateList, deleteList, removeTag } = useContext(ItemContext);
+  const { removeTag } = useContext(ItemContext);
+  const { updateList } = useUpdateList();
+  const { deleteList } = useDeleteList();
+
   const { deleteCompletedItems, deleteItemsFromState, restoreItemsToState } = useDeleteCompletedItems();
   const [isListEdit, setIsListEdit] = useState(false);
 
