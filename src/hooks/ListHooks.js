@@ -169,6 +169,32 @@ export const useAllLists = () => {
   return { loading, data };
 };
 
+export const updateCachedList = (cache, user, existing, updatedList) => {
+  const cacheResult = cache.readQuery({
+    query: ALL_LISTS,
+    variables: {
+      user_id: user.sub,
+      user_email: user.email,
+    },
+  });
+
+  if (!cacheResult) return existing;
+
+  const newLists = cacheResult.item_list
+    .map((list) => (list.id !== updatedList.id ? list : { ...list, updated_at: updatedList.updated_at, name: updatedList.name }))
+    .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+
+  const newRef = cache.writeQuery({
+    query: ALL_LISTS,
+    variables: {
+      user_id: user.sub,
+      user_email: user.email,
+    },
+    data: { item_list: newLists },
+  });
+  return newRef;
+};
+
 export const useUpdateList = () => {
   const [update, { loading, error, data }] = useMutation(UPDATE_LIST);
   const selectedList = useRecoilValue(selectedListState);
@@ -188,33 +214,7 @@ export const useUpdateList = () => {
         cache.modify({
           fields: {
             item_list(existing = []) {
-              const { item_list } = cache.readQuery({
-                query: ALL_LISTS,
-                variables: {
-                  user_id: user.sub,
-                  user_email: user.email,
-                },
-              });
-
-              if (!item_list) {
-                return existing;
-              }
-
-              const newLists = item_list
-                .map((list) =>
-                  list.id !== id ? list : { ...list, updated_at: update_item_list_by_pk.updated_at, name: update_item_list_by_pk.name }
-                )
-                .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
-
-              const newRef = cache.writeQuery({
-                query: ALL_LISTS,
-                variables: {
-                  user_id: user.sub,
-                  user_email: user.email,
-                },
-                data: { item_list: newLists },
-              });
-              return newRef;
+              return updateCachedList(cache, user, existing, update_item_list_by_pk);
             },
           },
         });
@@ -291,10 +291,11 @@ export const useAddList = () => {
         on_conflict: { constraint: 'item_list_tag_pkey', update_columns: 'tag_id' },
       },
     };
+    const { item_list_tags, ...newListWoTag } = newList;
 
     return create({
       variables: {
-        list: newList,
+        list: selectedTag ? newList : newListWoTag,
       },
       update(cache, { data }) {
         cache.modify({
