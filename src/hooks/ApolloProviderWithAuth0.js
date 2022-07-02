@@ -41,6 +41,11 @@ function ApolloProviderWithAuth0({ children }) {
                   return incoming;
                 },
               },
+              item: {
+                merge(existing, incoming) {
+                  return incoming;
+                },
+              },
             },
           },
         },
