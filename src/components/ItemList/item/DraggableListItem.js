@@ -82,7 +82,7 @@ export const DraggableListItem = (props) => {
           size="large"
           onClick={(event) => {
             event.stopPropagation();
-            deleteItem(props.id);
+            deleteItem(props.itemId);
           }}
         >
           <DeleteIcon />
@@ -127,7 +127,7 @@ export const DraggableListItem = (props) => {
       button
       onClick={() => handleClickListItem(item)}
       disabled={item.color === 'indeterminate'}
-      secondaryAction={<SecondaryAction id={item.id} />}
+      secondaryAction={<SecondaryAction itemId={item.id} />}
       {...provided.dragHandleProps}
     >
       <ListItemIcon>
