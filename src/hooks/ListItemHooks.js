@@ -125,9 +125,10 @@ export const useAllItems = () => {
     pollInterval: 10000, // 10 sec
   });
 
+  const jsonItem = JSON.stringify(data?.item);
   useEffect(() => {
     data && setListItems(data.item);
-  }, [data, JSON.stringify(data?.item), setListItems]);
+  }, [data, jsonItem, setListItems]);
 
   error && console.warn(error);
   return { loading, data };
@@ -204,11 +205,13 @@ export const useToggleItem = () => {
 };
 
 export const useReorderItem = () => {
+  const setListItems = useSetRecoilState(listItemsInListState);
   const selectedList = useRecoilValue(selectedListState);
   const { user } = useAuth0();
   const [update, { loading, error, data }] = useMutation(REPOSITION_ITEM);
 
   const reorderItem = (id, position, sortedItems) => {
+    setListItems(sortedItems);
     const newItem = { id: id, position: position };
 
     return update({
@@ -232,9 +235,8 @@ export const useReorderItem = () => {
       },
       update(cache, { data: { update_item_by_pk, update_item_list_by_pk } }) {
         cache.modify({
-          id: cache.identify(newItem),
           fields: {
-            item(existingItems = []) {
+            item(existingItems = [], { readField }) {
               const newItemRef = cache.writeFragment({
                 data: update_item_by_pk,
                 fragment: gql`
@@ -244,29 +246,9 @@ export const useReorderItem = () => {
                   }
                 `,
               });
-
-              const cacheResult = cache.readQuery({
-                query: ALL_ITEMS,
-                variables: { item_list_id: selectedList.id },
-              });
-
-              if (!cacheResult) return existingItems;
-
-              const newItems = cacheResult.item
-                .map((item) => (item.id !== update_item_by_pk.id ? item : { ...item, position: update_item_by_pk.position }))
-                .sort((a, b) => b.position - a.position);
-
-              const newRef = cache.writeQuery({
-                query: ALL_ITEMS,
-                variables: { item_list_id: selectedList.id },
-                data: { item: [newItems, newItemRef] },
-              });
-              return newRef;
+              const fltExistingItems = existingItems.filter((item) => readField('id', item) !== update_item_by_pk.id);
+              return [...fltExistingItems, newItemRef].sort((a, b) => readField('position', b) - readField('position', a));
             },
-          },
-        });
-        cache.modify({
-          fields: {
             item_list(existing = []) {
               return updateCachedList(cache, user, existing, update_item_list_by_pk);
             },
@@ -427,9 +409,6 @@ export const useDeleteCompletedItems = () => {
           fields: {
             item(existingItems = [], { readField }) {
               const deletedIds = delete_item.returning;
-              const newItems = listItems.filter((item) => !deletedIds.some((d) => d.id === item.id));
-              setListItems(newItems);
-
               return existingItems.filter((item) => !deletedIds.some((d) => d.id === readField('id', item)));
             },
             item_list(existing = []) {
