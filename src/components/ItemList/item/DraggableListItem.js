@@ -1,6 +1,6 @@
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import Brightness1TwoToneIcon from '@mui/icons-material/Brightness1TwoTone';
-import DeleteIcon from '@mui/icons-material/Delete';
+import ClearIcon from '@mui/icons-material/Clear';
 import Done from '@mui/icons-material/Done';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import RemoveCircleOutlineTwoToneIcon from '@mui/icons-material/RemoveCircleOutlineTwoTone';
@@ -69,7 +69,8 @@ export const DraggableListItem = (props) => {
       <ListItemSecondaryAction
         sx={{
           display: 'flex',
-          '& hr': { ml: 2, mr: 1 },
+          right: 0,
+          '& hr': { ml: 1 },
         }}
       >
         <IconButton edge="end" size="large">
@@ -81,10 +82,10 @@ export const DraggableListItem = (props) => {
           size="large"
           onClick={(event) => {
             event.stopPropagation();
-            deleteItem(props.id);
+            deleteItem(props.itemId);
           }}
         >
-          <DeleteIcon />
+          <ClearIcon />
         </IconButton>
       </ListItemSecondaryAction>
     );
@@ -125,14 +126,22 @@ export const DraggableListItem = (props) => {
     <ListItem
       button
       onClick={() => handleClickListItem(item)}
-      disabled={item.color === 'indeterminate'}
-      secondaryAction={<SecondaryAction id={item.id} />}
+      secondaryAction={<SecondaryAction itemId={item.id} />}
+      {...provided.dragHandleProps}
     >
       <ListItemIcon>
-        <IconButton {...provided.dragHandleProps} edge="start" size="large" sx={{ pl: 1.15, mr: 0.3, pr: 0.8, color: grey['600'] }}>
+        <IconButton
+          edge="start"
+          size="large"
+          disableRipple
+          sx={{ pl: 1.15, mr: 0.3, pr: 0.8, color: grey['600'] }}
+          onClick={(event) => {
+            event.stopPropagation();
+          }}
+        >
           <DragHandleIcon className={colorClass} />
         </IconButton>
-        <Typography variant="h6" className={classes.index}>
+        <Typography variant="h6" className={classes.index} sx={{ ...(item.color === 'indeterminate' && { color: grey['600'] }) }}>
           {index + 1}
         </Typography>
       </ListItemIcon>

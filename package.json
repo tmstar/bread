@@ -22,7 +22,8 @@
     "react-dom": "^18.0.0",
     "react-lottie": "^1.2.3",
     "react-router-dom": "^6.3.0",
-    "recoil": "^0.7.2"
+    "recoil": "^0.7.2",
+    "uuid-by-string": "^3.0.7"
   },
   "devDependencies": {
     "preval.macro": "^5.0.0",

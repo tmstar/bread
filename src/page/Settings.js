@@ -1,6 +1,8 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import ArrowBack from '@mui/icons-material/ArrowBack';
 import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
@@ -101,6 +103,23 @@ function Settings() {
                 }}
                 sx={{ px: 4.5 }}
               />
+            </ListItem>
+            <Divider />
+            <ListSubheader color="primary" sx={{ px: 6.3, pt: 1 }}>
+              {'フィードバック'}
+            </ListSubheader>
+            <ListItem>
+              <Button target="_blank" href="https://www.buymeacoffee.com/tmstar" sx={{ mx: 3.7 }}>
+                <Box
+                  component="img"
+                  src="https://cdn.buymeacoffee.com/buttons/v2/default-red.png"
+                  alt="Buy Me A Coffee"
+                  sx={{
+                    height: 60,
+                    width: 217,
+                  }}
+                />
+              </Button>
             </ListItem>
             <Divider />
             <ListItem>

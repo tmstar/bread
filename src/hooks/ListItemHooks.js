@@ -1,12 +1,14 @@
+import { useAuth0 } from '@auth0/auth0-react';
 import gql from 'graphql-tag';
 import { useEffect, useState } from 'react';
-import { useMutation, useQuery } from 'react-apollo';
+import { useApolloClient, useMutation, useQuery } from 'react-apollo';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { v4 as uuid_v4 } from 'uuid';
-import { listItemsInListState, listsInTagState, selectedListState } from '../atoms';
+import { listItemsInListState, selectedListState } from '../atoms';
+import { updateCachedList } from './ListHooks';
 
 const ALL_ITEMS = gql`
-  query AllTodos($item_list_id: uuid!) {
+  query AllItems($item_list_id: uuid!) {
     item(where: { item_list_id: { _eq: $item_list_id } }, order_by: { position: desc_nulls_last, created_at: desc }) {
       id
       title
@@ -20,10 +22,8 @@ const ALL_ITEMS = gql`
 `;
 
 const CREATE_ITEM = gql`
-  mutation CreateTodo($id: uuid!, $title: String!, $completed: Boolean!, $is_active: Boolean!, $position: numeric!, $item_list_id: uuid!) {
-    insert_item_one(
-      object: { id: $id, title: $title, completed: $completed, is_active: $is_active, position: $position, item_list_id: $item_list_id }
-    ) {
+  mutation CreateItem($item: item_insert_input!, $item_list_id: uuid!) {
+    insert_item_one(object: $item) {
       id
       title
       note
@@ -36,66 +36,70 @@ const CREATE_ITEM = gql`
     update_item_list_by_pk(pk_columns: { id: $item_list_id }, _set: { updated_at: "2021-01-01" }) {
       id
       updated_at
-      items {
-        id
-        completed
-      }
+      name
     }
   }
 `;
 
 const UPDATE_ITEM = gql`
-  mutation UpdateTodo(
-    $id: uuid!
-    $title: String!
-    $note: String
-    $color: String
-    $completed: Boolean!
-    $is_active: Boolean!
-    $position: numeric!
-    $item_list_id: uuid!
-  ) {
-    update_item_by_pk(
-      pk_columns: { id: $id }
-      _set: { title: $title, note: $note, color: $color, completed: $completed, is_active: $is_active, position: $position }
-    ) {
+  mutation UpdateItem($id: uuid!, $title: String!, $note: String, $color: String, $item_list_id: uuid!) {
+    update_item_by_pk(pk_columns: { id: $id }, _set: { title: $title, note: $note, color: $color }) {
       id
       title
       note
       color
-      completed
-      is_active
+    }
+    update_item_list_by_pk(pk_columns: { id: $item_list_id }, _set: { updated_at: "2021-01-01" }) {
+      id
+      updated_at
+      name
+    }
+  }
+`;
+
+const REPOSITION_ITEM = gql`
+  mutation RepositionItem($id: uuid!, $position: numeric!, $item_list_id: uuid!) {
+    update_item_by_pk(pk_columns: { id: $id }, _set: { position: $position }) {
+      id
       position
     }
     update_item_list_by_pk(pk_columns: { id: $item_list_id }, _set: { updated_at: "2021-01-01" }) {
       id
       updated_at
-      items {
-        id
-        completed
-      }
+      name
+    }
+  }
+`;
+
+const TOGGLE_ITEM = gql`
+  mutation ToggleItem($id: uuid!, $completed: Boolean!, $item_list_id: uuid!) {
+    update_item_by_pk(pk_columns: { id: $id }, _set: { completed: $completed }) {
+      id
+      completed
+    }
+    update_item_list_by_pk(pk_columns: { id: $item_list_id }, _set: { updated_at: "2021-01-01" }) {
+      id
+      updated_at
+      name
     }
   }
 `;
 
 const DELETE_ITEM = gql`
-  mutation DeleteTodo($id: uuid!, $item_list_id: uuid!) {
+  mutation DeleteItem($id: uuid!, $item_list_id: uuid!) {
     delete_item_by_pk(id: $id) {
       id
     }
     update_item_list_by_pk(pk_columns: { id: $item_list_id }, _set: { updated_at: "2021-01-01" }) {
       id
       updated_at
-      items {
-        id
-        completed
-      }
+      name
     }
   }
 `;
 
 const DELETE_COMPLETED_ITEMS = gql`
-  mutation DeleteCompletedTodos($item_list_id: uuid!) {
+  mutation DeleteCompletedItems($item_list_id: uuid!) {
     delete_item(where: { item_list_id: { _eq: $item_list_id }, completed: { _eq: true } }) {
       returning {
         id
@@ -112,16 +116,6 @@ const DELETE_COMPLETED_ITEMS = gql`
   }
 `;
 
-const modifyUpdatedAt = (lists, updatedList) => {
-  const list = lists.find((list) => list.id === updatedList.id);
-  const latestList = { ...list, updated_at: updatedList.updated_at };
-  // Due to a bug, aggregation is done in js instead of GraphQL.
-  latestList._item_count = updatedList.items.filter((e) => !e.completed).length;
-  return lists
-    .map((list) => (list.id !== latestList.id ? list : latestList))
-    .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
-};
-
 export const useAllItems = () => {
   const selectedList = useRecoilValue(selectedListState);
   const setListItems = useSetRecoilState(listItemsInListState);
@@ -131,45 +125,79 @@ export const useAllItems = () => {
     pollInterval: 10000, // 10 sec
   });
 
+  const jsonItem = JSON.stringify(data?.item);
   useEffect(() => {
     data && setListItems(data.item);
-  }, [data, setListItems]);
+  }, [data, jsonItem, setListItems]);
 
   error && console.warn(error);
   return { loading, data };
 };
 
 export const useToggleItem = () => {
-  const [listItems, setListItems] = useRecoilState(listItemsInListState);
-  const [lists, setLists] = useRecoilState(listsInTagState);
   const selectedList = useRecoilValue(selectedListState);
-  const [update, { loading, error, data }] = useMutation(UPDATE_ITEM);
-
-  const onCompleted = (data) => {
-    const modLists = modifyUpdatedAt(lists, data.update_item_list_by_pk);
-    setLists(modLists);
-  };
+  const { user } = useAuth0();
+  const client = useApolloClient();
+  const [update, { loading, error, data }] = useMutation(TOGGLE_ITEM);
 
   const toggleItem = (id, completed) => {
-    const item = listItems.find((item) => item.id === id);
-    const newItem = { ...item, completed: !completed, position: item.position || 0 };
-
-    // quick update displayed list
-    const toggledItems = listItems.map((item) => (item.id !== newItem.id ? item : newItem));
-    setListItems(toggledItems);
+    const item = client.readFragment({
+      id: `item:${id}`,
+      fragment: gql`
+        fragment OldToggleItem on item {
+          id
+          completed
+        }
+      `,
+    });
+    const newItem = { ...item, completed: !completed };
 
     return update({
       variables: {
         id: newItem.id,
-        title: newItem.title,
-        note: newItem.note,
-        color: newItem.color,
         completed: newItem.completed,
-        is_active: newItem.is_active,
-        position: newItem.position,
         item_list_id: selectedList.id,
       },
-    }).then((res) => onCompleted(res.data));
+      optimisticResponse: {
+        update_item_by_pk: {
+          id: newItem.id,
+          __typename: 'item',
+          completed: newItem.completed,
+        },
+        update_item_list_by_pk: {
+          id: selectedList.id,
+          __typename: 'item_list',
+          updated_at: selectedList.updated_at,
+          name: selectedList.name,
+        },
+      },
+      update(cache, { data: { update_item_by_pk, update_item_list_by_pk } }) {
+        cache.modify({
+          id: cache.identify(newItem),
+          fields: {
+            item(existingItems = []) {
+              const newItemRef = cache.writeFragment({
+                data: update_item_by_pk,
+                fragment: gql`
+                  fragment NewToggleItem on item {
+                    id
+                    completed
+                  }
+                `,
+              });
+              return [...existingItems, newItemRef];
+            },
+          },
+        });
+        cache.modify({
+          fields: {
+            item_list(existing = []) {
+              return updateCachedList(cache, user, existing, update_item_list_by_pk);
+            },
+          },
+        });
+      },
+    });
   };
 
   error && console.warn(error);
@@ -177,47 +205,57 @@ export const useToggleItem = () => {
 };
 
 export const useReorderItem = () => {
-  const [listItems, setListItems] = useRecoilState(listItemsInListState);
-  const [lists, setLists] = useRecoilState(listsInTagState);
+  const setListItems = useSetRecoilState(listItemsInListState);
   const selectedList = useRecoilValue(selectedListState);
-  const [update, { loading, error, data }] = useMutation(UPDATE_ITEM);
-
-  const onCompleted = (data) => {
-    const modLists = modifyUpdatedAt(lists, data.update_item_list_by_pk);
-    setLists(modLists);
-  };
+  const { user } = useAuth0();
+  const [update, { loading, error, data }] = useMutation(REPOSITION_ITEM);
 
   const reorderItem = (id, position, sortedItems) => {
     setListItems(sortedItems);
-    const item = listItems.find((item) => item.id === id);
-    const newItem = { ...item, position: position };
+    const newItem = { id: id, position: position };
 
     return update({
       variables: {
         id: newItem.id,
-        title: newItem.title,
-        note: newItem.note,
-        color: newItem.color,
-        completed: newItem.completed,
-        is_active: newItem.is_active,
         position: newItem.position,
         item_list_id: selectedList.id,
       },
-      update(cache) {
+      optimisticResponse: {
+        update_item_by_pk: {
+          id: newItem.id,
+          __typename: 'item',
+          position: newItem.position,
+        },
+        update_item_list_by_pk: {
+          id: selectedList.id,
+          __typename: 'item_list',
+          updated_at: selectedList.updated_at,
+          name: selectedList.name,
+        },
+      },
+      update(cache, { data: { update_item_by_pk, update_item_list_by_pk } }) {
         cache.modify({
           fields: {
-            item() {
-              const newRef = cache.writeQuery({
-                query: ALL_ITEMS,
-                variables: { item_list_id: selectedList.id },
-                data: { item: sortedItems },
+            item(existingItems = [], { readField }) {
+              const newItemRef = cache.writeFragment({
+                data: update_item_by_pk,
+                fragment: gql`
+                  fragment NewRepositionItem on item {
+                    id
+                    position
+                  }
+                `,
               });
-              return newRef;
+              const fltExistingItems = existingItems.filter((item) => readField('id', item) !== update_item_by_pk.id);
+              return [...fltExistingItems, newItemRef].sort((a, b) => readField('position', b) - readField('position', a));
+            },
+            item_list(existing = []) {
+              return updateCachedList(cache, user, existing, update_item_list_by_pk);
             },
           },
         });
       },
-    }).then((res) => onCompleted(res.data));
+    });
   };
 
   error && console.warn(error);
@@ -225,26 +263,28 @@ export const useReorderItem = () => {
 };
 
 export const useUpdateItem = () => {
-  const [listItems, setListItems] = useRecoilState(listItemsInListState);
-  const [lists, setLists] = useRecoilState(listsInTagState);
   const selectedList = useRecoilValue(selectedListState);
+  const { user } = useAuth0();
+  const client = useApolloClient();
   const [update, { loading, error, data }] = useMutation(UPDATE_ITEM);
-
-  const onCompleted = (data) => {
-    const newItems = listItems.map((item) => (item.id !== data.update_item_by_pk.id ? item : data.update_item_by_pk));
-    setListItems(newItems);
-
-    const modLists = modifyUpdatedAt(lists, data.update_item_list_by_pk);
-    setLists(modLists);
-  };
 
   const updateItem = (id, title, note, color) => {
     if (!title) {
       // ignore empty title
       return Promise.resolve();
     }
-    const item = listItems.find((item) => item.id === id);
-    const newItem = { ...item, title: title, note: note, color: color, position: item.position || 0 };
+    const item = client.readFragment({
+      id: `item:${id}`,
+      fragment: gql`
+        fragment OldUpdateItem on item {
+          id
+          title
+          note
+          color
+        }
+      `,
+    });
+    const newItem = { ...item, title: title, note: note, color: color };
 
     return update({
       variables: {
@@ -252,12 +292,53 @@ export const useUpdateItem = () => {
         title: newItem.title,
         note: newItem.note,
         color: newItem.color,
-        completed: newItem.completed,
-        is_active: newItem.is_active,
-        position: newItem.position,
         item_list_id: selectedList.id,
       },
-    }).then((res) => onCompleted(res.data));
+      optimisticResponse: {
+        update_item_by_pk: {
+          id: newItem.id,
+          __typename: 'item',
+          title: newItem.title,
+          note: newItem.note,
+          color: newItem.color,
+          item_list_id: selectedList.id,
+        },
+        update_item_list_by_pk: {
+          id: selectedList.id,
+          __typename: 'item_list',
+          updated_at: selectedList.updated_at,
+          name: selectedList.name,
+        },
+      },
+      update(cache, { data: { update_item_by_pk, update_item_list_by_pk } }) {
+        cache.modify({
+          id: cache.identify(newItem),
+          fields: {
+            item(existingItems = []) {
+              const newItemRef = cache.writeFragment({
+                data: update_item_by_pk,
+                fragment: gql`
+                  fragment NewUpdateItem on item {
+                    id
+                    title
+                    note
+                    color
+                  }
+                `,
+              });
+              return [...existingItems, newItemRef];
+            },
+          },
+        });
+        cache.modify({
+          fields: {
+            item_list(existing = []) {
+              return updateCachedList(cache, user, existing, update_item_list_by_pk);
+            },
+          },
+        });
+      },
+    });
   };
 
   error && console.warn(error);
@@ -265,33 +346,38 @@ export const useUpdateItem = () => {
 };
 
 export const useDeleteItem = () => {
-  const [listItems, setListItems] = useRecoilState(listItemsInListState);
-  const [lists, setLists] = useRecoilState(listsInTagState);
   const selectedList = useRecoilValue(selectedListState);
+  const { user } = useAuth0();
   const [_delete, { loading, error, data }] = useMutation(DELETE_ITEM);
-
-  const onCompleted = (data) => {
-    const modLists = modifyUpdatedAt(lists, data.update_item_list_by_pk);
-    setLists(modLists);
-  };
 
   const deleteItem = (id) => {
     return _delete({
       variables: { id: id, item_list_id: selectedList.id },
-      update(cache, { data }) {
+      optimisticResponse: {
+        delete_item_by_pk: {
+          id: id,
+          __typename: 'item',
+        },
+        update_item_list_by_pk: {
+          id: selectedList.id,
+          __typename: 'item_list',
+          updated_at: selectedList.updated_at,
+          name: selectedList.name,
+        },
+      },
+      update(cache, { data: { delete_item_by_pk, update_item_list_by_pk } }) {
         cache.modify({
           fields: {
-            item(existing, { readField }) {
-              const deletedId = data.delete_item_by_pk.id;
-              const newItems = listItems.filter((item) => item.id !== deletedId);
-              setListItems(newItems);
-
-              return existing.filter((item) => readField('id', item) !== deletedId);
+            item(existingItems = [], { readField }) {
+              return existingItems.filter((item) => readField('id', item) !== delete_item_by_pk.id);
+            },
+            item_list(existing = []) {
+              return updateCachedList(cache, user, existing, update_item_list_by_pk);
             },
           },
         });
       },
-    }).then((res) => onCompleted(res.data));
+    });
   };
 
   error && console.warn(error);
@@ -300,15 +386,10 @@ export const useDeleteItem = () => {
 
 export const useDeleteCompletedItems = () => {
   const [listItems, setListItems] = useRecoilState(listItemsInListState);
-  const [lists, setLists] = useRecoilState(listsInTagState);
   const selectedList = useRecoilValue(selectedListState);
+  const { user } = useAuth0();
   const [_delete, { loading, error, data }] = useMutation(DELETE_COMPLETED_ITEMS);
   const [backupItems, setBackupItems] = useState([]);
-
-  const onCompleted = (data) => {
-    const modLists = modifyUpdatedAt(lists, data.update_item_list_by_pk);
-    setLists(modLists);
-  };
 
   const deleteItemsFromState = () => {
     setBackupItems([...listItems]);
@@ -323,20 +404,20 @@ export const useDeleteCompletedItems = () => {
   const deleteCompletedItems = () => {
     return _delete({
       variables: { item_list_id: selectedList.id },
-      update(cache, { data }) {
+      update(cache, { data: { delete_item, update_item_list_by_pk } }) {
         cache.modify({
           fields: {
-            item(existing, { readField }) {
-              const deletedIds = data.delete_item.returning;
-              const newItems = listItems.filter((item) => !deletedIds.some((d) => d.id === item.id));
-              setListItems(newItems);
-
-              return existing.filter((item) => !deletedIds.some((d) => d.id === readField('id', item)));
+            item(existingItems = [], { readField }) {
+              const deletedIds = delete_item.returning;
+              return existingItems.filter((item) => !deletedIds.some((d) => d.id === readField('id', item)));
+            },
+            item_list(existing = []) {
+              return updateCachedList(cache, user, existing, update_item_list_by_pk);
             },
           },
         });
       },
-    }).then((res) => onCompleted(res.data));
+    });
   };
 
   error && console.warn(error);
@@ -344,15 +425,10 @@ export const useDeleteCompletedItems = () => {
 };
 
 export const useAddItem = () => {
-  const [listItems, setListItems] = useRecoilState(listItemsInListState);
-  const [lists, setLists] = useRecoilState(listsInTagState);
+  const listItems = useRecoilValue(listItemsInListState);
   const selectedList = useRecoilValue(selectedListState);
+  const { user } = useAuth0();
   const [create, { loading, error, data }] = useMutation(CREATE_ITEM);
-
-  const onCompleted = (data) => {
-    const modLists = modifyUpdatedAt(lists, data.update_item_list_by_pk);
-    setLists(modLists);
-  };
 
   const addItem = (title) => {
     if (!title) {
@@ -361,41 +437,60 @@ export const useAddItem = () => {
     }
     const newPosition = listItems.length ? Math.max(...listItems.map((item) => item.position)) + 1 : 1;
     const newItem = {
+      id: uuid_v4(),
       title: title,
       completed: false,
       is_active: true,
       position: newPosition,
-      id: uuid_v4(),
       item_list_id: selectedList.id,
     };
 
     return create({
       variables: {
-        id: newItem.id,
-        title: newItem.title,
-        completed: false,
-        is_active: true,
-        position: newItem.position,
-        item_list_id: newItem.item_list_id,
+        item: newItem,
+        item_list_id: selectedList.id,
       },
-      update(cache, { data }) {
+      optimisticResponse: {
+        insert_item_one: {
+          ...newItem,
+          __typename: 'item',
+          note: null,
+          color: 'default',
+        },
+        update_item_list_by_pk: {
+          id: selectedList.id,
+          __typename: 'item_list',
+          updated_at: selectedList.updated_at,
+          name: selectedList.name,
+        },
+      },
+      update(cache, { data: { insert_item_one, update_item_list_by_pk } }) {
         cache.modify({
           fields: {
-            item() {
-              const newItems = [data.insert_item_one].concat(listItems);
-              setListItems(newItems);
-
-              const newRef = cache.writeQuery({
-                query: ALL_ITEMS,
-                variables: { item_list_id: selectedList.id },
-                data: { item: newItems },
+            item(existingItems = []) {
+              const newItemRef = cache.writeFragment({
+                data: insert_item_one,
+                fragment: gql`
+                  fragment NewAddItem on item {
+                    id
+                    title
+                    note
+                    color
+                    completed
+                    is_active
+                    position
+                  }
+                `,
               });
-              return newRef;
+              return [newItemRef, ...existingItems];
+            },
+            item_list(existing = []) {
+              return updateCachedList(cache, user, existing, update_item_list_by_pk);
             },
           },
         });
       },
-    }).then((res) => onCompleted(res.data));
+    });
   };
 
   error && console.warn(error);

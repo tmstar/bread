@@ -12,21 +12,12 @@ export const ItemContext = createContext();
 export const ItemProvider = ({ children }) => {
   const [uniqueTags, setUniqueTags] = useRecoilState(uniqueTagsState);
   const selectedTag = useRecoilValue(selectedTagState);
-  const [lists, setLists] = useRecoilState(listsInTagState); // lists in a tag
+  const setLists = useSetRecoilState(listsInTagState); // lists in a tag
   const setListItems = useSetRecoilState(listItemsInListState); // list items in a list
   const [tagsInList, setTagsInList] = useRecoilState(tagsInListState); // tags in a list
-  const [selectedList, setSelectedList] = useRecoilState(selectedListState);
+  const selectedList = useRecoilValue(selectedListState);
   const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [token, setToken] = useState();
-
-  const _replaceList = (updatedList) => {
-    const list = lists.find((list) => list.id === updatedList.id);
-    const latestList = { ...list, updated_at: updatedList.updated_at, name: updatedList.name };
-    const newLists = lists
-      .map((list) => (list.id !== latestList.id ? list : latestList))
-      .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
-    setLists(newLists);
-  };
 
   const _addTag = (listId, tagName, isReplaced) => {
     const newTag = { id: uuid_v4(), name: tagName };
@@ -71,21 +62,6 @@ export const ItemProvider = ({ children }) => {
   }, [token, getAccessTokenSilently, setUniqueTags]);
 
   useEffect(() => {
-    if (!token) {
-      return;
-    }
-    setLists([]);
-    getAccessTokenSilently()
-      .then((token) => {
-        return ListService.getAll(token, selectedTag?.id);
-      })
-      .then((itemLists) => {
-        itemLists.map((list) => (list._item_count = list.items_aggregate.aggregate.count));
-        setLists(itemLists);
-      });
-  }, [token, getAccessTokenSilently, selectedTag, setLists]);
-
-  useEffect(() => {
     if (!selectedList) {
       setTagsInList([]);
       setListItems([]);
@@ -97,47 +73,6 @@ export const ItemProvider = ({ children }) => {
     });
     setTagsInList(newTags);
   }, [selectedList, setListItems, setTagsInList, getAccessTokenSilently]);
-
-  const updateList = (id, name) => {
-    if (!name) {
-      // ignore empty name
-      return Promise.resolve();
-    }
-    const list = lists.find((list) => list.id === id);
-    const newList = { ...list, name: name };
-
-    return getAccessTokenSilently()
-      .then((token) => {
-        return ListService.update(token, id, newList);
-      })
-      .then((updatedList) => {
-        _replaceList(updatedList);
-      });
-  };
-
-  const deleteList = (id) => {
-    getAccessTokenSilently()
-      .then((token) => {
-        return ListService.delete(token, id);
-      })
-      .then((result) => {
-        const newLists = lists.filter((list) => list.id !== result.itemListId);
-        setLists(newLists);
-
-        const unUsedTagIds = result.tags.filter((t) => !t.tag.item_list_tags_aggregate.aggregate.count).map((t) => t.tag_id);
-        if (!unUsedTagIds.length) {
-          return;
-        }
-        getAccessTokenSilently()
-          .then((token) => {
-            return TagService.deleteAll(token, unUsedTagIds);
-          })
-          .then((deletedTags) => {
-            const newTags = uniqueTags.filter((tag) => !deletedTags.some((t) => t.id === tag.id));
-            setUniqueTags(newTags);
-          });
-      });
-  };
 
   const removeTag = (tagId) => {
     getAccessTokenSilently()
@@ -164,24 +99,6 @@ export const ItemProvider = ({ children }) => {
       });
   };
 
-  const addList = (listName) => {
-    setTagsInList([]);
-    const newItemList = { name: listName, id: uuid_v4() };
-    return getAccessTokenSilently()
-      .then((token) => {
-        return ListService.add(token, newItemList);
-      })
-      .then((addedList) => {
-        addedList._item_count = 0;
-        setLists([addedList].concat(lists));
-        setSelectedList(addedList);
-
-        if (selectedTag?.name) {
-          _addTag(addedList.id, selectedTag.name, true);
-        }
-      });
-  };
-
   const addTag = (tagName) => {
     if (!tagName) {
       // ignore empty tag
@@ -193,10 +110,7 @@ export const ItemProvider = ({ children }) => {
   return (
     <ItemContext.Provider
       value={{
-        updateList: updateList,
-        deleteList: deleteList,
         removeTag: removeTag,
-        addList: addList,
         addTag: addTag,
       }}
     >

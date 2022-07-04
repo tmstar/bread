@@ -6,7 +6,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-export const AlertDialog = (props) => {
+export const AlertDialog = ({ onCloseOk, ...props }) => {
   return (
     <Dialog {...props} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
       <DialogTitle id="alert-dialog-title">{props.title}</DialogTitle>
@@ -17,7 +17,7 @@ export const AlertDialog = (props) => {
         <Button onClick={props.onClose} color="primary">
           {'キャンセル'}
         </Button>
-        <Button onClick={props.onCloseOk} color="primary" autoFocus>
+        <Button onClick={onCloseOk} color="primary" autoFocus>
           {props.labelok}
         </Button>
       </DialogActions>

@@ -1,8 +1,6 @@
-import AllInboxIcon from '@mui/icons-material/AllInbox';
 import ArrowBack from '@mui/icons-material/ArrowBack';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import ListAltIcon from '@mui/icons-material/ListAlt';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
@@ -20,6 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { listTitleState, openListState, selectedListState, tagsInListState } from '../../atoms';
 import { ItemContext } from '../../hooks/ItemProvider';
+import { useDeleteList, useUpdateList } from '../../hooks/ListHooks';
 import { useDeleteCompletedItems } from '../../hooks/ListItemHooks';
 import { AlertDialog } from '../utils/AlertDialog';
 import { Snackbar, SnackbarButton } from '../utils/Snackbar';
@@ -61,7 +60,10 @@ function TodoView() {
   const [selectedList, selectList] = useRecoilState(selectedListState);
   const tags = useRecoilValue(tagsInListState);
 
-  const { updateList, deleteList, removeTag } = useContext(ItemContext);
+  const { removeTag } = useContext(ItemContext);
+  const { updateList } = useUpdateList();
+  const { deleteList } = useDeleteList();
+
   const { deleteCompletedItems, deleteItemsFromState, restoreItemsToState } = useDeleteCompletedItems();
   const [isListEdit, setIsListEdit] = useState(false);
 
@@ -130,21 +132,6 @@ function TodoView() {
       open={isMobileMenuOpen}
       onClose={() => setMobileMoreAnchorEl(null)}
     >
-      {isListEdit ? (
-        <MenuItem onClick={() => toggleMode()}>
-          <IconButton aria-label="show active" color="inherit" size="large">
-            <AllInboxIcon />
-          </IconButton>
-          <p>リストの編集を終了</p>
-        </MenuItem>
-      ) : (
-        <MenuItem onClick={() => toggleMode()}>
-          <IconButton aria-label="show all" color="inherit" size="large">
-            <ListAltIcon />
-          </IconButton>
-          <p>リストを編集</p>
-        </MenuItem>
-      )}
       <MenuItem onClick={() => handleDeleteCompleted()}>
         <IconButton aria-label="delete completed" color="inherit" size="large">
           <DeleteIcon />
@@ -188,7 +175,7 @@ function TodoView() {
           >
             <ArrowBack />
           </IconButton>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', width: '100%' }}>
             <InputBase
               className={classes.title}
               value={listTitle}
