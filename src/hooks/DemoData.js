@@ -22,7 +22,7 @@ export const demoText = {
       ],
     },
     {
-      name: `リストにタグ付けして、だれかに共有`,
+      name: `タグ付けして、だれかに共有`,
       tags: [{ name: `Welcome to Bread` }, { name: `contact@example.com` }],
       items: [
         {
