@@ -1,6 +1,6 @@
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import Brightness1TwoToneIcon from '@mui/icons-material/Brightness1TwoTone';
-import DeleteIcon from '@mui/icons-material/Delete';
+import ClearIcon from '@mui/icons-material/Clear';
 import Done from '@mui/icons-material/Done';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import RemoveCircleOutlineTwoToneIcon from '@mui/icons-material/RemoveCircleOutlineTwoTone';
@@ -85,7 +85,7 @@ export const DraggableListItem = (props) => {
             deleteItem(props.itemId);
           }}
         >
-          <DeleteIcon />
+          <ClearIcon />
         </IconButton>
       </ListItemSecondaryAction>
     );
@@ -126,7 +126,6 @@ export const DraggableListItem = (props) => {
     <ListItem
       button
       onClick={() => handleClickListItem(item)}
-      disabled={item.color === 'indeterminate'}
       secondaryAction={<SecondaryAction itemId={item.id} />}
       {...provided.dragHandleProps}
     >
@@ -142,7 +141,7 @@ export const DraggableListItem = (props) => {
         >
           <DragHandleIcon className={colorClass} />
         </IconButton>
-        <Typography variant="h6" className={classes.index}>
+        <Typography variant="h6" className={classes.index} sx={{ ...(item.color === 'indeterminate' && { color: grey['600'] }) }}>
           {index + 1}
         </Typography>
       </ListItemIcon>
