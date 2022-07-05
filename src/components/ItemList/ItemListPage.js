@@ -15,8 +15,8 @@ import Toolbar from '@mui/material/Toolbar';
 import makeStyles from '@mui/styles/makeStyles';
 import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { listTitleState, openListState, selectedListState, tagsInListState } from '../../atoms';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { listTitleState, selectedListState, tagsInListState } from '../../atoms';
 import { ItemContext } from '../../hooks/ItemProvider';
 import { useDeleteList, useUpdateList } from '../../hooks/ListHooks';
 import { useDeleteCompletedItems } from '../../hooks/ListItemHooks';
@@ -56,7 +56,6 @@ function TodoView() {
   const classes = useStyles();
   const navigate = useNavigate();
   const [listTitle, setListTitle] = useRecoilState(listTitleState);
-  const toggleList = useSetRecoilState(openListState);
   const [selectedList, selectList] = useRecoilState(selectedListState);
   const tags = useRecoilValue(tagsInListState);
 
@@ -76,7 +75,6 @@ function TodoView() {
 
   const handleDrawerClose = () => {
     navigate(-1);
-    toggleList(false);
     selectList(null);
   };
 
@@ -87,7 +85,6 @@ function TodoView() {
   const handleDeleteListOk = () => {
     deleteList(selectedList.id);
     navigate(-1);
-    toggleList(false);
     selectList(null);
   };
 

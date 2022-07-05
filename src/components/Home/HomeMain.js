@@ -113,7 +113,6 @@ function HomeMain() {
           onClick={() => {
             setListTitle(list.name);
             selectList(list);
-            toggleList(true);
           }}
         >
           <ListItemText
