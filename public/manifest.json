@@ -164,6 +164,7 @@
     }
   ],
   "description": "Share your shopping list with your family on Bread. ✓Easy to share. ✓Family can check the list immediately. ✓You can tick off the list on the go. Make your list Now!",
+  "prefer_related_applications": true,
   "related_applications": [
     {
       "platform": "play",
