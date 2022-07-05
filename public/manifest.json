@@ -10,22 +10,26 @@
     {
       "src": "logo192.png",
       "type": "image/png",
-      "sizes": "192x192",
-      "purpose": "maskable"
+      "sizes": "192x192"
     },
     {
       "src": "logo512.png",
       "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "android/android-launchericon-512-512.png",
       "sizes": "512x512",
       "purpose": "maskable"
     },
     {
-      "src": "android/android-launchericon-512-512.png",
+      "src": "android/android-launchericon-512-512-small.png",
       "sizes": "512x512"
     },
     {
       "src": "android/android-launchericon-192-192.png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "maskable"
     },
     {
       "src": "android/android-launchericon-144-144.png",
@@ -159,5 +163,11 @@
       "sizes": "1024x500"
     }
   ],
-  "description": "Share your shopping list with your family on Bread. ✓Easy to share. ✓Family can check the list immediately. ✓You can tick off the list on the go. Make your list Now!"
+  "description": "Share your shopping list with your family on Bread. ✓Easy to share. ✓Family can check the list immediately. ✓You can tick off the list on the go. Make your list Now!",
+  "related_applications": [
+    {
+      "platform": "play",
+      "id": "com.bread.android"
+    }
+  ]
 }
