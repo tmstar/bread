@@ -127,8 +127,11 @@ export const useAllItems = () => {
 
   const jsonItem = JSON.stringify(data?.item);
   useEffect(() => {
+    if (!selectedList) {
+      setListItems([]);
+    }
     data && setListItems(data.item);
-  }, [data, jsonItem, setListItems]);
+  }, [data, jsonItem, selectedList, setListItems]);
 
   error && console.warn(error);
   return { loading, data };
