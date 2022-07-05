@@ -2,7 +2,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { createContext, useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { v4 as uuid_v4 } from 'uuid';
-import { listItemsInListState, listsInTagState, selectedListState, selectedTagState, tagsInListState, uniqueTagsState } from '../atoms';
+import { listsInTagState, selectedListState, selectedTagState, tagsInListState, uniqueTagsState } from '../atoms';
 import Hasura from '../services/hasura';
 import ListService from '../services/itemList';
 import TagService from '../services/tags';
@@ -13,7 +13,6 @@ export const ItemProvider = ({ children }) => {
   const [uniqueTags, setUniqueTags] = useRecoilState(uniqueTagsState);
   const selectedTag = useRecoilValue(selectedTagState);
   const setLists = useSetRecoilState(listsInTagState); // lists in a tag
-  const setListItems = useSetRecoilState(listItemsInListState); // list items in a list
   const [tagsInList, setTagsInList] = useRecoilState(tagsInListState); // tags in a list
   const selectedList = useRecoilValue(selectedListState);
   const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
@@ -64,7 +63,6 @@ export const ItemProvider = ({ children }) => {
   useEffect(() => {
     if (!selectedList) {
       setTagsInList([]);
-      setListItems([]);
       return;
     }
     const newTags = selectedList.item_list_tags.map((listTag) => {
@@ -72,7 +70,7 @@ export const ItemProvider = ({ children }) => {
       return { id: tag.id, name: tag.name };
     });
     setTagsInList(newTags);
-  }, [selectedList, setListItems, setTagsInList, getAccessTokenSilently]);
+  }, [selectedList, setTagsInList, getAccessTokenSilently]);
 
   const removeTag = (tagId) => {
     getAccessTokenSilently()

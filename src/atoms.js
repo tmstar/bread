@@ -40,9 +40,9 @@ export const selectedListState = selector({
   key: 'selectedList',
   get: ({ get }) => get(listState),
   set: ({ set }, newValue) => {
+    newValue || set(listItemsInListState, []);
     set(openListState, newValue ? true : false);
     set(listState, newValue);
-    newValue || set(listItemsInListState, []);
   },
 });
 
