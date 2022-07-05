@@ -1,4 +1,4 @@
-import { atom } from 'recoil';
+import { atom, selector } from 'recoil';
 
 export const openMenuState = atom({
   key: 'openMenu', // Menu drawer state
@@ -31,9 +31,19 @@ export const openListState = atom({
   default: false,
 });
 
-export const selectedListState = atom({
-  key: 'selectedList', // Selected list obj
+export const listState = atom({
+  key: 'list', // Selected list obj
   default: null,
+});
+
+export const selectedListState = selector({
+  key: 'selectedList',
+  get: ({ get }) => get(listState),
+  set: ({ set }, newValue) => {
+    set(openListState, newValue ? true : false);
+    set(listState, newValue);
+    newValue || set(listItemsInListState, []);
+  },
 });
 
 export const listItemsInListState = atom({
