@@ -465,25 +465,18 @@ export const useAddItem = () => {
         },
       },
       update(cache, { data: { insert_item_one, update_item_list_by_pk } }) {
+        const { item } = cache.readQuery({
+          query: ALL_ITEMS,
+          variables: { item_list_id: selectedList.id },
+        });
+        cache.writeQuery({
+          query: ALL_ITEMS,
+          variables: { item_list_id: selectedList.id },
+          data: { item: [insert_item_one, ...item] },
+        });
+
         cache.modify({
           fields: {
-            item(existingItems = []) {
-              const newItemRef = cache.writeFragment({
-                data: insert_item_one,
-                fragment: gql`
-                  fragment NewAddItem on item {
-                    id
-                    title
-                    note
-                    color
-                    completed
-                    is_active
-                    position
-                  }
-                `,
-              });
-              return [newItemRef, ...existingItems];
-            },
             item_list(existing = []) {
               return updateCachedList(cache, user, existing, update_item_list_by_pk);
             },
