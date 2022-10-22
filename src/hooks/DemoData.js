@@ -42,7 +42,7 @@ export const demoText = {
         },
         {
           title: `iPad・iPhoneでお使いの場合`,
-          note: `Safariで Bread (https://app.breadlist.ga) を開き、「ホーム画面に追加」をすることでアプリをインストール可能です。 `,
+          note: `Safariで Bread (https://app.breadlist.ml) を開き、「ホーム画面に追加」をすることでアプリをインストール可能です。 `,
           color: `color2`,
         },
         {

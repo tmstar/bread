@@ -34,7 +34,7 @@ const Copyright = () => {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
-      <Link color="inherit" href="https://breadlist.ga/" underline="hover">
+      <Link color="inherit" href="https://breadlist.ml/" underline="hover">
         {'Bread Labs'}
       </Link>
       {' 2022.'}
