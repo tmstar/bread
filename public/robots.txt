@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
-Sitemap: https://app.breadlist.ga/sitemap.xml
-Host: https://app.breadlist.ga
+Sitemap: https://app.breadlist.ml/sitemap.xml
+Host: https://app.breadlist.ml
